@@ -23,9 +23,10 @@ export async function renderPage(
   doc: PdfJsDoc,
   pageNumber: number,
   scale = 1.5,
+  rotation?: number,
 ): Promise<HTMLCanvasElement> {
   const page = await doc.getPage(pageNumber)
-  const viewport = page.getViewport({ scale })
+  const viewport = rotation === undefined ? page.getViewport({ scale }) : page.getViewport({ scale, rotation })
   const canvas = document.createElement('canvas')
   canvas.width = Math.ceil(viewport.width)
   canvas.height = Math.ceil(viewport.height)

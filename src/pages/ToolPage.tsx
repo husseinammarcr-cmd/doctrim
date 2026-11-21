@@ -5,6 +5,7 @@ import Dropzone from '../components/Dropzone'
 import ToolIcon from '../components/ToolIcon'
 import PageGrid, { type PageItem } from '../components/tool/PageGrid'
 import SignaturePad from '../components/tool/SignaturePad'
+import CropEditor, { type CropMarginsMm } from '../components/tool/CropEditor'
 import { getTool, type Tool } from '../lib/tools'
 import { serverConfigured } from '../lib/api'
 import ServerToolRunner from '../components/tool/ServerToolRunner'
@@ -119,6 +120,10 @@ function Runner({ tool }: { tool: Tool }) {
     signPage: 1,
     signPos: 'bottom-right',
     signWidth: 160,
+    cropTop: 10,
+    cropRight: 10,
+    cropBottom: 10,
+    cropLeft: 10,
   })
   const setOpt = (k: string, v: any) => setOpts((o) => ({ ...o, [k]: v }))
 
@@ -185,6 +190,16 @@ function Runner({ tool }: { tool: Tool }) {
   const removePage = (i: number) => setPages((ps) => ps.filter((_, k) => k !== i))
   const rotateAll = (d: number) => setPages((ps) => ps.map((p) => ({ ...p, rotation: p.rotation + d })))
 
+  const cropMargins: CropMarginsMm = {
+    top: Number(opts.cropTop) || 0,
+    right: Number(opts.cropRight) || 0,
+    bottom: Number(opts.cropBottom) || 0,
+    left: Number(opts.cropLeft) || 0,
+  }
+  const setCropMargins = (m: CropMarginsMm) =>
+    setOpts((o) => ({ ...o, cropTop: m.top, cropRight: m.right, cropBottom: m.bottom, cropLeft: m.left }))
+  const cropPreset = (v: number) => setCropMargins({ top: v, right: v, bottom: v, left: v })
+
   const process = async () => {
     setProcessing(true)
     setError('')
@@ -229,6 +244,15 @@ function Runner({ tool }: { tool: Tool }) {
         const fmt = tool.slug === 'pdf-to-jpg' ? 'jpeg' : 'png'
         const images = await E.pdfToImages(bytes[0], fmt, Number(opts.scale), 'page')
         setResult({ kind: 'images', images, filename: `${tool.slug}.zip` })
+      } else if (tool.slug === 'crop-pdf') {
+        const pt = 72 / 25.4
+        const out = await E.cropPdf(bytes[0], {
+          top: (Number(opts.cropTop) || 0) * pt,
+          right: (Number(opts.cropRight) || 0) * pt,
+          bottom: (Number(opts.cropBottom) || 0) * pt,
+          left: (Number(opts.cropLeft) || 0) * pt,
+        })
+        setResult({ kind: 'pdf', bytes: out, filename: 'cropped.pdf' })
       } else if (tool.slug === 'watermark-pdf') {
         const hex = opts.color || '#888888'
         const c: [number, number, number] = [parseInt(hex.slice(1, 3), 16) / 255, parseInt(hex.slice(3, 5), 16) / 255, parseInt(hex.slice(5, 7), 16) / 255]
@@ -406,6 +430,49 @@ function Runner({ tool }: { tool: Tool }) {
                 </div>
               )}
 
+              {tool.slug === 'crop-pdf' && (
+                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px]">
+                  <CropEditor bytes={bytes[0]} margins={cropMargins} onChange={setCropMargins} />
+                  <div className="grid content-start gap-4">
+                    <div>
+                      <Label>Margins (mm)</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {(['top', 'right', 'bottom', 'left'] as const).map((side) => (
+                          <label key={side} className="block">
+                            <span className="mb-1 block text-[12px] font-semibold capitalize text-ink-muted">{side}</span>
+                            <input
+                              type="number"
+                              min={0}
+                              step={1}
+                              className={inputCls}
+                              value={cropMargins[side]}
+                              onChange={(e) => setCropMargins({ ...cropMargins, [side]: e.target.value as any })}
+                            />
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Quick presets</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {[0, 5, 10, 20].map((v) => (
+                          <button
+                            key={v}
+                            onClick={() => cropPreset(v)}
+                            className={`btn-ghost btn-md ${[cropMargins.top, cropMargins.right, cropMargins.bottom, cropMargins.left].every((n) => n === v) ? 'ring-2 ring-brand' : ''}`}
+                          >
+                            {v === 0 ? 'None' : `${v} mm`}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-[13px] leading-relaxed text-ink-muted">
+                      Cropping hides the outer edges without resizing or re-encoding the page content — text stays sharp and selectable.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {tool.slug === 'watermark-pdf' && (
                 <div className="grid max-w-[560px] gap-4 sm:grid-cols-2">
                   <div className="sm:col-span-2">
@@ -542,6 +609,7 @@ function processLabel(slug: string): string {
   const map: Record<string, string> = {
     'merge-pdf': 'Merge PDF',
     'compress-pdf': 'Compress PDF',
+    'crop-pdf': 'Apply crop',
     'split-pdf': 'Split PDF',
     'rotate-pdf': 'Apply rotation',
     'organize-pdf': 'Apply changes',

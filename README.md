@@ -14,7 +14,7 @@ on Cloudflare Pages, with an optional FastAPI backend for server-side tools.
 ## Tools
 Ready (run entirely in your browser — files never leave your device):
 Merge, Split, Rotate, Organize, Delete pages, Extract pages, JPG→PDF, PNG→PDF,
-PDF→JPG, PDF→PNG, Compress, Watermark, Number pages, Sign, PDF Reader.
+PDF→JPG, PDF→PNG, Compress, Crop, Watermark, Number pages, Sign, PDF Reader.
 
 Server-backed (enabled when `VITE_API_URL` is set and the API is deployed):
 Protect, Unlock, Word/Excel/PPT→PDF, PDF→Word, OCR, strong compression.

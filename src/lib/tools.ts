@@ -60,7 +60,7 @@ export const TOOLS: Tool[] = [
   // ---- Edit / modify ----
   { slug: 'watermark-pdf', name: 'Watermark PDF', desc: 'Stamp text over your PDF pages', category: 'edit', color: '#00C0FF', icon: 'stamp', status: 'ready', accept: '.pdf', inputLabel: 'PDF' },
   { slug: 'number-pages', name: 'Number Pages', desc: 'Add page numbers to a PDF', category: 'edit', color: '#00D267', icon: 'hash', status: 'ready', accept: '.pdf', inputLabel: 'PDF' },
-  { slug: 'crop-pdf', name: 'Crop PDF', desc: 'Trim unwanted margins from PDF pages', category: 'edit', color: '#00D267', icon: 'crop', status: 'soon', accept: '.pdf', inputLabel: 'PDF' },
+  { slug: 'crop-pdf', name: 'Crop PDF', desc: 'Trim unwanted margins from your PDF pages', category: 'edit', color: '#00D267', icon: 'crop', status: 'ready', accept: '.pdf', inputLabel: 'PDF' },
   { slug: 'pdf-reader', name: 'PDF Reader', desc: 'Read and view your PDF in the browser', category: 'edit', color: '#00D267', icon: 'book-open', status: 'ready', accept: '.pdf', inputLabel: 'PDF' },
 
   // ---- Protect ----

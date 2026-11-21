@@ -236,6 +236,33 @@ export async function signPdf(
   return doc.save()
 }
 
+/* ---------------- Crop ---------------- */
+export type CropMargins = { top: number; right: number; bottom: number; left: number } // points
+
+/**
+ * Inset the crop box of every page by the given margins (in points).
+ * Uses the existing crop box as the base, so re-cropping an already cropped
+ * PDF behaves predictably. A minimum 20 pt area is always kept.
+ */
+export async function cropPdf(bytes: Bytes, margins: CropMargins): Promise<Bytes> {
+  const doc = await load(bytes)
+  const MIN = 20
+  for (const page of doc.getPages()) {
+    const box = page.getCropBox()
+    const left = Math.max(0, Math.min(margins.left, box.width - MIN))
+    const right = Math.max(0, Math.min(margins.right, box.width - left - MIN))
+    const bottom = Math.max(0, Math.min(margins.bottom, box.height - MIN))
+    const top = Math.max(0, Math.min(margins.top, box.height - bottom - MIN))
+    page.setCropBox(
+      box.x + left,
+      box.y + bottom,
+      box.width - left - right,
+      box.height - top - bottom,
+    )
+  }
+  return doc.save()
+}
+
 /* ---------------- helpers ---------------- */
 export function downloadBytes(bytes: Bytes, filename: string, mime = 'application/pdf') {
   saveBytes(bytes, filename, mime)
