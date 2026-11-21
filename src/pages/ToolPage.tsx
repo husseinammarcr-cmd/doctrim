@@ -10,6 +10,7 @@ import { serverConfigured } from '../lib/api'
 import ServerToolRunner from '../components/tool/ServerToolRunner'
 import { openPdfJs, thumbnail } from '../lib/pdf/pdfjs'
 import * as E from '../lib/pdf/engine'
+import { saveBlob } from '../lib/download'
 
 type Result =
   | { kind: 'pdf'; bytes: Uint8Array; filename: string; before?: number; after?: number }
@@ -264,12 +265,7 @@ function Runner({ tool }: { tool: Tool }) {
     const zip = new JSZip()
     result.images.forEach((img) => zip.file(img.name, img.blob))
     const blob = await zip.generateAsync({ type: 'blob' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = result.filename
-    a.click()
-    setTimeout(() => URL.revokeObjectURL(url), 4000)
+    void saveBlob(blob, result.filename, 'application/zip')
   }
 
   const hasFiles = files.length > 0

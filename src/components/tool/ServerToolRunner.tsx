@@ -5,6 +5,7 @@ import Dropzone from '../Dropzone'
 import ToolIcon from '../ToolIcon'
 import type { Tool } from '../../lib/tools'
 import { api } from '../../lib/api'
+import { saveBlob } from '../../lib/download'
 import { formatSize } from '../../lib/pdf/engine'
 
 const inputCls = 'w-full rounded border border-line bg-white px-3 py-2 text-[14px] text-ink focus:border-brand focus:outline-none'
@@ -57,12 +58,7 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
 
   const download = () => {
     if (!result) return
-    const url = URL.createObjectURL(result.blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = result.filename
-    a.click()
-    setTimeout(() => URL.revokeObjectURL(url), 4000)
+    void saveBlob(result.blob, result.filename)
   }
 
   const canProcess = !!file && !processing && (!needsPassword || password.length > 0)

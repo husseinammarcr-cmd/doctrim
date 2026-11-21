@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts, degrees, rgb } from 'pdf-lib'
 import { openPdfJs, renderPage, canvasToBlob } from './pdfjs'
+import { saveBytes } from '../download'
 
 export type Bytes = Uint8Array
 
@@ -237,16 +238,7 @@ export async function signPdf(
 
 /* ---------------- helpers ---------------- */
 export function downloadBytes(bytes: Bytes, filename: string, mime = 'application/pdf') {
-  const ab = bytes.slice().buffer as ArrayBuffer
-  const blob = new Blob([ab], { type: mime })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 4000)
+  saveBytes(bytes, filename, mime)
 }
 
 export function formatSize(n: number): string {
