@@ -1,0 +1,148 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ArrowLeft, Download, Loader2, RefreshCw, Server, ShieldCheck } from 'lucide-react'
+import Dropzone from '../Dropzone'
+import ToolIcon from '../ToolIcon'
+import type { Tool } from '../../lib/tools'
+import { api } from '../../lib/api'
+import { formatSize } from '../../lib/pdf/engine'
+
+const inputCls = 'w-full rounded border border-line bg-white px-3 py-2 text-[14px] text-ink focus:border-brand focus:outline-none'
+
+function outName(tool: Tool, file: File): string {
+  const stem = file.name.replace(/\.[^.]+$/, '')
+  switch (tool.slug) {
+    case 'protect-pdf': return 'protected.pdf'
+    case 'unlock-pdf': return 'unlocked.pdf'
+    case 'pdf-to-word': return `${stem}.docx`
+    case 'pdf-ocr': return 'ocr.pdf'
+    default: return `${stem}.pdf`
+  }
+}
+
+export default function ServerToolRunner({ tool }: { tool: Tool }) {
+  const [file, setFile] = useState<File | null>(null)
+  const [password, setPassword] = useState('')
+  const [lang, setLang] = useState('eng')
+  const [processing, setProcessing] = useState(false)
+  const [result, setResult] = useState<{ blob: Blob; filename: string } | null>(null)
+  const [error, setError] = useState('')
+
+  const needsPassword = tool.slug === 'protect-pdf' || tool.slug === 'unlock-pdf'
+  const isOcr = tool.slug === 'pdf-ocr'
+
+  const reset = () => {
+    setFile(null); setResult(null); setError(''); setPassword('')
+  }
+
+  const process = async () => {
+    if (!file) return
+    setProcessing(true); setError(''); setResult(null)
+    try {
+      let blob: Blob
+      switch (tool.slug) {
+        case 'protect-pdf': blob = await api.protect(file, password); break
+        case 'unlock-pdf': blob = await api.unlock(file, password); break
+        case 'pdf-to-word': blob = await api.pdfToWord(file); break
+        case 'pdf-ocr': blob = await api.ocr(file, lang); break
+        default: blob = await api.officeToPdf(file)
+      }
+      setResult({ blob, filename: outName(tool, file) })
+    } catch (e: any) {
+      setError(e?.message || 'The server could not process this file.')
+    } finally {
+      setProcessing(false)
+    }
+  }
+
+  const download = () => {
+    if (!result) return
+    const url = URL.createObjectURL(result.blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = result.filename
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(url), 4000)
+  }
+
+  const canProcess = !!file && !processing && (!needsPassword || password.length > 0)
+
+  return (
+    <div className="bg-surface/60 min-h-[70vh]">
+      <div className="container-x py-10">
+        <Link to="/pdf-tools" className="inline-flex items-center gap-1 text-[14px] font-semibold text-ink-muted hover:text-brand">
+          <ArrowLeft size={15} /> All tools
+        </Link>
+        <div className="mt-4 flex items-center gap-4">
+          <ToolIcon icon={tool.icon} color={tool.color} size={52} radius={13} />
+          <div>
+            <h1 className="text-3xl font-bold text-ink">{tool.name}</h1>
+            <p className="mt-0.5 text-[15px] text-ink-muted">{tool.desc}</p>
+          </div>
+        </div>
+        <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-[13px] font-semibold text-brand">
+          <Server size={14} /> Securely processed on the DocTrim server, then deleted.
+        </p>
+
+        <div className="card mt-6 p-6 sm:p-8">
+          {!file && <Dropzone accept={tool.accept} onFiles={(fs) => setFile(fs[0])} label={tool.inputLabel} />}
+
+          {file && !result && (
+            <div>
+              <div className="flex items-center gap-3 rounded border border-line bg-white px-4 py-3">
+                <ShieldCheck size={18} className="text-brand" />
+                <span className="flex-1 truncate text-[14px] font-semibold text-ink">{file.name}</span>
+                <span className="text-[12px] text-ink-muted">{formatSize(file.size)}</span>
+              </div>
+
+              {needsPassword && (
+                <div className="mt-4 max-w-[420px]">
+                  <label className="mb-1 block text-[13px] font-semibold text-ink-soft">
+                    {tool.slug === 'protect-pdf' ? 'Set a password' : 'Enter the password'}
+                  </label>
+                  <input type="password" className={inputCls} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+                </div>
+              )}
+
+              {isOcr && (
+                <div className="mt-4 max-w-[420px]">
+                  <label className="mb-1 block text-[13px] font-semibold text-ink-soft">Document language</label>
+                  <select className={inputCls} value={lang} onChange={(e) => setLang(e.target.value)}>
+                    <option value="eng">English</option>
+                    <option value="ara">Arabic</option>
+                    <option value="fra">French</option>
+                    <option value="deu">German</option>
+                    <option value="spa">Spanish</option>
+                  </select>
+                </div>
+              )}
+
+              {error && <p className="mt-4 rounded bg-red-50 px-4 py-3 text-[14px] text-accent-red">{error}</p>}
+
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <button onClick={process} disabled={!canProcess} className="btn-primary btn-lg disabled:opacity-50">
+                  {processing ? (<><Loader2 size={18} className="animate-spin" /> Processing…</>) : (<><Download size={18} /> {tool.name}</>)}
+                </button>
+                <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> Start over</button>
+              </div>
+            </div>
+          )}
+
+          {result && (
+            <div className="text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-light text-brand">
+                <ShieldCheck size={30} />
+              </div>
+              <h2 className="mt-4 text-2xl font-bold text-ink">Done!</h2>
+              <p className="mt-2 text-[15px] text-ink-soft">{result.filename} · {formatSize(result.blob.size)}</p>
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <button onClick={download} className="btn-primary btn-lg"><Download size={18} /> Download</button>
+                <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> Start over</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

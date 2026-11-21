@@ -24,6 +24,8 @@ export interface Tool {
   multi?: boolean
   /** short label for the input file type */
   inputLabel: string
+  /** requires the server API (VITE_API_URL) */
+  server?: boolean
 }
 
 export const TOOLS: Tool[] = [
@@ -72,6 +74,15 @@ export const TOOLS: Tool[] = [
 ]
 
 export const POPULAR = TOOLS.filter((t) => t.category === 'popular')
+
+// Tools that run on the server API (enabled when VITE_API_URL is configured).
+const SERVER_SLUGS = ['pdf-to-word', 'pdf-ocr', 'word-to-pdf', 'excel-to-pdf', 'ppt-to-pdf', 'protect-pdf', 'unlock-pdf']
+for (const t of TOOLS) {
+  if (SERVER_SLUGS.includes(t.slug)) {
+    t.server = true
+    t.status = 'ready'
+  }
+}
 
 export const DIRECTORY: { title: string; slugs: string[] }[] = [
   { title: 'Convert from PDF', slugs: ['pdf-to-word', 'pdf-to-excel', 'pdf-to-ppt', 'pdf-to-jpg', 'pdf-to-png', 'pdf-ocr'] },

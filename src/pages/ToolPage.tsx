@@ -6,6 +6,8 @@ import ToolIcon from '../components/ToolIcon'
 import PageGrid, { type PageItem } from '../components/tool/PageGrid'
 import SignaturePad from '../components/tool/SignaturePad'
 import { getTool, type Tool } from '../lib/tools'
+import { serverConfigured } from '../lib/api'
+import ServerToolRunner from '../components/tool/ServerToolRunner'
 import { openPdfJs, thumbnail } from '../lib/pdf/pdfjs'
 import * as E from '../lib/pdf/engine'
 
@@ -61,6 +63,10 @@ export default function ToolPage() {
         <Link to="/pdf-tools" className="btn-primary btn-md mt-6">Browse all tools</Link>
       </div>
     )
+  }
+  if (tool.server) {
+    if (!serverConfigured()) return <ComingSoon tool={tool} />
+    return <ServerToolRunner key={tool.slug} tool={tool} />
   }
   if (tool.status === 'soon') return <ComingSoon tool={tool} />
   return <Runner key={tool.slug} tool={tool} />
