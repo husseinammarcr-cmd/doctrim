@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white text-ink font-sans;
+  }
+  ::selection {
+    @apply bg-brand/20;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-container px-6;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded font-semibold transition-colors duration-150 cursor-pointer select-none;
+  }
+  .btn-primary {
+    @apply btn bg-brand text-white hover:bg-brand-hover;
+  }
+  .btn-outline {
+    @apply btn border border-brand text-brand bg-white hover:bg-brand-lighter;
+  }
+  .btn-ghost {
+    @apply btn border border-line text-ink bg-white hover:bg-surface;
+  }
+  .btn-md {
+    @apply px-5 py-2.5 text-[15px];
+  }
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+  .card {
+    @apply rounded-lg border border-line bg-white;
+  }
+  .nav-link {
+    @apply text-[15px] font-semibold text-ink-soft hover:text-brand transition-colors;
+  }
+  .h-display {
+    @apply font-bold text-ink tracking-tight;
+  }
+}
+
+/* thin scrollbar for tool panels */
+.scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: #d9d9de; border-radius: 8px; }
+.scroll-thin::-webkit-scrollbar-track { background: transparent; }
