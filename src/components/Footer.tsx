@@ -16,10 +16,9 @@ const COLS: { title: string; links: { label: string; to: string }[] }[] = [
     title: 'Company',
     links: [
       { label: 'About', to: '/about' },
-      { label: 'Help', to: '/help' },
-      { label: 'Blog', to: '/' },
-      { label: 'Careers', to: '/' },
-      { label: 'PDF Statistics', to: '/' },
+      { label: 'Help Center', to: '/help' },
+      { label: 'Privacy Policy', to: '/privacy' },
+      { label: 'Terms of Service', to: '/terms' },
     ],
   },
   {
@@ -28,7 +27,6 @@ const COLS: { title: string; links: { label: string; to: string }[] }[] = [
       { label: 'All PDF Tools', to: '/pdf-tools' },
       { label: 'Free — No Sign-Up', to: '/#free' },
       { label: 'Security', to: '/#trust' },
-      { label: 'Developers', to: '/' },
     ],
   },
   {

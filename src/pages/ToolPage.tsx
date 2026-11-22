@@ -9,6 +9,7 @@ import CropEditor, { type CropMarginsMm } from '../components/tool/CropEditor'
 import { getTool, type Tool } from '../lib/tools'
 import { serverConfigured } from '../lib/api'
 import ServerToolRunner from '../components/tool/ServerToolRunner'
+import NotFound from './NotFound'
 import { openPdfJs, thumbnail } from '../lib/pdf/pdfjs'
 import * as E from '../lib/pdf/engine'
 import { saveBlob } from '../lib/download'
@@ -58,14 +59,7 @@ const inputCls = selectCls
 export default function ToolPage() {
   const { slug } = useParams()
   const tool = getTool(slug || '')
-  if (!tool) {
-    return (
-      <div className="container-x py-24 text-center">
-        <h1 className="text-3xl font-bold">Tool not found</h1>
-        <Link to="/pdf-tools" className="btn-primary btn-md mt-6">Browse all tools</Link>
-      </div>
-    )
-  }
+  if (!tool) return <NotFound />
   if (tool.server) {
     if (!serverConfigured()) return <ComingSoon tool={tool} />
     return <ServerToolRunner key={tool.slug} tool={tool} />

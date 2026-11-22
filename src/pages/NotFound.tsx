@@ -1,0 +1,54 @@
+import { Link } from 'react-router-dom'
+import { ArrowLeft, ArrowRight, Search } from 'lucide-react'
+import ToolCard from '../components/ToolCard'
+import { getTool } from '../lib/tools'
+import { usePageMeta } from '../lib/usePageMeta'
+
+export default function NotFound() {
+  usePageMeta(
+    'Page not found — DocTrim',
+    'This page does not exist. Jump back into the free PDF tools or search the tools directory.'
+  )
+
+  return (
+    <div className="bg-white">
+      <section className="border-b border-line bg-surface">
+        <div className="container-x py-20 lg:py-28">
+          <div className="mx-auto max-w-[620px] text-center">
+            <p className="text-[84px] font-black leading-none tracking-tighter text-brand/15 lg:text-[120px]">
+              404
+            </p>
+            <h1 className="h-display mt-2 text-4xl leading-tight lg:text-5xl">This page went missing.</h1>
+            <p className="mt-4 text-lg text-ink-soft">
+              The link may be old, mistyped, or pointing at a tool that has not shipped yet. Nothing is
+              broken on your side — and your files are still on your device.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link to="/" className="btn-primary btn-lg">
+                <ArrowLeft size={18} /> Back to home
+              </Link>
+              <Link to="/pdf-tools" className="btn-ghost btn-lg">
+                <Search size={18} /> Browse all tools
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="container-x py-14">
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="h-display text-2xl">Popular right now</h2>
+          <Link to="/pdf-tools" className="hidden items-center gap-1 text-[14px] font-semibold text-brand hover:underline sm:flex">
+            All PDF tools <ArrowRight size={15} />
+          </Link>
+        </div>
+        <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {['merge-pdf', 'compress-pdf', 'split-pdf', 'sign-pdf', 'crop-pdf', 'rotate-pdf'].map((slug) => {
+            const t = getTool(slug)
+            return t ? <ToolCard key={slug} tool={t} /> : null
+          })}
+        </div>
+      </section>
+    </div>
+  )
+}
