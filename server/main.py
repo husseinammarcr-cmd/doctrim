@@ -9,6 +9,7 @@ Run:  uvicorn main:app --host 127.0.0.1 --port 8090
 """
 from __future__ import annotations
 
+import io
 import os
 import re
 import shutil
@@ -178,6 +179,27 @@ async def office_to_pdf(file: UploadFile = File(...)):
         raise HTTPException(500, str(e))
 
 
+def _looks_like_scan(path: Path, sample_pages: int = 3) -> bool:
+    """True when the first pages are images with (almost) no extractable text."""
+    try:
+        import pymupdf
+
+        with pymupdf.open(path) as doc:
+            pages = min(sample_pages, doc.page_count)
+            if pages == 0:
+                return False
+            empty = 0
+            for i in range(pages):
+                page = doc[i]
+                text = (page.get_text("text") or "").strip()
+                has_img = bool(page.get_images(full=False))
+                if has_img and len(text) < 60:
+                    empty += 1
+            return empty >= max(1, pages - 1)
+    except Exception:
+        return False
+
+
 @app.post("/api/pdf-to-word")
 async def pdf_to_word(file: UploadFile = File(...)):
     d = _tmpdir()
@@ -186,9 +208,45 @@ async def pdf_to_word(file: UploadFile = File(...)):
         out = d / (src.stem + ".docx")
         from pdf2docx import Converter
 
-        cv = Converter(str(src))
-        cv.convert(str(out))
-        cv.close()
+        def downsample(target: Path, dpi: int = 150) -> bool:
+            """Ghostscript copy with images resampled (text stays vector)."""
+            try:
+                _run([
+                    "gs", "-sDEVICE=pdfwrite", "-dCompatibilityLevel=1.5",
+                    "-dNOPAUSE", "-dQUIET", "-dBATCH",
+                    "-dDownsampleColorImages=true", f"-dColorImageResolution={dpi}",
+                    "-dColorImageDownsampleType=/Bicubic",
+                    "-dDownsampleGrayImages=true", f"-dGrayImageResolution={dpi}",
+                    "-dGrayImageDownsampleType=/Bicubic",
+                    "-dDetectDuplicateImages=true", "-dJPEGQ=82",
+                    f"-sOutputFile={target}", str(src),
+                ], timeout=240)
+                return target.exists() and target.stat().st_size > 0
+            except Exception:
+                return False
+
+        def convert(src_path: Path, dest: Path) -> None:
+            cv = Converter(str(src_path))
+            cv.convert(str(dest))
+            cv.close()
+
+        # Scanned PDFs carry full-resolution page images (300 dpi+), so pdf2docx
+        # emits a huge .docx (12 scanned pages ≈ 30 MB). Downsample those first;
+        # for mixed/text PDFs convert as-is and only retry when the result is big.
+        scan_like = _looks_like_scan(src)
+        small_pdf = d / "downsampled.pdf"
+        pre = scan_like and downsample(small_pdf, 150)
+        convert(small_pdf if pre else src, out)
+
+        # Still oversized? One more pass at a lower resolution, keep the smaller file.
+        if out.exists() and out.stat().st_size > 20 * 1024 * 1024:
+            alt_pdf = d / "alt.pdf"
+            if downsample(alt_pdf, 110 if pre else 150):
+                alt = d / "alt.docx"
+                convert(alt_pdf, alt)
+                if alt.exists() and alt.stat().st_size < out.stat().st_size:
+                    alt.replace(out)
+
         if not out.exists():
             raise HTTPException(500, "Conversion produced no output")
         return FileResponse(
@@ -419,14 +477,14 @@ async def pdf_to_ppt(file: UploadFile = File(...)):
             blank = prs.slide_layouts[6]  # "Blank"
 
             for i, page in enumerate(doc):
+                # JPEG, not PNG: a lossless PNG of a photo-heavy page is 3-4 MB,
+                # JPEG at 144 dpi is ~200 KB and looks the same on a slide.
                 pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
-                img = d / f"page-{i}.png"
-                pix.save(img)
                 slide = prs.slides.add_slide(blank)
                 ratio = min(slide_w / pix.width, slide_h / pix.height)
                 w, h = int(pix.width * ratio), int(pix.height * ratio)
                 slide.shapes.add_picture(
-                    str(img),
+                    io.BytesIO(pix.tobytes("jpeg", jpg_quality=80)),
                     Emu(int((slide_w - w) / 2)),
                     Emu(int((slide_h - h) / 2)),
                     width=Emu(w), height=Emu(h),
