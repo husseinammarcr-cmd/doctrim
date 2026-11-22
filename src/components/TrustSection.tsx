@@ -1,17 +1,18 @@
-import { Headphones, ShieldCheck, BadgeCheck } from 'lucide-react'
+import { ShieldCheck, BadgeCheck, UserX } from 'lucide-react'
+import { TOOLS } from '../lib/tools'
 
 const STATS = [
-  { value: '30+', label: 'PDF tools' },
-  { value: '100%', label: 'Free to start' },
+  { value: `${TOOLS.length}`, label: 'PDF tools' },
+  { value: '100%', label: 'Free, forever' },
+  { value: '0', label: 'Accounts needed' },
   { value: '256-bit', label: 'TLS encryption' },
-  { value: '24/7', label: 'Support' },
 ]
 
 const CARDS = [
   {
-    icon: Headphones,
-    title: '24/7 Customer Support',
-    body: 'Real help whenever you need it. Our support team is available around the clock.',
+    icon: UserX,
+    title: 'No Account Required',
+    body: 'There is nothing to sign up for. No email, no password, no profile — open a tool and use it.',
   },
   {
     icon: ShieldCheck,
@@ -32,7 +33,7 @@ export default function TrustSection() {
         <div className="mx-auto max-w-[640px] text-center">
           <h2 className="h-display text-4xl lg:text-[40px]">Why Choose DocTrim?</h2>
           <p className="mt-3 text-lg text-ink-soft">
-            People and businesses trust DocTrim to get their document work done — safely and simply.
+            People and businesses trust DocTrim to get their document work done — safely, simply and for free.
           </p>
         </div>
         <div className="mx-auto mt-10 grid max-w-[820px] grid-cols-2 gap-6 md:grid-cols-4">

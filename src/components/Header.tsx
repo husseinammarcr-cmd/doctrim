@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ChevronDown, Grid3X3, Menu, X } from 'lucide-react'
+import { ChevronDown, Gift, Grid3X3, Menu, X } from 'lucide-react'
 import Logo from './Logo'
 import ToolIcon from './ToolIcon'
 import { DIRECTORY, getTool } from '../lib/tools'
@@ -88,10 +88,12 @@ export default function Header() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-4 lg:flex">
-          <a href="/#pricing" className="nav-link">Pricing</a>
-          <a href="/#pricing" className="nav-link">Teams</a>
-          <a href="/#pricing" className="btn-ghost btn-md">Log In</a>
-          <a href="/#pricing" className="btn-primary btn-md">Free Trial</a>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-[13px] font-bold text-brand">
+            <Gift size={14} /> 100% Free
+          </span>
+          <Link to="/pdf-tools" className="btn-primary btn-md">
+            All PDF Tools
+          </Link>
         </div>
 
         {/* mobile toggle */}
@@ -110,9 +112,11 @@ export default function Header() {
               </Link>
             ))}
             <Link to="/pdf-tools" className="rounded px-2 py-2 text-[15px] font-semibold text-brand">All PDF tools</Link>
-            <div className="mt-2 flex gap-3 px-2">
-              <a href="/#pricing" className="btn-ghost btn-md flex-1">Log In</a>
-              <a href="/#pricing" className="btn-primary btn-md flex-1">Free Trial</a>
+            <div className="mt-2 px-2">
+              <Link to="/pdf-tools" className="btn-primary btn-md w-full">
+                All PDF Tools — Free
+              </Link>
+              <p className="mt-2 text-center text-[13px] text-ink-muted">No account needed</p>
             </div>
           </div>
         </div>

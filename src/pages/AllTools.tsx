@@ -8,7 +8,7 @@ export default function AllTools() {
         <div className="mx-auto max-w-[640px] text-center">
           <h1 className="h-display text-4xl lg:text-5xl">All PDF Tools</h1>
           <p className="mt-3 text-lg text-ink-soft">
-            Every tool you need to convert, compress, organize, edit and protect PDFs — free to start.
+            Every tool you need to convert, compress, organize, edit and protect PDFs — all free, no sign-up.
           </p>
         </div>
 

@@ -3,11 +3,11 @@ import Hero from '../components/Hero'
 import ToolCard from '../components/ToolCard'
 import FeatureSection, { type Feature } from '../components/FeatureSection'
 import MobileSection from '../components/MobileSection'
-import PricingSection from '../components/PricingSection'
+import FreeSection from '../components/FreeSection'
 import TrustSection from '../components/TrustSection'
 import CTASection from '../components/CTASection'
 import ToolsDirectory from '../components/ToolsDirectory'
-import { POPULAR } from '../lib/tools'
+import { POPULAR, TOOLS } from '../lib/tools'
 
 const FEATURES: Feature[] = [
   {
@@ -51,7 +51,7 @@ export default function Home() {
           <div className="mx-auto max-w-[640px] text-center">
             <h2 className="h-display text-4xl">Most Popular PDF Tools</h2>
             <p className="mt-3 text-lg text-ink-soft">
-              30 tools to convert, compress, and edit PDFs for free. Try it out today!
+              {TOOLS.length} tools to convert, compress, and edit PDFs — all free, no sign-up required.
             </p>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -79,7 +79,7 @@ export default function Home() {
       </section>
 
       <MobileSection />
-      <PricingSection />
+      <FreeSection />
       <TrustSection />
       <CTASection />
       <ToolsDirectory compact />

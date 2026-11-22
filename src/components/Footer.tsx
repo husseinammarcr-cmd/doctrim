@@ -4,12 +4,12 @@ import Logo from './Logo'
 
 const COLS: { title: string; links: { label: string; to: string }[] }[] = [
   {
-    title: 'Solutions',
+    title: 'Popular Tools',
     links: [
-      { label: 'Sales', to: '/#pricing' },
-      { label: 'Finance', to: '/#pricing' },
-      { label: 'Real Estate', to: '/#pricing' },
-      { label: 'Education', to: '/#pricing' },
+      { label: 'Compress PDF', to: '/compress-pdf' },
+      { label: 'Merge PDF', to: '/merge-pdf' },
+      { label: 'Split PDF', to: '/split-pdf' },
+      { label: 'Sign PDF', to: '/sign-pdf' },
     ],
   },
   {
@@ -25,11 +25,10 @@ const COLS: { title: string; links: { label: string; to: string }[] }[] = [
   {
     title: 'Product',
     links: [
-      { label: 'Pricing', to: '/#pricing' },
-      { label: 'Teams', to: '/#pricing' },
       { label: 'All PDF Tools', to: '/pdf-tools' },
-      { label: 'Developers', to: '/' },
+      { label: 'Free — No Sign-Up', to: '/#free' },
       { label: 'Security', to: '/#trust' },
+      { label: 'Developers', to: '/' },
     ],
   },
   {
@@ -50,6 +49,7 @@ export default function Footer() {
           <div>
             <Logo />
             <p className="mt-3 text-[15px] text-ink-soft">We make PDF easy.</p>
+            <p className="mt-2 text-[13px] text-ink-muted">Free forever. No account, no subscription.</p>
           </div>
           {COLS.map((col) => (
             <div key={col.title}>
