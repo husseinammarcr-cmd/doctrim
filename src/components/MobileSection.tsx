@@ -3,24 +3,28 @@ import { EASE_OUT, viewportOnce } from '../lib/motion'
 
 function StoreButton({ store }: { store: 'google' | 'apple' }) {
   return (
-    <a href="#mobile" className="flex items-center gap-3 rounded-lg bg-ink px-4 py-2.5 text-white hover:bg-black">
+    <div
+      aria-disabled="true"
+      title="Coming soon"
+      className="flex cursor-not-allowed select-none items-center gap-3 rounded-lg bg-ink/55 px-4 py-2.5 text-white"
+    >
       {store === 'google' ? (
-        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden>
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden className="opacity-75">
           <path fill="#00D267" d="M3.6 1.8 13.5 12 3.6 22.2c-.4-.3-.6-.8-.6-1.4V3.2c0-.6.2-1.1.6-1.4z" />
           <path fill="#FFD200" d="M17.4 8.1 13.5 12l3.9 3.9 3.2-1.8c1-.6 1-1.6 0-2.2l-3.2-1.8z" />
           <path fill="#FF5400" d="M3.6 1.8c.5-.4 1.2-.4 1.9 0l11.9 6.3-3.9 3.9L3.6 1.8z" />
           <path fill="#00C0FF" d="M13.5 12l3.9 3.9L5.5 22.2c-.7.4-1.4.4-1.9 0L13.5 12z" />
         </svg>
       ) : (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" aria-hidden>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" aria-hidden className="opacity-75">
           <path d="M16.4 12.6c0-2.4 2-3.6 2.1-3.6-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.6.9-.7 0-1.9-.9-3.1-.8-1.6 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.6s-2.4-1-2.3-3.6zM14.2 5.6c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.8 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2.1-.5 2.8-1.3z" />
         </svg>
       )}
       <span className="text-left leading-tight">
-        <span className="block text-[10px] uppercase opacity-80">{store === 'google' ? 'Get it on' : 'Download on the'}</span>
+        <span className="block text-[10px] uppercase opacity-70">Coming soon to</span>
         <span className="block text-[15px] font-semibold">{store === 'google' ? 'Google Play' : 'App Store'}</span>
       </span>
-    </a>
+    </div>
   )
 }
 
@@ -90,6 +94,9 @@ export default function MobileSection() {
             <StoreButton store="google" />
             <StoreButton store="apple" />
           </div>
+          <p className="mt-3 text-[13px] text-ink-muted">
+            In development — the apps are not available yet. Every tool works in your browser today.
+          </p>
         </motion.div>
         <motion.div
           className="mx-auto w-full max-w-[520px]"

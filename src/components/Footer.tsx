@@ -33,9 +33,9 @@ const COLS: { title: string; links: { label: string; to: string }[] }[] = [
   {
     title: 'Apps',
     links: [
-      { label: 'Download DocTrim', to: '/#mobile' },
-      { label: 'PDF Scanner', to: '/#mobile' },
-      { label: 'Windows App', to: '/#mobile' },
+      { label: 'Mobile apps (soon)', to: '/#mobile' },
+      { label: 'PDF Scanner (soon)', to: '/#mobile' },
+      { label: 'Windows app (soon)', to: '/#mobile' },
     ],
   },
 ]
@@ -74,12 +74,15 @@ export default function Footer() {
             <a href="#" aria-label="X" className="hover:text-brand"><Twitter size={18} /></a>
           </div>
           <p className="text-[13px] text-ink-muted">© {new Date().getFullYear()} DocTrim. All rights reserved.</p>
-          <a href="/#mobile" className="btn bg-ink px-4 py-2 text-[14px] text-white hover:bg-black">
+          <span
+            title="Coming soon"
+            className="btn cursor-not-allowed select-none bg-ink/10 px-4 py-2 text-[14px] text-ink-muted"
+          >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
               <path d="M0 2.3 6.5 1.4v6.1H0V2.3zm7.5-1L16 0v7.5H7.5V1.3zM0 8.5h6.5v6.1L0 13.7V8.5zm7.5 0H16V16l-8.5-1.2V8.5z" />
             </svg>
-            Download for Windows
-          </a>
+            Windows app — coming soon
+          </span>
         </div>
       </div>
     </footer>
