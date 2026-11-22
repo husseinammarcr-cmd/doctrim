@@ -41,5 +41,7 @@ export const api = {
   unlock: (file: File, password: string) => post('/api/unlock', file, { password }),
   officeToPdf: (file: File) => post('/api/office-to-pdf', file),
   pdfToWord: (file: File) => post('/api/pdf-to-word', file),
+  pdfToExcel: (file: File) => post('/api/pdf-to-excel', file),
+  pdfToPpt: (file: File) => post('/api/pdf-to-ppt', file),
   ocr: (file: File, lang = 'eng') => post('/api/ocr', file, { lang }),
 }

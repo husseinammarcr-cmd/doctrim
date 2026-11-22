@@ -16,6 +16,8 @@ function outName(tool: Tool, file: File): string {
     case 'protect-pdf': return 'protected.pdf'
     case 'unlock-pdf': return 'unlocked.pdf'
     case 'pdf-to-word': return `${stem}.docx`
+    case 'pdf-to-excel': return `${stem}.xlsx`
+    case 'pdf-to-ppt': return `${stem}.pptx`
     case 'pdf-ocr': return 'ocr.pdf'
     default: return `${stem}.pdf`
   }
@@ -45,6 +47,8 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
         case 'protect-pdf': blob = await api.protect(file, password); break
         case 'unlock-pdf': blob = await api.unlock(file, password); break
         case 'pdf-to-word': blob = await api.pdfToWord(file); break
+        case 'pdf-to-excel': blob = await api.pdfToExcel(file); break
+        case 'pdf-to-ppt': blob = await api.pdfToPpt(file); break
         case 'pdf-ocr': blob = await api.ocr(file, lang); break
         default: blob = await api.officeToPdf(file)
       }

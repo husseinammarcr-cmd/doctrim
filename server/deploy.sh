@@ -18,7 +18,8 @@ echo "==> Installing system dependencies"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 apt-get install -y python3-venv python3-pip ghostscript libreoffice \
-  tesseract-ocr tesseract-ocr-eng ocrmypdf curl
+  tesseract-ocr tesseract-ocr-eng tesseract-ocr-ara tesseract-ocr-fra \
+  tesseract-ocr-deu tesseract-ocr-spa ocrmypdf curl
 
 echo "==> Setting up app at $APP_DIR"
 mkdir -p "$APP_DIR"
