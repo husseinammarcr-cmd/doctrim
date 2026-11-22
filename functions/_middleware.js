@@ -87,6 +87,14 @@ const NOT_FOUND_META = {
   type: 'website',
 }
 
+const NOT_FOUND_META_AR = {
+  title: 'الصفحة غير موجودة — DocTrim',
+  description: 'هذه الصفحة غير موجودة. تصفّح أدوات PDF المجانية على DocTrim.',
+  image: '/og/ar-home.png',
+  type: 'website',
+  locale: 'ar_AR',
+}
+
 export async function onRequest(context) {
   const { request, next } = context
   if (request.method !== 'GET') return next()
@@ -109,8 +117,9 @@ export async function onRequest(context) {
   if (!type.includes('text/html')) return next()
 
   const meta = META[path]
+  const isArPath = path === 'ar' || path.startsWith('ar/')
   const html = await res.text()
-  const body = render(html, meta || NOT_FOUND_META, path, { notFound: !meta })
+  const body = render(html, meta || (isArPath ? NOT_FOUND_META_AR : NOT_FOUND_META), path, { notFound: !meta })
 
   const headers = new Headers(res.headers)
   headers.delete('content-length')
