@@ -6,7 +6,6 @@ export type ToolCategory =
   | 'organize'
   | 'edit'
   | 'protect'
-  | 'ai'
 
 export interface Tool {
   slug: string
@@ -67,10 +66,6 @@ export const TOOLS: Tool[] = [
   { slug: 'protect-pdf', name: 'Protect PDF', desc: 'Add a password and encrypt your PDF', category: 'protect', color: '#FF46FB', icon: 'lock', status: 'soon', accept: '.pdf', inputLabel: 'PDF' },
   { slug: 'unlock-pdf', name: 'Unlock PDF', desc: 'Remove a password from a PDF', category: 'protect', color: '#FF46FB', icon: 'unlock', status: 'soon', accept: '.pdf', inputLabel: 'PDF' },
   { slug: 'flatten-pdf', name: 'Flatten PDF', desc: 'Merge layers and annotations into one', category: 'protect', color: '#FF46FB', icon: 'layers', status: 'soon', accept: '.pdf', inputLabel: 'PDF' },
-
-  // ---- AI ----
-  { slug: 'ai-summarizer', name: 'AI PDF Summarizer', desc: 'Summarize long PDFs in seconds', category: 'ai', color: '#0055FF', icon: 'sparkles', status: 'soon', accept: '.pdf', inputLabel: 'PDF' },
-  { slug: 'translate-pdf', name: 'Translate PDF', desc: 'Translate PDF documents to another language', category: 'ai', color: '#0055FF', icon: 'languages', status: 'soon', accept: '.pdf', inputLabel: 'PDF' },
 ]
 
 export const POPULAR = TOOLS.filter((t) => t.category === 'popular')
@@ -90,7 +85,6 @@ export const DIRECTORY: { title: string; slugs: string[] }[] = [
   { title: 'Organize PDF', slugs: ['merge-pdf', 'split-pdf', 'rotate-pdf', 'organize-pdf', 'delete-pdf-pages', 'extract-pdf-pages'] },
   { title: 'Edit PDF', slugs: ['edit-pdf', 'sign-pdf', 'watermark-pdf', 'number-pages', 'crop-pdf', 'pdf-reader'] },
   { title: 'Protect PDF', slugs: ['protect-pdf', 'unlock-pdf', 'flatten-pdf'] },
-  { title: 'AI PDF', slugs: ['ai-summarizer', 'translate-pdf'] },
   { title: 'Optimize', slugs: ['compress-pdf'] },
 ]
 
@@ -105,5 +99,4 @@ export const CATEGORY_LABEL: Record<ToolCategory, string> = {
   organize: 'Organize PDF',
   edit: 'Edit PDF',
   protect: 'Protect PDF',
-  ai: 'AI PDF',
 }

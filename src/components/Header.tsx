@@ -11,7 +11,6 @@ const NAV = [
   { label: 'Merge', to: '/merge-pdf' },
   { label: 'Edit', to: '/edit-pdf' },
   { label: 'Sign', to: '/sign-pdf' },
-  { label: 'AI PDF', to: '/ai-summarizer' },
 ]
 
 export default function Header() {
