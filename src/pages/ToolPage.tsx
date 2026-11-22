@@ -18,6 +18,7 @@ import { openPdfJs, thumbnail } from '../lib/pdf/pdfjs'
 import * as E from '../lib/pdf/engine'
 import { saveBlob } from '../lib/download'
 import { track } from '../lib/analytics'
+import { useI18n } from '../i18n'
 
 type Result =
   | { kind: 'pdf'; bytes: Uint8Array; filename: string; before?: number; after?: number }
@@ -64,6 +65,7 @@ const inputCls = selectCls
 export default function ToolPage() {
   const { slug } = useParams()
   const tool = getTool(slug || '')
+  const { isAr, t, toolName, toolDesc } = useI18n()
 
   // EditPdfPage owns a richer title/description for /edit-pdf.
   usePageMeta(
@@ -71,8 +73,10 @@ export default function ToolPage() {
       ? 'Page not found — DocTrim'
       : tool.slug === 'edit-pdf'
         ? ''
-        : `${tool.name} — Free Online PDF Tool | DocTrim`,
-    tool && tool.slug !== 'edit-pdf' ? tool.desc : undefined
+        : isAr
+          ? `${toolName(tool)} — أداة PDF مجانية أونلاين | DocTrim`
+          : `${tool.name} — Free Online PDF Tool | DocTrim`,
+    tool && tool.slug !== 'edit-pdf' ? (isAr ? toolDesc(tool) : tool.desc) : undefined
   )
 
   if (!tool) return <NotFound />
@@ -86,19 +90,20 @@ export default function ToolPage() {
 }
 
 function ComingSoon({ tool }: { tool: Tool }) {
+  const { t, toolName, toolDesc } = useI18n()
   return (
     <div className="container-x py-20">
       <div className="mx-auto max-w-[560px] text-center">
         <div className="mx-auto mb-6 w-fit"><ToolIcon icon={tool.icon} color={tool.color} size={64} radius={16} /></div>
-        <h1 className="text-3xl font-bold text-ink">{tool.name}</h1>
-        <p className="mt-3 text-lg text-ink-soft">{tool.desc}</p>
+        <h1 className="text-3xl font-bold text-ink">{toolName(tool)}</h1>
+        <p className="mt-3 text-lg text-ink-soft">{toolDesc(tool)}</p>
         <div className="card mt-8 p-6">
           <p className="text-[15px] text-ink-soft">
-            This tool is on the way. We're adding features step by step — check back soon.
+            {t('tool.soon', "This tool is on the way. We're adding features step by step — check back soon.")}
           </p>
         </div>
         <Link to="/pdf-tools" className="btn-outline btn-md mt-6">
-          <ArrowLeft size={16} /> Back to all tools
+          <ArrowLeft size={16} className="rtl:rotate-180" /> {t('tool.backAll', 'Back to all tools')}
         </Link>
       </div>
     </div>
@@ -106,6 +111,7 @@ function ComingSoon({ tool }: { tool: Tool }) {
 }
 
 function Runner({ tool }: { tool: Tool }) {
+  const { t, isAr, toolName, toolDesc } = useI18n()
   const [files, setFiles] = useState<File[]>([])
   const [bytes, setBytes] = useState<Uint8Array[]>([])
   const [pages, setPages] = useState<PageItem[]>([])
@@ -161,7 +167,7 @@ function Runner({ tool }: { tool: Tool }) {
           }
           setPages(previews)
         } catch (e) {
-          setError('Could not read this PDF. It may be corrupted or password-protected.')
+          setError(t('tool.badFile', 'Could not read this PDF. It may be corrupted or password-protected.'))
         } finally {
           setLoadingPreviews(false)
         }
@@ -221,7 +227,7 @@ function Runner({ tool }: { tool: Tool }) {
     try {
       const base = tool.slug.replace(/-pdf$/, '')
       if (isMerge) {
-        if (bytes.length < 2) throw new Error('Add at least two PDFs to merge.')
+        if (bytes.length < 2) throw new Error(t('err.merge2', 'Add at least two PDFs to merge.'))
         const out = await E.mergePdfs(bytes)
         setResult({ kind: 'pdf', bytes: out, filename: 'merged.pdf' })
       } else if (tool.slug === 'compress-pdf') {
@@ -232,7 +238,7 @@ function Runner({ tool }: { tool: Tool }) {
         if (tool.slug === 'delete-pdf-pages') ops = pages.filter((p) => !p.included).map((p) => ({ srcIndex: p.srcIndex, rotation: p.rotation }))
         else if (tool.slug === 'extract-pdf-pages') ops = pages.filter((p) => p.included).map((p) => ({ srcIndex: p.srcIndex, rotation: p.rotation }))
         else ops = pages.filter((p) => p.included).map((p) => ({ srcIndex: p.srcIndex, rotation: p.rotation }))
-        if (!ops.length) throw new Error('No pages left to export.')
+        if (!ops.length) throw new Error(t('err.noPages', 'No pages left to export.'))
         const out = await E.applyPageOps(bytes[0], ops)
         setResult({ kind: 'pdf', bytes: out, filename: `${base}.pdf` })
       } else if (tool.slug === 'split-pdf') {
@@ -241,7 +247,7 @@ function Runner({ tool }: { tool: Tool }) {
         if (opts.splitMode === 'all') groups = Array.from({ length: count }, (_, i) => [i])
         else {
           groups = parseRanges(opts.ranges, count)
-          if (!groups.length) throw new Error('Enter valid page ranges, e.g. 1-3,5,7-9.')
+          if (!groups.length) throw new Error(t('err.ranges', 'Enter valid page ranges, e.g. 1-3,5,7-9.'))
         }
         const parts = await Promise.all(groups.map((g) => E.extractPages(bytes[0], g)))
         const JSZip = (await import('jszip')).default
@@ -276,7 +282,7 @@ function Runner({ tool }: { tool: Tool }) {
         const out = await E.numberPages(bytes[0], { position: opts.position, size: Number(opts.size), start: Number(opts.numStart) })
         setResult({ kind: 'pdf', bytes: out, filename: 'numbered.pdf' })
       } else if (tool.slug === 'sign-pdf') {
-        if (!sig) throw new Error('Draw your signature first.')
+        if (!sig) throw new Error(t('err.signFirst', 'Draw your signature first.'))
         const { PDFDocument } = await import('pdf-lib')
         const doc = await PDFDocument.load(bytes[0], { ignoreEncryption: true })
         const pi = Math.min(Math.max(1, Number(opts.signPage)), doc.getPageCount()) - 1
@@ -288,11 +294,11 @@ function Runner({ tool }: { tool: Tool }) {
         const out = await E.signPdf(bytes[0], sig, { pageIndex: pi, x, y: 40, width: w })
         setResult({ kind: 'pdf', bytes: out, filename: 'signed.pdf' })
       } else {
-        throw new Error('This tool is not available yet.')
+        throw new Error(t('err.notAvailable', 'This tool is not available yet.'))
       }
       track('run_ok', { t: tool.slug, v: Math.round(performance.now() - started) })
     } catch (e: any) {
-      const msg = e?.message || 'Something went wrong while processing your file.'
+      const msg = e?.message || t('tool.genericError', 'Something went wrong while processing your file.')
       setError(msg)
       track('run_fail', { t: tool.slug, m: msg, v: Math.round(performance.now() - started) })
     } finally {
@@ -316,17 +322,17 @@ function Runner({ tool }: { tool: Tool }) {
     <div className="bg-surface/60 min-h-[70vh]">
       <div className="container-x py-10">
         <Link to="/pdf-tools" className="inline-flex items-center gap-1 text-[14px] font-semibold text-ink-muted hover:text-brand">
-          <ArrowLeft size={15} /> All tools
+          <ArrowLeft size={15} className="rtl:rotate-180" /> {t('nav.allTools', 'All tools')}
         </Link>
         <div className="mt-4 flex items-center gap-4">
           <ToolIcon icon={tool.icon} color={tool.color} size={52} radius={13} />
           <div>
-            <h1 className="text-3xl font-bold text-ink">{tool.name}</h1>
-            <p className="mt-0.5 text-[15px] text-ink-muted">{tool.desc}</p>
+            <h1 className="text-3xl font-bold text-ink">{toolName(tool)}</h1>
+            <p className="mt-0.5 text-[15px] text-ink-muted">{toolDesc(tool)}</p>
           </div>
         </div>
         <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-[13px] font-semibold text-brand">
-          <ShieldCheck size={14} /> Files are processed in your browser — they never leave your device.
+          <ShieldCheck size={14} /> {t('tool.privacy', 'Files are processed in your browser — they never leave your device.')}
         </p>
 
         <div className="card mt-6 p-6 sm:p-8">
@@ -364,14 +370,14 @@ function Runner({ tool }: { tool: Tool }) {
                   </div>
                   <div className="mt-4 grid gap-4 sm:grid-cols-2">
                     <div>
-                      <Label>Page size</Label>
+                      <Label>{t('opt.pageSize', 'Page size')}</Label>
                       <select className={selectCls} value={opts.pageSize} onChange={(e) => setOpt('pageSize', e.target.value)}>
-                        <option value="fit">Fit to image</option>
+                        <option value="fit">{t('opt.fitImage', 'Fit to image')}</option>
                         <option value="a4">A4</option>
                       </select>
                     </div>
                     <div>
-                      <Label>Margin (pt)</Label>
+                      <Label>{t('opt.marginPt', 'Margin (pt)')}</Label>
                       <input type="number" className={inputCls} value={opts.margin} min={0} onChange={(e) => setOpt('margin', e.target.value)} />
                     </div>
                   </div>
@@ -392,8 +398,8 @@ function Runner({ tool }: { tool: Tool }) {
                           <button onClick={() => rotateAll(270)} className="btn-ghost btn-md">270°</button>
                         </div>
                       )}
-                      {tool.slug === 'delete-pdf-pages' && <p className="mb-3 text-[14px] text-ink-muted">Select the pages you want to delete.</p>}
-                      {tool.slug === 'extract-pdf-pages' && <p className="mb-3 text-[14px] text-ink-muted">Select the pages you want to keep.</p>}
+                      {tool.slug === 'delete-pdf-pages' && <p className="mb-3 text-[14px] text-ink-muted">{t('opt.selectDelete', 'Select the pages you want to delete.')}</p>}
+                      {tool.slug === 'extract-pdf-pages' && <p className="mb-3 text-[14px] text-ink-muted">{t('opt.selectKeep', 'Select the pages you want to keep.')}</p>}
                       <PageGrid
                         pages={pages}
                         mode={isReader ? 'rotate' : tool.slug === 'organize-pdf' ? 'organize' : tool.slug === 'rotate-pdf' ? 'rotate' : 'select'}
@@ -410,26 +416,26 @@ function Runner({ tool }: { tool: Tool }) {
               {/* single-file option panels */}
               {tool.slug === 'compress-pdf' && (
                 <div className="max-w-[420px]">
-                  <Label>Compression level</Label>
+                  <Label>{t('opt.compression', 'Compression level')}</Label>
                   <select className={selectCls} value={opts.level} onChange={(e) => setOpt('level', e.target.value)}>
-                    <option value="basic">Basic — keep text &amp; vectors (smaller reduction)</option>
-                    <option value="recommended">Recommended — balanced quality &amp; size</option>
-                    <option value="extreme">Extreme — smallest file (lower quality)</option>
+                    <option value="basic">{t('opt.basic', 'Basic — keep text & vectors (smaller reduction)')}</option>
+                    <option value="recommended">{t('opt.recommended', 'Recommended — balanced quality & size')}</option>
+                    <option value="extreme">{t('opt.extreme', 'Extreme — smallest file (lower quality)')}</option>
                   </select>
-                  <p className="mt-2 text-[13px] text-ink-muted">Recommended &amp; Extreme also try re-rendering pages as images and keep whichever result is smallest — great for scanned or image-heavy PDFs.</p>
+                  <p className="mt-2 text-[13px] text-ink-muted">{t('opt.compressNote', 'Recommended & Extreme also try re-rendering pages as images and keep whichever result is smallest — great for scanned or image-heavy PDFs.')}</p>
                 </div>
               )}
 
               {tool.slug === 'split-pdf' && (
                 <div className="max-w-[420px]">
-                  <Label>Split mode</Label>
+                  <Label>{t('opt.splitMode', 'Split mode')}</Label>
                   <select className={selectCls} value={opts.splitMode} onChange={(e) => setOpt('splitMode', e.target.value)}>
-                    <option value="all">Every page into a separate PDF</option>
-                    <option value="ranges">Custom ranges</option>
+                    <option value="all">{t('opt.splitAll', 'Every page into a separate PDF')}</option>
+                    <option value="ranges">{t('opt.splitRanges', 'Custom ranges')}</option>
                   </select>
                   {opts.splitMode === 'ranges' && (
                     <div className="mt-3">
-                      <Label>Page ranges (e.g. 1-3,5,7-9)</Label>
+                      <Label>{t('opt.ranges', 'Page ranges (e.g. 1-3,5,7-9)')}</Label>
                       <input className={inputCls} value={opts.ranges} onChange={(e) => setOpt('ranges', e.target.value)} placeholder="1-3,5,7-9" />
                     </div>
                   )}
@@ -438,11 +444,11 @@ function Runner({ tool }: { tool: Tool }) {
 
               {isImageOut && (
                 <div className="max-w-[420px]">
-                  <Label>Image quality (resolution)</Label>
+                  <Label>{t('opt.quality', 'Image quality (resolution)')}</Label>
                   <select className={selectCls} value={opts.scale} onChange={(e) => setOpt('scale', e.target.value)}>
-                    <option value={1}>Standard (72 DPI)</option>
-                    <option value={2}>High (144 DPI)</option>
-                    <option value={3}>Very high (216 DPI)</option>
+                    <option value={1}>{t('opt.q72', 'Standard (72 DPI)')}</option>
+                    <option value={2}>{t('opt.q144', 'High (144 DPI)')}</option>
+                    <option value={3}>{t('opt.q216', 'Very high (216 DPI)')}</option>
                   </select>
                 </div>
               )}
@@ -452,7 +458,7 @@ function Runner({ tool }: { tool: Tool }) {
                   <CropEditor bytes={bytes[0]} margins={cropMargins} onChange={setCropMargins} />
                   <div className="grid content-start gap-4">
                     <div>
-                      <Label>Margins (mm)</Label>
+                      <Label>{t('opt.marginsMm', 'Margins (mm)')}</Label>
                       <div className="grid grid-cols-2 gap-3">
                         {(['top', 'right', 'bottom', 'left'] as const).map((side) => (
                           <label key={side} className="block">
@@ -470,7 +476,7 @@ function Runner({ tool }: { tool: Tool }) {
                       </div>
                     </div>
                     <div>
-                      <Label>Quick presets</Label>
+                      <Label>{t('opt.presets', 'Quick presets')}</Label>
                       <div className="flex flex-wrap gap-2">
                         {[0, 5, 10, 20].map((v) => (
                           <button
@@ -493,24 +499,24 @@ function Runner({ tool }: { tool: Tool }) {
               {tool.slug === 'watermark-pdf' && (
                 <div className="grid max-w-[560px] gap-4 sm:grid-cols-2">
                   <div className="sm:col-span-2">
-                    <Label>Watermark text</Label>
+                    <Label>{t('opt.text', 'Watermark text')}</Label>
                     <input className={inputCls} value={opts.text} onChange={(e) => setOpt('text', e.target.value)} />
                   </div>
                   <div>
-                    <Label>Opacity ({Number(opts.opacity).toFixed(2)})</Label>
+                    <Label>{t('opt.opacity', 'Opacity')} ({Number(opts.opacity).toFixed(2)})</Label>
                     <input type="range" min={0.05} max={1} step={0.05} value={opts.opacity} onChange={(e) => setOpt('opacity', e.target.value)} className="w-full" />
                   </div>
                   <div>
-                    <Label>Font size</Label>
+                    <Label>{t('opt.fontSize', 'Font size')}</Label>
                     <input type="number" className={inputCls} value={opts.size} min={8} max={200} onChange={(e) => setOpt('size', e.target.value)} />
                   </div>
                   <div>
-                    <Label>Color</Label>
+                    <Label>{t('opt.color', 'Color')}</Label>
                     <input type="color" className="h-10 w-full rounded border border-line" value={opts.color || '#888888'} onChange={(e) => setOpt('color', e.target.value)} />
                   </div>
                   <div className="flex items-end gap-2 pb-1">
                     <input id="diag" type="checkbox" checked={opts.diagonal} onChange={(e) => setOpt('diagonal', e.target.checked)} />
-                    <label htmlFor="diag" className="text-[14px] text-ink-soft">Diagonal</label>
+                    <label htmlFor="diag" className="text-[14px] text-ink-soft">{t('opt.diagonal', 'Diagonal')}</label>
                   </div>
                 </div>
               )}
@@ -518,19 +524,19 @@ function Runner({ tool }: { tool: Tool }) {
               {tool.slug === 'number-pages' && (
                 <div className="grid max-w-[560px] gap-4 sm:grid-cols-3">
                   <div>
-                    <Label>Position</Label>
+                    <Label>{t('opt.position', 'Position')}</Label>
                     <select className={selectCls} value={opts.position} onChange={(e) => setOpt('position', e.target.value)}>
-                      <option value="bottom-center">Bottom center</option>
-                      <option value="bottom-right">Bottom right</option>
-                      <option value="top-center">Top center</option>
+                      <option value="bottom-center">{t('opt.bottomCenter', 'Bottom center')}</option>
+                      <option value="bottom-right">{t('opt.bottomRight', 'Bottom right')}</option>
+                      <option value="top-center">{t('opt.topCenter', 'Top center')}</option>
                     </select>
                   </div>
                   <div>
-                    <Label>Font size</Label>
+                    <Label>{t('opt.fontSize', 'Font size')}</Label>
                     <input type="number" className={inputCls} value={opts.size} min={6} max={48} onChange={(e) => setOpt('size', e.target.value)} />
                   </div>
                   <div>
-                    <Label>Start at</Label>
+                    <Label>{t('opt.startAt', 'Start at')}</Label>
                     <input type="number" className={inputCls} value={opts.numStart} min={1} onChange={(e) => setOpt('numStart', e.target.value)} />
                   </div>
                 </div>
@@ -539,24 +545,24 @@ function Runner({ tool }: { tool: Tool }) {
               {tool.slug === 'sign-pdf' && (
                 <div className="grid gap-6 lg:grid-cols-2">
                   <div>
-                    <Label>Your signature</Label>
+                    <Label>{t('opt.signature', 'Your signature')}</Label>
                     <SignaturePad onChange={setSig} />
                   </div>
                   <div className="grid content-start gap-4">
                     <div>
-                      <Label>Page number</Label>
+                      <Label>{t('opt.pageNumber', 'Page number')}</Label>
                       <input type="number" className={inputCls} value={opts.signPage} min={1} max={pages.length || 1} onChange={(e) => setOpt('signPage', e.target.value)} />
                     </div>
                     <div>
-                      <Label>Position</Label>
+                      <Label>{t('opt.position', 'Position')}</Label>
                       <select className={selectCls} value={opts.signPos} onChange={(e) => setOpt('signPos', e.target.value)}>
-                        <option value="bottom-left">Bottom left</option>
-                        <option value="bottom-center">Bottom center</option>
-                        <option value="bottom-right">Bottom right</option>
+                        <option value="bottom-left">{t('opt.bottomLeft', 'Bottom left')}</option>
+                        <option value="bottom-center">{t('opt.bottomCenter', 'Bottom center')}</option>
+                        <option value="bottom-right">{t('opt.bottomRight', 'Bottom right')}</option>
                       </select>
                     </div>
                     <div>
-                      <Label>Signature width ({opts.signWidth} pt)</Label>
+                      <Label>{t('opt.signWidth', 'Signature width')} ({opts.signWidth} pt)</Label>
                       <input type="range" min={60} max={320} value={opts.signWidth} onChange={(e) => setOpt('signWidth', e.target.value)} className="w-full" />
                     </div>
                   </div>
@@ -568,14 +574,14 @@ function Runner({ tool }: { tool: Tool }) {
               {!isReader && (
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <button onClick={process} disabled={!canProcess} className="btn-primary btn-lg disabled:opacity-50">
-                    {processing ? (<><Loader2 size={18} className="animate-spin" /> Processing…</>) : (<><Download size={18} /> {processLabel(tool.slug)}</>)}
+                    {processing ? (<><Loader2 size={18} className="animate-spin" /> {t('tool.processingLabel', 'Processing…')}</>) : (<><Download size={18} /> {processLabel(tool.slug, isAr)}</>)}
                   </button>
-                  <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> Start over</button>
+                  <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> {t('tool.startOver', 'Start over')}</button>
                 </div>
               )}
               {isReader && (
                 <div className="mt-6">
-                  <button onClick={reset} className="btn-ghost btn-md"><RefreshCw size={16} /> Open another PDF</button>
+                  <button onClick={reset} className="btn-ghost btn-md"><RefreshCw size={16} /> {t('tool.openAnother', 'Open another PDF')}</button>
                 </div>
               )}
             </div>
@@ -597,25 +603,25 @@ function Runner({ tool }: { tool: Tool }) {
               >
                 <ShieldCheck size={30} />
               </motion.div>
-              <h2 className="mt-4 text-2xl font-bold text-ink">Done!</h2>
+              <h2 className="mt-4 text-2xl font-bold text-ink">{t('tool.done', 'Done!')}</h2>
               {result.kind === 'pdf' && result.before != null && result.after != null && (
                 <p className="mt-2 text-[15px] text-ink-soft">
                   {E.formatSize(result.before)} → <span className="font-bold text-brand">{E.formatSize(result.after)}</span>
-                  {' '}(saved {Math.max(0, Math.round((1 - result.after / result.before) * 100))}%)
+                  {' '}({t('tool.saved', 'saved')} {Math.max(0, Math.round((1 - result.after / result.before) * 100))}%)
                 </p>
               )}
               {result.kind === 'images' && (
-                <p className="mt-2 text-[15px] text-ink-soft">{result.images.length} image{result.images.length > 1 ? 's' : ''} ready.</p>
+                <p className="mt-2 text-[15px] text-ink-soft">{result.images.length} {isAr ? 'صورة جاهزة' : `image${result.images.length > 1 ? 's' : ''} ready`}.</p>
               )}
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 {result.kind === 'pdf' ? (
                   <button onClick={() => E.downloadBytes(result.bytes, result.filename, result.filename.endsWith('.zip') ? 'application/zip' : 'application/pdf')} className="btn-primary btn-lg">
-                    <Download size={18} /> Download {result.filename.endsWith('.zip') ? 'ZIP' : 'PDF'}
+                    <Download size={18} /> {t('tool.download', 'Download')} {result.filename.endsWith('.zip') ? 'ZIP' : 'PDF'}
                   </button>
                 ) : (
-                  <button onClick={downloadZip} className="btn-primary btn-lg"><Download size={18} /> Download ZIP</button>
+                  <button onClick={downloadZip} className="btn-primary btn-lg"><Download size={18} /> {t('tool.download', 'Download')} ZIP</button>
                 )}
-                <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> Start over</button>
+                <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> {t('tool.startOver', 'Start over')}</button>
               </div>
               {result.kind === 'images' && (
                 <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
@@ -632,23 +638,26 @@ function Runner({ tool }: { tool: Tool }) {
   )
 }
 
-function processLabel(slug: string): string {
-  const map: Record<string, string> = {
-    'merge-pdf': 'Merge PDF',
-    'compress-pdf': 'Compress PDF',
-    'crop-pdf': 'Apply crop',
-    'split-pdf': 'Split PDF',
-    'rotate-pdf': 'Apply rotation',
-    'organize-pdf': 'Apply changes',
-    'delete-pdf-pages': 'Delete pages',
-    'extract-pdf-pages': 'Extract pages',
-    'jpg-to-pdf': 'Convert to PDF',
-    'png-to-pdf': 'Convert to PDF',
-    'pdf-to-jpg': 'Convert to JPG',
-    'pdf-to-png': 'Convert to PNG',
-    'watermark-pdf': 'Add watermark',
-    'number-pages': 'Add page numbers',
-    'sign-pdf': 'Sign PDF',
-  }
-  return map[slug] || 'Process'
+const PROCESS_LABELS: Record<string, [string, string]> = {
+  'merge-pdf': ['Merge PDF', 'دمج PDF'],
+  'compress-pdf': ['Compress PDF', 'ضغط PDF'],
+  'crop-pdf': ['Apply crop', 'تطبيق القص'],
+  'split-pdf': ['Split PDF', 'تقسيم PDF'],
+  'rotate-pdf': ['Apply rotation', 'تطبيق التدوير'],
+  'organize-pdf': ['Apply changes', 'تطبيق التغييرات'],
+  'delete-pdf-pages': ['Delete pages', 'حذف الصفحات'],
+  'extract-pdf-pages': ['Extract pages', 'استخراج الصفحات'],
+  'jpg-to-pdf': ['Convert to PDF', 'تحويل إلى PDF'],
+  'png-to-pdf': ['Convert to PDF', 'تحويل إلى PDF'],
+  'pdf-to-jpg': ['Convert to JPG', 'تحويل إلى JPG'],
+  'pdf-to-png': ['Convert to PNG', 'تحويل إلى PNG'],
+  'watermark-pdf': ['Add watermark', 'إضافة علامة مائية'],
+  'number-pages': ['Add page numbers', 'إضافة أرقام صفحات'],
+  'sign-pdf': ['Sign PDF', 'توقيع PDF'],
+}
+
+function processLabel(slug: string, ar: boolean): string {
+  const entry = PROCESS_LABELS[slug]
+  if (!entry) return ar ? 'معالجة' : 'Process'
+  return ar ? entry[1] : entry[0]
 }

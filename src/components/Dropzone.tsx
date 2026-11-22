@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { UploadCloud } from 'lucide-react'
+import { useI18n } from '../i18n'
 
 export default function Dropzone({
   accept,
@@ -16,6 +17,7 @@ export default function Dropzone({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [drag, setDrag] = useState(false)
+  const { t } = useI18n()
 
   const handle = useCallback(
     (list: FileList | null) => {
@@ -58,10 +60,14 @@ export default function Dropzone({
         <UploadCloud size={26} />
       </span>
       <div>
-        <p className="text-lg font-bold text-ink">Drop {label} here</p>
-        <p className="mt-1 text-[14px] text-ink-muted">or click to choose {multi ? 'files' : 'a file'}</p>
+        <p className="text-lg font-bold text-ink">
+          {label === 'PDF' || label === 'Images' ? t('drop.title', 'Drop your file here') : `${t('drop.title', 'Drop your file here')} — ${label}`}
+        </p>
+        <p className="mt-1 text-[14px] text-ink-muted">{t(multi ? 'drop.subMany' : 'drop.subOne', multi ? 'or click to choose files' : 'or click to choose a file')}</p>
       </div>
-      <span className="btn-primary btn-md">Choose {multi ? 'Files' : 'File'}</span>
+      <span className="btn-primary btn-md">
+        {multi ? t('drop.buttonMany', 'Choose Files') : t('drop.button', 'Choose File')}
+      </span>
     </div>
   )
 }

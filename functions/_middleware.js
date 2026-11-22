@@ -39,6 +39,15 @@ function strip(html) {
 export function render(html, meta, path, { notFound = false } = {}) {
   const url = `${SITE}/${path}`
   const image = `${SITE}${meta.image}`
+  const isAr = path === 'ar' || path.startsWith('ar/')
+  const lang = isAr ? 'ar' : 'en'
+  const alternates = meta.alt
+    ? [
+        `<link rel="alternate" hreflang="en" href="${SITE}${meta.alt.en}" />`,
+        `<link rel="alternate" hreflang="ar" href="${SITE}${meta.alt.ar}" />`,
+        `<link rel="alternate" hreflang="x-default" href="${SITE}${meta.alt.en}" />`,
+      ]
+    : []
   const head = [
     `<title>${esc(meta.title)}</title>`,
     `<meta name="description" content="${esc(meta.description)}" />`,
@@ -53,7 +62,8 @@ export function render(html, meta, path, { notFound = false } = {}) {
     '<meta property="og:image:width" content="1200" />',
     '<meta property="og:image:height" content="630" />',
     `<meta property="og:image:alt" content="${esc(meta.title)}" />`,
-    '<meta property="og:locale" content="en_US" />',
+    `<meta property="og:locale" content="${meta.locale || 'en_US'}" />`,
+    ...alternates,
     '<meta name="twitter:card" content="summary_large_image" />',
     `<meta name="twitter:title" content="${esc(meta.title)}" />`,
     `<meta name="twitter:description" content="${esc(meta.description)}" />`,
@@ -64,10 +74,10 @@ export function render(html, meta, path, { notFound = false } = {}) {
     .filter(Boolean)
     .join('\n    ')
 
-  if (notFound) {
-    return strip(html).replace('</head>', `    ${head}\n  </head>`)
-  }
-  return strip(html).replace('</head>', `    ${head}\n  </head>`)
+  const shell = strip(html)
+    .replace(/<html[^>]*>/i, `<html lang="${lang}" dir="${isAr ? 'rtl' : 'ltr'}">`)
+    .replace('</head>', `    ${head}\n  </head>`)
+  return shell
 }
 
 const NOT_FOUND_META = {

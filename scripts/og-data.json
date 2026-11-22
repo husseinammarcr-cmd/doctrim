@@ -244,5 +244,192 @@
       "title": "Terms of Service",
       "desc": "The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, and the limits of our liability."
     }
-  ]
+  ],
+  "ar": {
+    "home": {
+      "title": "أدوات PDF بالعربية.",
+      "desc": "27 أداة PDF مجانية بالعربية تعمل داخل متصفحك: دمج وضغط وتحويل وتوقيع وتعديل ملفات PDF بدون حساب وبدون رفع ملفاتك."
+    },
+    "tools": [
+      {
+        "slug": "pdf-to-word",
+        "name": "PDF إلى Word",
+        "desc": "حوّل ملفات PDF إلى مستندات Word قابلة للتعديل",
+        "color": "#2B8FE3"
+      },
+      {
+        "slug": "merge-pdf",
+        "name": "دمج PDF",
+        "desc": "اجمع عدة ملفات PDF في مستند واحد",
+        "color": "#8B48FE"
+      },
+      {
+        "slug": "jpg-to-pdf",
+        "name": "JPG إلى PDF",
+        "desc": "حوّل صور JPG وPNG وBMP وGIF وTIFF إلى PDF",
+        "color": "#FF8E00"
+      },
+      {
+        "slug": "sign-pdf",
+        "name": "توقيع PDF",
+        "desc": "أنشئ توقيعاً إلكترونياً ووقّع مستنداتك",
+        "color": "#CA41FC"
+      },
+      {
+        "slug": "edit-pdf",
+        "name": "تعديل PDF",
+        "desc": "عدّل النص الموجود، وأضف نصاً وصوراً وأشكالاً وتوقيعات وحجباً",
+        "color": "#00C0FF"
+      },
+      {
+        "slug": "compress-pdf",
+        "name": "ضغط PDF",
+        "desc": "قلّل حجم ملف PDF دون فقدان الجودة",
+        "color": "#FF5400"
+      },
+      {
+        "slug": "pdf-to-jpg",
+        "name": "PDF إلى JPG",
+        "desc": "حوّل كل صفحة PDF إلى صورة JPG",
+        "color": "#FF8E00"
+      },
+      {
+        "slug": "pdf-to-png",
+        "name": "PDF إلى PNG",
+        "desc": "حوّل كل صفحة PDF إلى صورة PNG",
+        "color": "#FF8E00"
+      },
+      {
+        "slug": "pdf-to-excel",
+        "name": "PDF إلى Excel",
+        "desc": "استخرج الجداول من ملفات PDF إلى Excel",
+        "color": "#00D267"
+      },
+      {
+        "slug": "pdf-to-ppt",
+        "name": "PDF إلى PowerPoint",
+        "desc": "حوّل صفحات PDF إلى شرائح عرض",
+        "color": "#FF8E00"
+      },
+      {
+        "slug": "pdf-ocr",
+        "name": "التعرّف على النص OCR",
+        "desc": "اجعل ملفات PDF الممسوحة قابلة للبحث والتحديد",
+        "color": "#FF5400"
+      },
+      {
+        "slug": "word-to-pdf",
+        "name": "Word إلى PDF",
+        "desc": "حوّل مستندات Word إلى PDF",
+        "color": "#2B8FE3"
+      },
+      {
+        "slug": "excel-to-pdf",
+        "name": "Excel إلى PDF",
+        "desc": "حوّل جداول Excel إلى PDF",
+        "color": "#00D267"
+      },
+      {
+        "slug": "ppt-to-pdf",
+        "name": "PowerPoint إلى PDF",
+        "desc": "حوّل عروض PowerPoint إلى PDF",
+        "color": "#FF8E00"
+      },
+      {
+        "slug": "png-to-pdf",
+        "name": "PNG إلى PDF",
+        "desc": "حوّل صور PNG إلى مستند PDF",
+        "color": "#FF8E00"
+      },
+      {
+        "slug": "split-pdf",
+        "name": "تقسيم PDF",
+        "desc": "استخرج الصفحات أو قسّم الملف إلى ملفات منفصلة",
+        "color": "#8B48FE"
+      },
+      {
+        "slug": "rotate-pdf",
+        "name": "تدوير PDF",
+        "desc": "دوّر صفحات PDF بمقدار 90° أو 180° أو 270°",
+        "color": "#8B48FE"
+      },
+      {
+        "slug": "organize-pdf",
+        "name": "ترتيب PDF",
+        "desc": "أعد ترتيب الصفحات ودوّرها واحذفها بصرياً",
+        "color": "#8B48FE"
+      },
+      {
+        "slug": "delete-pdf-pages",
+        "name": "حذف صفحات PDF",
+        "desc": "احذف الصفحات غير المرغوبة من الملف",
+        "color": "#8B48FE"
+      },
+      {
+        "slug": "extract-pdf-pages",
+        "name": "استخراج صفحات PDF",
+        "desc": "اسحب الصفحات المحددة إلى ملف جديد",
+        "color": "#8B48FE"
+      },
+      {
+        "slug": "watermark-pdf",
+        "name": "علامة مائية",
+        "desc": "اطبع نصاً فوق صفحات PDF",
+        "color": "#00C0FF"
+      },
+      {
+        "slug": "number-pages",
+        "name": "ترقيم الصفحات",
+        "desc": "أضف أرقام صفحات إلى ملف PDF",
+        "color": "#00D267"
+      },
+      {
+        "slug": "crop-pdf",
+        "name": "قص PDF",
+        "desc": "اقتطع الهوامش الزائدة من صفحات PDF",
+        "color": "#00D267"
+      },
+      {
+        "slug": "pdf-reader",
+        "name": "قارئ PDF",
+        "desc": "اقرأ ملف PDF واعرضه في المتصفح",
+        "color": "#00D267"
+      },
+      {
+        "slug": "protect-pdf",
+        "name": "حماية PDF",
+        "desc": "أضف كلمة مرور وشفّر ملفك",
+        "color": "#FF46FB"
+      },
+      {
+        "slug": "unlock-pdf",
+        "name": "إزالة حماية PDF",
+        "desc": "أزل كلمة المرور من ملف PDF",
+        "color": "#FF46FB"
+      },
+      {
+        "slug": "flatten-pdf",
+        "name": "تثبيت PDF",
+        "desc": "ادمج الطبقات والتعليقات في طبقة واحدة",
+        "color": "#FF46FB"
+      }
+    ],
+    "static": [
+      {
+        "key": "pdf-tools",
+        "title": "كل أدوات PDF المجانية بالعربية | DocTrim",
+        "desc": "تصفّح 27 أداة PDF مجانية بالعربية: تحويل، ضغط، ترتيب صفحات، تعديل، توقيع وحماية — بدون تسجيل وبدون علامة مائية."
+      },
+      {
+        "key": "help",
+        "title": "المساعدة",
+        "desc": "كيف تعمل أدوات DocTrim، هل تُرفع ملفاتك، حدود حجم الملفات، ولماذا كل شيء مجاني بدون حساب."
+      },
+      {
+        "key": "privacy",
+        "title": "سياسة الخصوصية",
+        "desc": "كيف يتعامل DocTrim مع ملفاتك: معالجة داخل المتصفح، بدون حساب، بدون تتبّع عبر المواقع، وحذف الملفات من السيرفر فوراً."
+      }
+    ]
+  }
 }

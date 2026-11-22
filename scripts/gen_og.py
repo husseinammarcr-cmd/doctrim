@@ -84,10 +84,9 @@ def rotated_card(w, h, radius, fill, outline=None, angle=0.0):
     return sm
 
 
-def paper_stack(img, accent):
+def paper_stack(img, accent, cx=905, cy=320, mirror=1):
     """The right-hand motif: three offset sheets with a mini document on top."""
     base_w, base_h = 300, 380
-    cx, cy = 905, 320
     layers = [
         (base_w, base_h, 14, tint(accent, 0.80), None, 9),
         (base_w, base_h, 14, tint(accent, 0.90), None, -5),
@@ -95,7 +94,7 @@ def paper_stack(img, accent):
     ]
     for i, (w, h, r, fill, outline, angle) in enumerate(layers):
         card = rotated_card(w, h, r, fill, outline, angle)
-        x = cx - card.width // 2 + (i - 1) * 6
+        x = cx - card.width // 2 + (i - 1) * 6 * mirror
         y = cy - card.height // 2 + (i - 1) * -4
         img.alpha_composite(card, (int(x), int(y)))
 
@@ -120,9 +119,9 @@ def paper_stack(img, accent):
     # riding tiles, echoing the hero
     for (tx, ty, col, size, ang) in [
         (cx - 190, cy - 150, accent, 54, -12),
-        (cx + 168, cy - 118, "#FFD200", 40, 10),
-        (cx + 150, cy + 150, "#00D267", 34, -8),
-        (cx - 178, cy + 168, "#8B48FE", 30, 14),
+        (cx + 168 * mirror, cy - 118, "#FFD200", 40, 10),
+        (cx + 150 * mirror, cy + 150, "#00D267", 34, -8),
+        (cx - 178 * mirror, cy + 168, "#8B48FE", 30, 14),
     ]:
         tile = rotated_card(size, size, 12, hex_rgb(col), None, ang)
         img.alpha_composite(tile, (int(tx - tile.width / 2), int(ty - tile.height / 2)))
@@ -301,6 +300,132 @@ def logo_card():
     return img
 
 
+
+# ---------------------------------------------------------------- Arabic cards
+# Mirrored layout: logo and copy on the right, paper stack on the left.
+AR_FONT_PATH = pathlib.Path("/root/fonts/NotoSansArabic.ttf")
+AR_MUTED = "#6B6B6B"
+
+
+def arfont(size: int, weight: int = 700) -> ImageFont.FreeTypeFont:
+    f = ImageFont.truetype(str(AR_FONT_PATH), size)
+    f.set_variation_by_axes([weight, 100])
+    return f
+
+
+def ar_text(d, x, y, text, f, fill, anchor="ra"):
+    d.text((x, y), text, font=f, fill=fill, direction="rtl", anchor=anchor, language="ar")
+
+
+def ar_wrap(d, text, f, max_w):
+    lines, cur = [], ""
+    for word in text.split():
+        trial = f"{cur} {word}".strip()
+        if not cur or d.textlength(trial, font=f, direction="rtl") <= max_w:
+            cur = trial
+        else:
+            lines.append(cur)
+            cur = word
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def ar_truncate(d, text, f, max_w, max_lines):
+    lines = ar_wrap(d, text, f, max_w)
+    if len(lines) <= max_lines:
+        return lines
+    kept = lines[:max_lines]
+    last = kept[-1]
+    while last and d.textlength(last + "…", font=f, direction="rtl") > max_w:
+        last = last[:-1]
+    kept[-1] = last.rstrip(" ،.,;:") + "…"
+    return kept
+
+
+def chrome_ar(img, d):
+    logo_mark(d, W - MARGIN - 38, 58, 16, 5)
+    f_brand = font(38, 800)
+    d.text((W - MARGIN - 52, 52), "DocTrim", font=f_brand, fill=hex_rgb(INK), anchor="ra")
+    f_site = font(23, 600)
+    d.text((MARGIN, 62), "doctrim.pages.dev", font=f_site, fill=hex_rgb(MUTED))
+    d.rounded_rectangle([MARGIN, 512, W - MARGIN, 514], radius=0, fill=hex_rgb(LINE))
+    f_strip = arfont(23, 600)
+    ar_text(d, W - MARGIN, 550, "27 أداة مجانية  ·  بدون تسجيل  ·  بدون علامة مائية", f_strip, hex_rgb(SOFT))
+
+
+def ar_block(d, title, desc, sizes, max_w, top, desc_size=28, desc_lines=2, gap=24):
+    for size in sizes:
+        f_title = arfont(size, 800)
+        title_lines = ar_wrap(d, title, f_title, max_w)
+        if len(title_lines) > 2:
+            continue
+        title_h = int(size * 1.28) * len(title_lines)
+        f_desc = arfont(desc_size, 400)
+        need = top + title_h + gap + int(desc_size * 1.6) * min(len(ar_wrap(d, desc, f_desc, max_w)), desc_lines)
+        if need > BOTTOM_SAFE:
+            continue
+        y = top
+        for line in title_lines:
+            ar_text(d, W - MARGIN, y, line, f_title, hex_rgb(INK))
+            y += int(size * 1.28)
+        y += gap - 6
+        for line in ar_truncate(d, desc, f_desc, max_w, desc_lines):
+            ar_text(d, W - MARGIN, y, line, f_desc, hex_rgb(AR_MUTED))
+            y += int(desc_size * 1.6)
+        return y
+    return top
+
+
+def ar_card(tool):
+    img, d = canvas()
+    paper_stack(img, tool["color"], cx=290, cy=320, mirror=-1)
+    d = ImageDraw.Draw(img)
+    f_eye = arfont(21, 700)
+    ar_text(d, W - MARGIN, 166, "أداة PDF مجانية أونلاين", f_eye, hex_rgb(BRAND))
+    ar_block(d, tool["name"], tool["desc"], [92, 84, 76, 68], 610, 204)
+    chrome_ar(img, d)
+    return img
+
+
+def ar_simple(title, desc, key, eyebrow_text="DocTrim"):
+    img, d = canvas()
+    paper_stack(img, BRAND, cx=290, cy=320, mirror=-1)
+    d = ImageDraw.Draw(img)
+    f_eye = arfont(21, 700)
+    ar_text(d, W - MARGIN, 166, eyebrow_text, f_eye, hex_rgb(BRAND))
+    ar_block(d, title, desc, [78, 70, 62, 56], 610, 204, desc_size=26)
+    chrome_ar(img, d)
+    return img
+
+
+def ar_fit(d, text, max_w, sizes, weight=800):
+    """Largest size at which the line still fits inside max_w."""
+    for size in sizes:
+        f = arfont(size, weight)
+        if d.textlength(text, font=f, direction="rtl") <= max_w:
+            return f, size
+    return arfont(sizes[-1], weight), sizes[-1]
+
+
+def ar_home(data):
+    img, d = canvas()
+    paper_stack(img, BRAND, cx=290, cy=320, mirror=-1)
+    d = ImageDraw.Draw(img)
+    f_eye = arfont(21, 700)
+    ar_text(d, W - MARGIN, 166, "مجاني بالكامل  ·  بدون تسجيل", f_eye, hex_rgb(BRAND))
+
+    max_w = 620
+    f1, s1 = ar_fit(d, "أدوات PDF بالعربية.", max_w, [84, 78, 72, 66, 60])
+    ar_text(d, W - MARGIN, 208, "أدوات PDF بالعربية.", f1, hex_rgb(INK))
+    f2, s2 = ar_fit(d, "بدون حساب، وبدون رفع ملفاتك.", max_w, [60, 56, 52, 48])
+    ar_text(d, W - MARGIN, 208 + int(s1 * 1.3), "بدون حساب، وبدون رفع ملفاتك.", f2, hex_rgb(BRAND))
+    f_sub = arfont(26, 400)
+    ar_text(d, W - MARGIN, 208 + int(s1 * 1.3) + int(s2 * 1.6) + 18, "27 أداة مجانية تعمل داخل متصفحك.", f_sub, hex_rgb(AR_MUTED))
+    chrome_ar(img, d)
+    return img
+
+
 def main():
     data = json.loads((ROOT / "scripts" / "og-data.json").read_text())
     OUT.mkdir(parents=True, exist_ok=True)
@@ -321,6 +446,15 @@ def main():
         if s["key"] in ("home",):
             continue
         save(card_static(s), s["key"])
+
+    # Arabic
+    ardata = data.get("ar")
+    if ardata:
+        save(ar_home(ardata), "ar-home")
+        for t in ardata["tools"]:
+            save(ar_card(t), f"ar-{t['slug']}")
+        for s in ardata["static"]:
+            save(ar_simple(s["title"], s["desc"], s["key"]), f"ar-{s['key']}")
 
     total = sum(f.stat().st_size for f in OUT.glob("*.png"))
     print(f"{written} cards written to public/og ({total / 1024:.0f} KB)")

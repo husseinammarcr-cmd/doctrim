@@ -32,6 +32,13 @@ for (const route of Object.keys(META)) {
   check(`${tag} one description`, count(html, /name="description"/g) === 1)
   check(`${tag} title text`, html.includes(`<title>${meta.title.replace(/&/g, '&amp;')}</title>`))
   check(`${tag} head still closes`, html.includes('</head>') && html.includes('</html>'))
+  const ar = route === 'ar' || route.startsWith('ar/')
+  check(`${tag} lang/dir`, html.includes(`<html lang="${ar ? 'ar' : 'en'}" dir="${ar ? 'rtl' : 'ltr'}">`))
+  if (meta.alt) {
+    check(`${tag} hreflang en`, html.includes(`hreflang="en" href="https://doctrim.pages.dev${meta.alt.en}"`))
+    check(`${tag} hreflang ar`, html.includes(`hreflang="ar" href="https://doctrim.pages.dev${meta.alt.ar}"`))
+  }
+  if (ar) check(`${tag} og:locale ar`, html.includes('og:locale" content="ar_AR"'))
   const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
   check(`${tag} json-ld blocks`, blocks.length === meta.jsonld.length, `${blocks.length} vs ${meta.jsonld.length}`)
   for (const b of blocks) {

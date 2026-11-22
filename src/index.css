@@ -14,6 +14,19 @@
   ::selection {
     @apply bg-brand/20;
   }
+  /* Arabic: Noto Sans Arabic has proper Arabic shaping and a taller x-height
+     than Source Sans 3, so line-height gets a small bump. */
+  [dir='rtl'] body {
+    font-family: 'Noto Sans Arabic', 'Source Sans 3', system-ui, sans-serif;
+    line-height: 1.7;
+  }
+  [dir='rtl'] .h-display,
+  [dir='rtl'] h1,
+  [dir='rtl'] h2,
+  [dir='rtl'] h3 {
+    letter-spacing: 0;
+    line-height: 1.35;
+  }
 }
 
 @layer components {
@@ -73,6 +86,9 @@
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [dir='rtl'] .nav-link::after {
+    transform-origin: right;
   }
   .nav-link:hover::after,
   .nav-link-active::after {

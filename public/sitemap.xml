@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://doctrim.pages.dev/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/" />
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/pdf-tools</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-tools" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-tools" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-tools" />
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -22,11 +28,17 @@
   </url>
   <url>
     <loc>https://doctrim.pages.dev/help</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/help" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/help" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/help" />
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/privacy" />
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -37,136 +49,217 @@
   </url>
   <url>
     <loc>https://doctrim.pages.dev/pdf-to-word</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-word" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-word" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-word" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/merge-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/merge-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/merge-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/merge-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/jpg-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/jpg-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/jpg-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/jpg-to-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/sign-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/sign-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/sign-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/sign-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/edit-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/edit-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/edit-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/edit-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/compress-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/compress-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/compress-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/compress-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/pdf-to-jpg</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-jpg" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-jpg" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-jpg" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/pdf-to-png</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-png" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-png" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-png" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/pdf-to-excel</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-excel" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-excel" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-excel" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/pdf-to-ppt</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-ppt" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-ppt" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-ppt" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/pdf-ocr</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-ocr" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-ocr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-ocr" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/word-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/word-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/word-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/word-to-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/excel-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/excel-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/excel-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/excel-to-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/ppt-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/ppt-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/ppt-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/ppt-to-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/png-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/png-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/png-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/png-to-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/split-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/split-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/split-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/split-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/rotate-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/rotate-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/rotate-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/rotate-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/organize-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/organize-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/organize-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/organize-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/delete-pdf-pages</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/delete-pdf-pages" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/delete-pdf-pages" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/delete-pdf-pages" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/extract-pdf-pages</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/extract-pdf-pages" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/extract-pdf-pages" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/extract-pdf-pages" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/watermark-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/watermark-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/watermark-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/watermark-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/number-pages</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/number-pages" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/number-pages" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/number-pages" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/crop-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/crop-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/crop-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/crop-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/pdf-reader</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-reader" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-reader" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-reader" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/protect-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/protect-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/protect-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/protect-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/unlock-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/unlock-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/unlock-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/unlock-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://doctrim.pages.dev/flatten-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/flatten-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/flatten-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/flatten-pdf" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -211,5 +304,253 @@
     <lastmod>2026-10-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/pdf-tools</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-tools" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-tools" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-tools" />
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/help</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/help" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/help" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/help" />
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/privacy" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/privacy" />
+    <changefreq>weekly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/pdf-to-word</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-word" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-word" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-word" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/merge-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/merge-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/merge-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/merge-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/jpg-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/jpg-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/jpg-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/jpg-to-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/sign-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/sign-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/sign-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/sign-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/edit-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/edit-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/edit-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/edit-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/compress-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/compress-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/compress-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/compress-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/pdf-to-jpg</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-jpg" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-jpg" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-jpg" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/pdf-to-png</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-png" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-png" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-png" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/pdf-to-excel</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-excel" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-excel" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-excel" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/pdf-to-ppt</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-to-ppt" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-to-ppt" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-to-ppt" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/pdf-ocr</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-ocr" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-ocr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-ocr" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/word-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/word-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/word-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/word-to-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/excel-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/excel-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/excel-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/excel-to-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/ppt-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/ppt-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/ppt-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/ppt-to-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/png-to-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/png-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/png-to-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/png-to-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/split-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/split-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/split-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/split-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/rotate-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/rotate-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/rotate-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/rotate-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/organize-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/organize-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/organize-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/organize-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/delete-pdf-pages</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/delete-pdf-pages" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/delete-pdf-pages" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/delete-pdf-pages" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/extract-pdf-pages</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/extract-pdf-pages" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/extract-pdf-pages" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/extract-pdf-pages" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/watermark-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/watermark-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/watermark-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/watermark-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/number-pages</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/number-pages" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/number-pages" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/number-pages" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/crop-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/crop-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/crop-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/crop-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/pdf-reader</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/pdf-reader" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/pdf-reader" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/pdf-reader" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/protect-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/protect-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/protect-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/protect-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/unlock-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/unlock-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/unlock-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/unlock-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://doctrim.pages.dev/ar/flatten-pdf</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/flatten-pdf" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/flatten-pdf" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/flatten-pdf" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

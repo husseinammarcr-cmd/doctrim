@@ -6,15 +6,7 @@ import Logo from './Logo'
 import ToolIcon from './ToolIcon'
 import { DIRECTORY, getTool } from '../lib/tools'
 import { EASE_IN, EASE_OUT } from '../lib/motion'
-
-const NAV = [
-  { label: 'Compress', to: '/compress-pdf' },
-  { label: 'Convert', to: '/pdf-to-word' },
-  { label: 'Merge', to: '/merge-pdf' },
-  { label: 'Edit', to: '/edit-pdf' },
-  { label: 'Sign', to: '/sign-pdf' },
-  { label: 'Blog', to: '/blog' },
-]
+import { localeHref, rememberLocale, splitLocale, useI18n } from '../i18n'
 
 export default function Header() {
   const [toolsOpen, setToolsOpen] = useState(false)
@@ -22,6 +14,25 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const loc = useLocation()
   const ref = useRef<HTMLDivElement>(null)
+  const { isAr, t, toolName, category, href } = useI18n()
+  const { sub } = splitLocale(loc.pathname)
+  const other = isAr ? 'en' : 'ar'
+
+  // Paths that exist in both locales; anything else (blog, legal) falls back to home.
+  const bilingual = (path: string) => {
+    const clean = path.replace(/^\/ar(?=\/|$)/, '') || '/'
+    return clean === '/' || clean === '/pdf-tools' || clean === '/help' || clean === '/privacy' || /^\/[a-z0-9-]+$/.test(clean)
+  }
+  const switchTarget = localeHref(other, bilingual(sub) ? sub : '/')
+
+  const NAV = [
+    { label: t('nav.compress', 'Compress'), to: '/compress-pdf' },
+    { label: t('nav.convert', 'Convert'), to: '/pdf-to-word' },
+    { label: t('nav.merge', 'Merge'), to: '/merge-pdf' },
+    { label: t('nav.edit', 'Edit'), to: '/edit-pdf' },
+    { label: t('nav.sign', 'Sign'), to: '/sign-pdf' },
+    ...(isAr ? [] : [{ label: t('nav.blog', 'Blog'), to: '/blog' }]),
+  ]
 
   useEffect(() => {
     setToolsOpen(false)
@@ -52,7 +63,7 @@ export default function Header() {
       }`}
     >
       <div className="container-x flex h-16 items-center gap-6">
-        <Link to="/" aria-label="DocTrim home" className="dt-logo">
+        <Link to={href('/')} aria-label="DocTrim home" className="dt-logo">
           <Logo />
         </Link>
 
@@ -64,7 +75,7 @@ export default function Header() {
             className="btn border border-line bg-white px-3 py-2 text-[15px] font-semibold text-ink hover:bg-surface"
           >
             <Grid3X3 size={16} />
-            Tools
+            {t('nav.tools', 'Tools')}
             <motion.span animate={{ rotate: toolsOpen ? 180 : 0 }} transition={{ duration: 0.25, ease: EASE_OUT }}>
               <ChevronDown size={14} />
             </motion.span>
@@ -93,16 +104,16 @@ export default function Header() {
                         show: { opacity: 1, y: 0, transition: { duration: 0.24, ease: EASE_OUT } },
                       }}
                     >
-                      <p className="mb-2 text-xs font-bold uppercase tracking-wide text-ink-muted">{group.title}</p>
+                      <p className="mb-2 text-xs font-bold uppercase tracking-wide text-ink-muted">{category(group.title)}</p>
                       <ul className="space-y-1.5">
                         {group.slugs.slice(0, 5).map((slug) => {
                           const t = getTool(slug)!
                           return (
                             <li key={slug}>
-                              <Link to={`/${slug}`} className="dt-drop-link flex items-center gap-2 rounded px-1 py-0.5 text-[14px] text-ink-soft hover:text-brand">
-                                <ToolIcon icon={t.icon} color={t.color} size={20} radius={5} />
-                                {t.name}
-                              </Link>
+                              <Link to={href(`/${slug}`)} className="dt-drop-link flex items-center gap-2 rounded px-1 py-0.5 text-[14px] text-ink-soft hover:text-brand">
+                                  <ToolIcon icon={t.icon} color={t.color} size={20} radius={5} />
+                                  {toolName(t)}
+                                </Link>
                             </li>
                           )
                         })}
@@ -110,8 +121,8 @@ export default function Header() {
                     </motion.div>
                   ))}
                 </motion.div>
-                <Link to="/pdf-tools" className="mt-5 inline-block text-[14px] font-semibold text-brand hover:underline">
-                  See all PDF tools →
+                <Link to={href('/pdf-tools')} className="mt-5 inline-block text-[14px] font-semibold text-brand hover:underline">
+                  {t('nav.allTools', 'See all PDF tools')} →
                 </Link>
               </motion.div>
             )}
@@ -123,11 +134,9 @@ export default function Header() {
           {NAV.map((n) => (
             <Link
               key={n.label}
-              to={n.to}
+              to={href(n.to)}
               className={`nav-link ${
-                loc.pathname === n.to || (n.to === '/blog' && loc.pathname.startsWith('/blog'))
-                  ? 'nav-link-active'
-                  : ''
+                sub === n.to || (n.to === '/blog' && sub.startsWith('/blog')) ? 'nav-link-active' : ''
               }`}
             >
               {n.label}
@@ -135,17 +144,26 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-3 lg:flex xl:gap-4">
+        <div className="ms-auto hidden items-center gap-3 lg:flex xl:gap-4">
           <span className="hidden items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-[13px] font-bold text-brand xl:inline-flex">
-            <Gift size={14} /> 100% Free
+            <Gift size={14} /> {t('header.badge', '100% Free')}
           </span>
-          <Link to="/pdf-tools" className="btn-primary btn-md">
-            All PDF Tools
+          <Link
+            to={switchTarget}
+            onClick={() => rememberLocale(other)}
+            hrefLang={other}
+            className="btn border border-line bg-white px-3 py-2 text-[14px] font-semibold text-ink-soft hover:bg-surface"
+            aria-label={isAr ? 'Switch to English' : 'التبديل إلى العربية'}
+          >
+            {isAr ? 'English' : 'عربي'}
+          </Link>
+          <Link to={href('/pdf-tools')} className="btn-primary btn-md">
+            {t('header.cta', 'All PDF Tools')}
           </Link>
         </div>
 
         {/* mobile toggle */}
-        <button className="ml-auto lg:hidden" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
+        <button className="ms-auto lg:hidden" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={mobileOpen ? 'close' : 'open'}
@@ -190,22 +208,44 @@ export default function Header() {
                   key={n.label}
                   variants={{ hidden: { opacity: 0, x: -10 }, show: { opacity: 1, x: 0, transition: { duration: 0.3, ease: EASE_OUT } } }}
                 >
-                  <Link to={n.to} className="block rounded px-2 py-2 text-[15px] font-semibold text-ink-soft hover:bg-surface">
+                  <Link to={href(n.to)} className="block rounded px-2 py-2 text-[15px] font-semibold text-ink-soft hover:bg-surface">
                     {n.label}
                   </Link>
                 </motion.div>
               ))}
-              <Link to="/pdf-tools" className="rounded px-2 py-2 text-[15px] font-semibold text-brand">All PDF tools</Link>
+              <Link to={href('/pdf-tools')} className="rounded px-2 py-2 text-[15px] font-semibold text-brand">
+                {t('nav.allTools', 'All PDF tools')}
+              </Link>
               <div className="mt-1 flex items-center gap-4 border-t border-line px-2 pt-3 text-[14px] font-semibold text-ink-soft">
-                <Link to="/about" className="hover:text-brand">About</Link>
-                <Link to="/help" className="hover:text-brand">Help</Link>
-                <Link to="/blog" className="hover:text-brand">Blog</Link>
+                {isAr ? (
+                  <>
+                    <Link to={href('/help')} className="hover:text-brand">{t('nav.help', 'Help')}</Link>
+                    <Link to={href('/privacy')} className="hover:text-brand">{t('nav.about', 'Privacy')}</Link>
+                    <Link to="/blog" className="hover:text-brand">Blog (EN)</Link>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/about" className="hover:text-brand">About</Link>
+                    <Link to="/help" className="hover:text-brand">Help</Link>
+                    <Link to="/blog" className="hover:text-brand">Blog</Link>
+                    <Link to="/privacy" className="hover:text-brand">Privacy</Link>
+                  </>
+                )}
               </div>
               <div className="mt-2 px-2">
-                <Link to="/pdf-tools" className="btn-primary btn-md w-full">
-                  All PDF Tools — Free
+                <Link to={href('/pdf-tools')} className="btn-primary btn-md w-full">
+                  {t('header.cta', 'All PDF Tools')}
                 </Link>
-                <p className="mt-2 text-center text-[13px] text-ink-muted">No account needed</p>
+                <Link
+                  to={switchTarget}
+                  onClick={() => rememberLocale(other)}
+                  className="mt-2 block w-full rounded px-2 py-2 text-center text-[14px] font-semibold text-brand"
+                >
+                  {isAr ? 'English' : 'عربي'}
+                </Link>
+                <p className="mt-2 text-center text-[13px] text-ink-muted">
+                  {isAr ? 'بدون حساب' : 'No account needed'}
+                </p>
               </div>
             </motion.div>
           </motion.div>

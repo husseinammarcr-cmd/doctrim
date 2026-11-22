@@ -37,11 +37,14 @@ for (const file of await readdir(blogDir)) {
 }
 posts.sort((a, b) => (a.date < b.date ? 1 : -1))
 
-const url = (loc, { priority = '0.6', changefreq = 'monthly', lastmod } = {}) =>
+const url = (loc, { priority = '0.6', changefreq = 'monthly', lastmod, alt } = {}) =>
   [
     '  <url>',
     `    <loc>${SITE}/${loc}</loc>`,
     lastmod ? `    <lastmod>${lastmod}</lastmod>` : '',
+    alt ? `    <xhtml:link rel="alternate" hreflang="en" href="${SITE}${alt.en}" />` : '',
+    alt ? `    <xhtml:link rel="alternate" hreflang="ar" href="${SITE}${alt.ar}" />` : '',
+    alt ? `    <xhtml:link rel="alternate" hreflang="x-default" href="${SITE}${alt.en}" />` : '',
     `    <changefreq>${changefreq}</changefreq>`,
     `    <priority>${priority}</priority>`,
     '  </url>',
@@ -49,16 +52,43 @@ const url = (loc, { priority = '0.6', changefreq = 'monthly', lastmod } = {}) =>
     .filter(Boolean)
     .join('\n')
 
+// English and Arabic are two halves of the same page set: label both with
+// hreflang so Google serves the Arabic URL to Arabic searches.
+const BILINGUAL = [
+  { en: '/', ar: '/ar', loc: '', priority: '1.0' },
+  { en: '/pdf-tools', ar: '/ar/pdf-tools', loc: 'pdf-tools', priority: '0.9' },
+  { en: '/help', ar: '/ar/help', loc: 'help', priority: '0.5' },
+  { en: '/privacy', ar: '/ar/privacy', loc: 'privacy', priority: '0.3' },
+]
+
+const enUrls = [
+  ...STATIC_ROUTES.map((r) => {
+    const pair = BILINGUAL.find((b) => b.loc === r.loc)
+    return url(r.loc, { ...r, alt: pair ? { en: pair.en, ar: pair.ar } : undefined })
+  }),
+  ...toolSlugs.map((slug) => {
+    const pair = { en: `/${slug}`, ar: `/ar/${slug}` }
+    return url(slug, { priority: '0.8', changefreq: 'monthly', alt: pair })
+  }),
+  ...posts.map((p) => url(`blog/${p.slug}`, { priority: '0.7', changefreq: 'monthly', lastmod: p.date })),
+]
+
+const arUrls = [
+  ...BILINGUAL.map((b) => url(b.ar.replace(/^\//, ''), { priority: b.priority, changefreq: 'weekly', alt: { en: b.en, ar: b.ar } })),
+  ...toolSlugs.map((slug) =>
+    url(`ar/${slug}`, { priority: '0.8', changefreq: 'monthly', alt: { en: `/${slug}`, ar: `/ar/${slug}` } })
+  ),
+]
+
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${STATIC_ROUTES.map((r) => url(r.loc, r)).join('\n')}
-${toolSlugs.map((slug) => url(slug, { priority: '0.8', changefreq: 'monthly' })).join('\n')}
-${posts.map((p) => url(`blog/${p.slug}`, { priority: '0.7', changefreq: 'monthly', lastmod: p.date })).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${enUrls.join('\n')}
+${arUrls.join('\n')}
 </urlset>
 `
 
-const total = STATIC_ROUTES.length + toolSlugs.length + posts.length
+const total = enUrls.length + arUrls.length
 for (const dir of ['public', 'dist']) {
   await writeFile(path.join(root, dir, 'sitemap.xml'), xml, 'utf8')
 }
-console.log(`sitemap.xml written: ${total} URLs (${toolSlugs.length} tools, ${posts.length} posts)`)
+console.log(`sitemap.xml written: ${total} URLs (${toolSlugs.length} tools, ${posts.length} posts, ${arUrls.length} Arabic)`)
