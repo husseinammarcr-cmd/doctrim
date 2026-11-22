@@ -34,8 +34,16 @@ function DocIllustration({ variant }: { variant: number }) {
           <path d="M372 110 q30 -18 24 -6" fill="none" stroke="#FF5400" strokeWidth={2.4} strokeLinecap="round" />
           <path d="M394 100 l4 6 -7 1z" fill="#FF5400" />
           <g transform="translate(150,330)" stroke="#0055FF" strokeWidth={2.4} fill="none" strokeLinecap="round">
-            <circle cx={-6} cy={6} r={5} /><circle cx={6} cy={6} r={5} />
-            <path d="M-3 2 L10 -12 M3 2 L-10 -12" />
+            <g className="dt-scissor-lift">
+              <circle cx={-6} cy={6} r={5} />
+              <circle cx={6} cy={6} r={5} />
+              <g className="dt-scissor-a">
+                <path d="M3 2 L-10 -12" />
+              </g>
+              <g className="dt-scissor-b">
+                <path d="M-3 2 L10 -12" />
+              </g>
+            </g>
           </g>
           <Badge x={380} y={280} label="PDF" color="#FF5400" />
           <Badge x={410} y={320} label="PPT" color="#FF8E00" />

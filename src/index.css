@@ -125,6 +125,91 @@
   }
 }
 
+/* feature illustration: scissors snip (open/close) while rising up the page.
+   Geometry, colours and resting pose are unchanged — motion only. */
+.dt-scissor-lift {
+  animation: dt-scissor-lift 5.2s cubic-bezier(0.45, 0, 0.35, 1) infinite;
+  will-change: transform;
+}
+.dt-scissor-a,
+.dt-scissor-b {
+  transform-box: fill-box;
+  animation: dt-scissor-snip-a 5.2s ease-in-out infinite;
+  will-change: transform;
+}
+.dt-scissor-a {
+  transform-origin: 10px 10.8px; /* blade pivot, measured from its own bbox */
+}
+.dt-scissor-b {
+  transform-origin: 3px 10.8px;
+  animation-name: dt-scissor-snip-b;
+}
+
+@keyframes dt-scissor-lift {
+  0%, 8% {
+    transform: translate(0, 0);
+  }
+  44% {
+    transform: translate(0, -78px);
+  }
+  58% {
+    transform: translate(0, -78px);
+  }
+  86%, 100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes dt-scissor-snip-a {
+  0%, 6% {
+    transform: rotate(0deg);
+  }
+  8%, 12%, 16% {
+    transform: rotate(-16deg);
+  }
+  10%, 14%, 18% {
+    transform: rotate(0deg);
+  }
+  46% {
+    transform: rotate(0deg);
+  }
+  48% {
+    transform: rotate(-16deg);
+  }
+  51%, 100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes dt-scissor-snip-b {
+  0%, 6% {
+    transform: rotate(0deg);
+  }
+  8%, 12%, 16% {
+    transform: rotate(16deg);
+  }
+  10%, 14%, 18% {
+    transform: rotate(0deg);
+  }
+  46% {
+    transform: rotate(0deg);
+  }
+  48% {
+    transform: rotate(16deg);
+  }
+  51%, 100% {
+    transform: rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dt-scissor-lift,
+  .dt-scissor-a,
+  .dt-scissor-b {
+    animation: none;
+  }
+}
+
 /* thin scrollbar for tool panels */
 .scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
 .scroll-thin::-webkit-scrollbar-thumb { background: #d9d9de; border-radius: 8px; }
