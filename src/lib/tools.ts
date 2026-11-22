@@ -33,7 +33,7 @@ export const TOOLS: Tool[] = [
   { slug: 'merge-pdf', name: 'Merge PDF', desc: 'Combine multiple PDFs into one unified document', category: 'popular', color: '#8B48FE', icon: 'merge', status: 'ready', accept: '.pdf', multi: true, inputLabel: 'PDF' },
   { slug: 'jpg-to-pdf', name: 'JPG to PDF', desc: 'Transform JPG, PNG, BMP, GIF, and TIFF images to PDF', category: 'popular', color: '#FF8E00', icon: 'image', status: 'ready', accept: 'image/*', multi: true, inputLabel: 'Images' },
   { slug: 'sign-pdf', name: 'Sign PDF', desc: 'Create an electronic signature and sign your documents', category: 'popular', color: '#CA41FC', icon: 'pen', status: 'ready', accept: '.pdf', inputLabel: 'PDF' },
-  { slug: 'edit-pdf', name: 'Edit PDF', desc: 'Add text, shapes, images and freehand annotations to your PDF', category: 'popular', color: '#00C0FF', icon: 'edit', status: 'ready', accept: '.pdf', inputLabel: 'PDF' },
+  { slug: 'edit-pdf', name: 'Edit PDF', desc: 'Rewrite existing text, add text, images, shapes, signatures and redactions', category: 'popular', color: '#00C0FF', icon: 'edit', status: 'ready', accept: '.pdf', inputLabel: 'PDF' },
   { slug: 'compress-pdf', name: 'Compress PDF', desc: 'Reduce the size of your PDF without losing quality', category: 'popular', color: '#FF5400', icon: 'compress', status: 'ready', accept: '.pdf', inputLabel: 'PDF' },
 
   // ---- Convert from PDF ----

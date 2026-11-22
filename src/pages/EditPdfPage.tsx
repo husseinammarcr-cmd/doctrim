@@ -1,17 +1,23 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, RefreshCw, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, Highlighter, RefreshCw, ShieldCheck, Signature, TextCursorInput } from 'lucide-react'
 import Dropzone from '../components/Dropzone'
 import ToolIcon from '../components/ToolIcon'
 import EditEditor from '../components/tool/EditEditor'
 import { getTool } from '../lib/tools'
 import { fileToBytes } from '../lib/pdf/engine'
+import { usePageMeta } from '../lib/usePageMeta'
 import NotFound from './NotFound'
 
 export default function EditPdfPage() {
   const tool = getTool('edit-pdf')
   const [file, setFile] = useState<File | null>(null)
   const [bytes, setBytes] = useState<Uint8Array | null>(null)
+
+  usePageMeta(
+    'Edit PDF — rewrite text, add anything, sign and redact | DocTrim',
+    'A full PDF editor in your browser: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Files never leave your device.',
+  )
 
   if (!tool) return <NotFound />
 
@@ -31,6 +37,17 @@ export default function EditPdfPage() {
         <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-[13px] font-semibold text-brand">
           <ShieldCheck size={14} /> Edited in your browser — the file never leaves your device.
         </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px] font-semibold text-ink-muted">
+          {[
+            { icon: TextCursorInput, label: 'Rewrite existing text' },
+            { icon: Highlighter, label: 'Highlight & redact' },
+            { icon: Signature, label: 'Sign and date' },
+          ].map(({ icon: Icon, label }) => (
+            <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1">
+              <Icon size={13} className="text-brand" /> {label}
+            </span>
+          ))}
+        </div>
 
         <div className="card mt-6 p-6 sm:p-8">
           {!bytes && (
