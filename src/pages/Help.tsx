@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronDown, Mail, Search, X } from 'lucide-react'
+import { ArrowRight, ChevronDown, Mail, Search, X } from 'lucide-react'
 import { usePageMeta } from '../lib/usePageMeta'
 
 const SUPPORT_EMAIL = 'Support@doctrim.com'
@@ -161,7 +161,8 @@ export default function Help() {
       {/* Hero + search */}
       <section className="border-b border-line bg-surface">
         <div className="container-x py-14 lg:py-20">
-          <div className="max-w-[720px]">
+          <div className="grid items-end gap-10 lg:grid-cols-[1fr_360px]">
+          <div className="max-w-[640px]">
             <span className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1.5 text-[13px] font-bold uppercase tracking-wide text-brand">
               Help Center
             </span>
@@ -198,11 +199,46 @@ export default function Help() {
               </p>
             )}
           </div>
+
+          {/* Popular questions */}
+          <div className="hidden rounded-xl border border-line bg-white p-6 shadow-sm lg:block">
+            <p className="text-xs font-bold uppercase tracking-wide text-ink-muted">Popular questions</p>
+            <ul className="mt-4 space-y-3">
+              {[
+                'Is DocTrim really free?',
+                'Where are my files processed?',
+                'Is there a maximum file size?',
+                'Will my PDF have a watermark?',
+              ].map((question) => (
+                <li key={question}>
+                  <button
+                    onClick={() => {
+                      setQuery(question)
+                      document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }}
+                    className="group flex w-full items-start justify-between gap-3 text-left text-[14px] font-semibold text-ink-soft hover:text-brand"
+                  >
+                    {question}
+                    <ArrowRight size={15} className="mt-0.5 shrink-0 text-ink-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-5 border-t border-line pt-4">
+              <p className="text-[13px] text-ink-soft">
+                Can’t find it?{' '}
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="font-semibold text-brand hover:underline">
+                  Email support
+                </a>
+              </p>
+            </div>
+          </div>
+          </div>
         </div>
       </section>
 
       {/* FAQ groups */}
-      <section className="container-x py-14">
+      <section id="faq" className="container-x scroll-mt-20 py-14">
         {filtered.length === 0 ? (
           <div className="mx-auto max-w-[560px] rounded-lg border border-line bg-surface px-6 py-12 text-center">
             <p className="text-lg font-bold text-ink">Nothing matched “{query}”.</p>
