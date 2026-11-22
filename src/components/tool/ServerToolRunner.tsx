@@ -18,6 +18,7 @@ function outName(tool: Tool, file: File): string {
     case 'pdf-to-word': return `${stem}.docx`
     case 'pdf-to-excel': return `${stem}.xlsx`
     case 'pdf-to-ppt': return `${stem}.pptx`
+    case 'flatten-pdf': return `${stem}-flattened.pdf`
     case 'pdf-ocr': return 'ocr.pdf'
     default: return `${stem}.pdf`
   }
@@ -49,6 +50,7 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
         case 'pdf-to-word': blob = await api.pdfToWord(file); break
         case 'pdf-to-excel': blob = await api.pdfToExcel(file); break
         case 'pdf-to-ppt': blob = await api.pdfToPpt(file); break
+        case 'flatten-pdf': blob = await api.flattenPdf(file); break
         case 'pdf-ocr': blob = await api.ocr(file, lang); break
         default: blob = await api.officeToPdf(file)
       }

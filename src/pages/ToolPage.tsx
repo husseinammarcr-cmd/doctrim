@@ -9,6 +9,7 @@ import CropEditor, { type CropMarginsMm } from '../components/tool/CropEditor'
 import { getTool, type Tool } from '../lib/tools'
 import { serverConfigured } from '../lib/api'
 import ServerToolRunner from '../components/tool/ServerToolRunner'
+import EditPdfPage from './EditPdfPage'
 import NotFound from './NotFound'
 import { openPdfJs, thumbnail } from '../lib/pdf/pdfjs'
 import * as E from '../lib/pdf/engine'
@@ -60,6 +61,7 @@ export default function ToolPage() {
   const { slug } = useParams()
   const tool = getTool(slug || '')
   if (!tool) return <NotFound />
+  if (tool.slug === 'edit-pdf') return <EditPdfPage />
   if (tool.server) {
     if (!serverConfigured()) return <ComingSoon tool={tool} />
     return <ServerToolRunner key={tool.slug} tool={tool} />

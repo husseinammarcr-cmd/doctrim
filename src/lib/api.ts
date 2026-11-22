@@ -43,5 +43,6 @@ export const api = {
   pdfToWord: (file: File) => post('/api/pdf-to-word', file),
   pdfToExcel: (file: File) => post('/api/pdf-to-excel', file),
   pdfToPpt: (file: File) => post('/api/pdf-to-ppt', file),
+  flattenPdf: (file: File) => post('/api/flatten-pdf', file),
   ocr: (file: File, lang = 'eng') => post('/api/ocr', file, { lang }),
 }

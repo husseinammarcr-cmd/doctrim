@@ -278,6 +278,34 @@ def _tidy_rows(rows):
     return [[r[j] for j in keep] for r in merged]
 
 
+@app.post("/api/flatten-pdf")
+async def flatten_pdf(file: UploadFile = File(...)):
+    """Bake annotations and form fields into the page content.
+
+    After this the pages look identical but carry no annotations and are no
+    longer fillable forms — what "flatten" means everywhere else.
+    """
+    import pymupdf
+
+    d = _tmpdir()
+    try:
+        src = await _save(file, d)
+        out = d / (Path(src.stem).name + "-flattened.pdf")
+        with pymupdf.open(src) as doc:
+            if doc.page_count == 0:
+                raise HTTPException(422, "This PDF has no pages")
+            doc.bake(annots=True, widgets=True)
+            doc.save(out, garbage=3, deflate=True)
+        return FileResponse(out, media_type="application/pdf", filename=out.name,
+                            background=BackgroundTask(_cleanup, d))
+    except HTTPException:
+        _cleanup(d)
+        raise
+    except Exception as e:
+        _cleanup(d)
+        raise HTTPException(500, str(e))
+
+
 @app.post("/api/pdf-to-excel")
 async def pdf_to_excel(file: UploadFile = File(...)):
     """Extract tables from a PDF into an .xlsx workbook.
