@@ -102,7 +102,8 @@ export async function onRequest(context) {
   const url = new URL(request.url)
   const path = url.pathname.replace(/^\/+|\/+$/g, '')
 
-  // assets, feed files and anything with an extension: untouched
+  // assets, feed files, the API proxy and anything with an extension: untouched
+  if (path === 'api' || path.startsWith('api/')) return next()
   if (path.includes('.') || path.startsWith('assets/') || path.startsWith('og/')) return next()
 
   // Fetch the built shell directly: `_redirects` rewrites every unknown path to

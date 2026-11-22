@@ -36,6 +36,7 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
   const [processing, setProcessing] = useState(false)
   const [result, setResult] = useState<{ blob: Blob; filename: string } | null>(null)
   const [error, setError] = useState('')
+  const [slow, setSlow] = useState(false)
 
   const needsPassword = tool.slug === 'protect-pdf' || tool.slug === 'unlock-pdf'
   const isOcr = tool.slug === 'pdf-ocr'
@@ -46,7 +47,9 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
 
   const process = async () => {
     if (!file) return
-    setProcessing(true); setError(''); setResult(null)
+    setProcessing(true); setError(''); setResult(null); setSlow(false)
+    // conversions can legitimately take a minute; say so instead of looking frozen
+    const slowTimer = window.setTimeout(() => setSlow(true), 20000)
     const started = performance.now()
     track('file_added', { t: tool.slug, v: Math.round(file.size / 1024) })
     track('run_start', { t: tool.slug })
@@ -65,10 +68,17 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
       setResult({ blob, filename: outName(tool, file) })
       track('run_ok', { t: tool.slug, v: Math.round(performance.now() - started) })
     } catch (e: any) {
-      const msg = e?.message || 'The server could not process this file.'
+      const raw = String(e?.message || '')
+      const network = /load failed|failed to fetch|networkerror|network error|aborted/i.test(raw)
+      const msg = network
+        ? isAr
+          ? 'تعذّر الوصول إلى السيرفر. تحقّق من اتصالك بالإنترنت ثم أعد المحاولة.'
+          : 'Could not reach the server. Check your connection and try again.'
+        : raw || (isAr ? 'تعذّر على السيرفر معالجة هذا الملف.' : 'The server could not process this file.')
       setError(msg)
       track('run_fail', { t: tool.slug, m: msg, v: Math.round(performance.now() - started) })
     } finally {
+      window.clearTimeout(slowTimer)
       setProcessing(false)
     }
   }
@@ -138,6 +148,13 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
               )}
 
               {error && <p className="mt-4 rounded bg-red-50 px-4 py-3 text-[14px] text-accent-red">{error}</p>}
+              {processing && slow && (
+                <p className="mt-3 text-[13px] text-ink-muted">
+                  {isAr
+                    ? 'الملف كبير — التحويل ما زال جارياً، لا تغلق الصفحة.'
+                    : 'Large file — the conversion is still running, please keep this tab open.'}
+                </p>
+              )}
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <button onClick={process} disabled={!canProcess} className="btn-primary btn-lg disabled:opacity-50">

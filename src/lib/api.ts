@@ -1,13 +1,11 @@
 // Client for the DocTrim server API (server-side tools).
 // Set VITE_API_URL at build time (Cloudflare Pages env var) to enable.
-const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || ''
+import { API_BASE as BASE, serverConfigured } from './apiBase'
 
-export function serverConfigured(): boolean {
-  return BASE.length > 0
-}
+export { serverConfigured }
 
 export async function serverHealthy(): Promise<boolean> {
-  if (!BASE) return false
+  if (!serverConfigured()) return false
   try {
     const r = await fetch(`${BASE}/api/health`, { method: 'GET' })
     return r.ok
@@ -17,7 +15,7 @@ export async function serverHealthy(): Promise<boolean> {
 }
 
 async function post(path: string, file: File, fields: Record<string, string> = {}): Promise<Blob> {
-  if (!BASE) throw new Error('Server API is not configured')
+  if (!serverConfigured()) throw new Error('Server API is not configured')
   const fd = new FormData()
   fd.append('file', file)
   for (const [k, v] of Object.entries(fields)) fd.append(k, v)

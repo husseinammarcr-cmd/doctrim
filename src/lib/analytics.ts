@@ -12,7 +12,7 @@
  *
  * If VITE_API_URL is unset (pure static build) every call is a no-op.
  */
-const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || ''
+import { API_BASE as BASE, serverConfigured } from './apiBase'
 
 export type StatEvent = 'pageview' | 'file_added' | 'run_start' | 'run_ok' | 'run_fail' | 'error' | 'download' | 'share'
 
@@ -28,7 +28,7 @@ const queue: Queued[] = []
 let timer: number | undefined
 
 function disabled(): boolean {
-  if (!BASE) return true
+  if (!serverConfigured()) return true
   try {
     if (localStorage.getItem('dt_notrack') === '1') return true
   } catch {
