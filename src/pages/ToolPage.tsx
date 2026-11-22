@@ -17,6 +17,7 @@ import NotFound from './NotFound'
 import { openPdfJs, thumbnail } from '../lib/pdf/pdfjs'
 import * as E from '../lib/pdf/engine'
 import { saveBlob } from '../lib/download'
+import { track } from '../lib/analytics'
 
 type Result =
   | { kind: 'pdf'; bytes: Uint8Array; filename: string; before?: number; after?: number }
@@ -150,6 +151,7 @@ function Runner({ tool }: { tool: Tool }) {
       setFiles(fs)
       const b = await Promise.all(fs.map((f) => E.fileToBytes(f)))
       setBytes(b)
+      track('file_added', { t: tool.slug, v: Math.round(fs.reduce((s, f) => s + f.size, 0) / 1024) })
       if (isPageTool || isReader) {
         setLoadingPreviews(true)
         try {
@@ -214,6 +216,8 @@ function Runner({ tool }: { tool: Tool }) {
     setProcessing(true)
     setError('')
     setResult(null)
+    const started = performance.now()
+    track('run_start', { t: tool.slug })
     try {
       const base = tool.slug.replace(/-pdf$/, '')
       if (isMerge) {
@@ -286,8 +290,11 @@ function Runner({ tool }: { tool: Tool }) {
       } else {
         throw new Error('This tool is not available yet.')
       }
+      track('run_ok', { t: tool.slug, v: Math.round(performance.now() - started) })
     } catch (e: any) {
-      setError(e?.message || 'Something went wrong while processing your file.')
+      const msg = e?.message || 'Something went wrong while processing your file.'
+      setError(msg)
+      track('run_fail', { t: tool.slug, m: msg, v: Math.round(performance.now() - started) })
     } finally {
       setProcessing(false)
     }

@@ -12,6 +12,8 @@
  *     browser has time to start the download.
  */
 
+import { track } from './analytics'
+
 type ShareNavigator = Navigator & {
   canShare?: (data: { files: File[] }) => boolean
   share?: (data: { files: File[]; title?: string }) => Promise<void>
@@ -51,11 +53,16 @@ async function tryShare(blob: Blob, filename: string, type: string): Promise<'do
  */
 export async function saveBlob(blob: Blob, filename: string, mime?: string): Promise<void> {
   const type = mime || blob.type || 'application/octet-stream'
+  const tool = location.pathname.split('/').filter(Boolean)[0] || 'home'
+  const kb = Math.round(blob.size / 1024)
 
   // iOS and Safari: the Web Share sheet is the reliable path.
   if (isIOS() || isSafari()) {
     const result = await tryShare(blob, filename, type)
-    if (result === 'done' || result === 'cancelled') return
+    if (result === 'done' || result === 'cancelled') {
+      track('download', { t: tool, v: kb })
+      return
+    }
     // 'unavailable' -> fall through to the anchor path below.
   }
 
@@ -68,6 +75,7 @@ export async function saveBlob(blob: Blob, filename: string, mime?: string): Pro
   a.style.display = 'none'
   document.body.appendChild(a)
   a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }))
+  track('download', { t: tool, v: kb })
   // Keep the anchor and the URL alive; revoking too early cancels the download.
   window.setTimeout(() => {
     a.remove()

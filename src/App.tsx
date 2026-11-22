@@ -1,8 +1,10 @@
+import { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { MotionConfig } from 'framer-motion'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import PageTransition from './components/motion/PageTransition'
+import { pageview } from './lib/analytics'
 import Home from './pages/Home'
 import AllTools from './pages/AllTools'
 import ToolPage from './pages/ToolPage'
@@ -17,6 +19,11 @@ import NotFound from './pages/NotFound'
 
 export default function App() {
   const location = useLocation()
+
+  // SPA navigations do not fire a page load, so each route change is one view.
+  useEffect(() => {
+    pageview(location.pathname)
+  }, [location.pathname])
 
   return (
     <MotionConfig reducedMotion="user" transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}>

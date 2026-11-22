@@ -9,6 +9,7 @@ import type { Tool } from '../../lib/tools'
 import { api } from '../../lib/api'
 import { saveBlob } from '../../lib/download'
 import { formatSize } from '../../lib/pdf/engine'
+import { track } from '../../lib/analytics'
 
 const inputCls = 'w-full rounded border border-line bg-white px-3 py-2 text-[14px] text-ink focus:border-brand focus:outline-none'
 
@@ -44,6 +45,9 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
   const process = async () => {
     if (!file) return
     setProcessing(true); setError(''); setResult(null)
+    const started = performance.now()
+    track('file_added', { t: tool.slug, v: Math.round(file.size / 1024) })
+    track('run_start', { t: tool.slug })
     try {
       let blob: Blob
       switch (tool.slug) {
@@ -57,8 +61,11 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
         default: blob = await api.officeToPdf(file)
       }
       setResult({ blob, filename: outName(tool, file) })
+      track('run_ok', { t: tool.slug, v: Math.round(performance.now() - started) })
     } catch (e: any) {
-      setError(e?.message || 'The server could not process this file.')
+      const msg = e?.message || 'The server could not process this file.'
+      setError(msg)
+      track('run_fail', { t: tool.slug, m: msg, v: Math.round(performance.now() - started) })
     } finally {
       setProcessing(false)
     }
