@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ChevronDown, ShieldCheck, Sparkles, WifiOff } from 'lucide-react'
 import ToolCard from '../components/ToolCard'
@@ -28,6 +29,65 @@ const FAQ_EN: Record<string, [string, string]> = {
   'home.faq4a': ['', ''],
   'home.faq5q': ['What is the file size limit?', 'Browser tools handle files up to your device memory. Server tools accept up to 50 MB per file.'],
   'home.faq5a': ['', ''],
+}
+
+
+/** Hero illustration: a document card with floating tool tiles, RTL flow. */
+function HeroArt() {
+  const { toolName } = useI18n()
+  const tiles = ['merge-pdf', 'compress-pdf', 'sign-pdf', 'edit-pdf']
+  return (
+    <div className="relative mx-auto hidden h-[420px] w-full max-w-[460px] lg:block" aria-hidden>
+      <motion.div
+        initial={{ opacity: 0, y: 18, rotate: -3 }}
+        animate={{ opacity: 1, y: 0, rotate: -3 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute inset-x-6 top-6 bottom-6 rounded-2xl border border-line bg-white shadow-[0_24px_60px_-30px_rgba(16,24,40,0.35)]"
+      >
+        <div className="flex items-center gap-2 border-b border-line px-5 py-3.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-accent-red" />
+          <span className="h-2.5 w-2.5 rounded-full bg-accent-yellow" />
+          <span className="h-2.5 w-2.5 rounded-full bg-accent-green" />
+          <span className="ms-auto text-[11px] font-bold uppercase tracking-wide text-ink-muted">PDF</span>
+        </div>
+        <div className="px-6 py-6">
+          <div className="h-3 w-24 rounded bg-ink/10" />
+          <div className="mt-3 h-2.5 w-full rounded bg-ink/[0.07]" />
+          <div className="mt-2 h-2.5 w-[86%] rounded bg-ink/[0.07]" />
+          <div className="mt-2 h-2.5 w-[92%] rounded bg-ink/[0.07]" />
+          <div className="mt-5 h-24 w-full rounded-lg bg-brand-lighter/70" />
+          <div className="mt-4 h-2.5 w-full rounded bg-ink/[0.07]" />
+          <div className="mt-2 h-2.5 w-[70%] rounded bg-ink/[0.07]" />
+        </div>
+      </motion.div>
+
+      {tiles.map((slug, i) => {
+        const tool = getTool(slug)!
+        const pos = [
+          'right-0 top-2',
+          'left-0 top-28',
+          'right-2 bottom-16',
+          'left-6 bottom-2',
+        ][i]
+        return (
+          <motion.div
+            key={slug}
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1, y: [0, -6, 0] }}
+            transition={{
+              opacity: { duration: 0.4, delay: 0.25 + i * 0.08 },
+              scale: { duration: 0.4, delay: 0.25 + i * 0.08 },
+              y: { duration: 4 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 },
+            }}
+            className={`absolute ${pos} flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 shadow-lift`}
+          >
+            <ToolIcon icon={tool.icon} color={tool.color} size={24} radius={6} />
+            <span className="text-[12.5px] font-bold text-ink">{toolName(tool)}</span>
+          </motion.div>
+        )
+      })}
+    </div>
+  )
 }
 
 export default function ArHome() {
@@ -63,8 +123,8 @@ export default function ArHome() {
       {/* hero */}
       <section className="relative overflow-hidden border-b border-line">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_85%_-10%,#EAF1FF_0%,#FFFFFF_55%)]" />
-        <div className="container-x relative py-16 lg:py-24">
-          <div className="max-w-[760px]">
+        <div className="container-x relative grid items-center gap-10 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:py-24">
+          <div className="max-w-[700px]">
             <span className="inline-flex items-center gap-2 rounded-full bg-brand-light px-3.5 py-1.5 text-[13px] font-bold text-brand">
               <Sparkles size={14} /> {t('home.eyebrow', '100% free · no account')}
             </span>
@@ -103,6 +163,7 @@ export default function ArHome() {
               })}
             </div>
           </div>
+          <HeroArt />
         </div>
       </section>
 
