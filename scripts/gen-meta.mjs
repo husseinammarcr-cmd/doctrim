@@ -315,6 +315,18 @@ const AR_STATIC = [
     desc: 'أدلة عملية بالعربية عن حجم ملفات PDF وحجم الصفحات وحدود التعديل والحجب والتوقيع الإلكتروني — مكتوبة من فريق DocTrim.',
     image: '/og/ar-blog.png',
   },
+  {
+    key: 'about',
+    title: 'من نحن — DocTrim',
+    desc: 'DocTrim مشروع صغير مستقل يبني أدوات PDF مجانية تحترم الخصوصية وتعمل داخل المتصفح — بدون حساب وبدون تثبيت وبدون اشتراك.',
+    image: '/og/ar-about.png',
+  },
+  {
+    key: 'terms',
+    title: 'شروط الاستخدام — DocTrim',
+    desc: 'الشروط التي تنطبق عند استخدام DocTrim: طبيعة الخدمة، حقوقك على ملفاتك، الاستخدام المقبول، وحدود المسؤولية.',
+    image: '/og/ar-terms.png',
+  },
   { key: 'pdf-tools', title: arCopy.meta['tools.title'], desc: arCopy.meta['tools.desc'], image: '/og/ar-pdf-tools.png' },
   { key: 'help', title: arCopy.meta['help.title'], desc: arCopy.meta['help.desc'], image: '/og/ar-help.png' },
   { key: 'privacy', title: arCopy.meta['privacy.title'], desc: arCopy.meta['privacy.desc'], image: '/og/ar-privacy.png' },
@@ -418,6 +430,8 @@ const PAIRS = [
   ['/help', '/ar/help'],
   ['/privacy', '/ar/privacy'],
   ['/blog', '/ar/blog'],
+  ['/about', '/ar/about'],
+  ['/terms', '/ar/terms'],
   ...tools.map((t) => [`/${t.slug}`, `/ar/${t.slug}`]),
   ...postsAr.map((p) => [`/blog/${p.slug}`, `/ar/blog/${p.slug}`]),
 ]
