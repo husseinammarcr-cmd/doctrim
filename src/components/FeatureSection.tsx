@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom'
+import { useRef } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { EASE_OUT, viewportOnce } from '../lib/motion'
 
 function Badge({ x, y, label, color }: { x: number; y: number; label: string; color: string }) {
   return (
@@ -101,18 +104,37 @@ export interface Feature {
 }
 
 export default function FeatureSection({ feature, reverse }: { feature: Feature; reverse?: boolean }) {
+  const reduce = useReducedMotion()
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  const artY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [28, -28])
+
   return (
-    <div className="container-x grid items-center gap-10 py-14 lg:grid-cols-2">
-      <div className={reverse ? 'lg:order-2' : ''}>
+    <div ref={ref} className="container-x grid items-center gap-10 py-14 lg:grid-cols-2">
+      <motion.div
+        className={reverse ? 'lg:order-2' : ''}
+        initial={{ opacity: 0, y: 26 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={viewportOnce}
+        transition={{ duration: 0.65, ease: EASE_OUT }}
+      >
         <h3 className="h-display text-4xl leading-tight lg:text-[44px]">{feature.title}</h3>
         <p className="mt-5 max-w-[480px] text-lg leading-relaxed text-ink-soft">{feature.body}</p>
-        <Link to={feature.linkTo} className="mt-6 inline-flex items-center gap-1 text-base font-semibold text-brand hover:underline">
+        <Link to={feature.linkTo} className="dt-link-arrow mt-6 inline-flex items-center gap-1 text-base font-semibold text-brand hover:underline">
           {feature.linkLabel} <span aria-hidden>→</span>
         </Link>
-      </div>
-      <div className={`mx-auto w-full max-w-[500px] ${reverse ? 'lg:order-1' : ''}`}>
+      </motion.div>
+      <motion.div
+        style={{ y: artY }}
+        className={`mx-auto w-full max-w-[500px] ${reverse ? 'lg:order-1' : ''}`}
+        initial={{ opacity: 0, scale: 0.94, x: reverse ? 26 : -26 }}
+        whileInView={{ opacity: 1, scale: 1, x: 0 }}
+        viewport={viewportOnce}
+        transition={{ duration: 0.8, ease: EASE_OUT }}
+      >
         <DocIllustration variant={feature.variant} />
-      </div>
+      </motion.div>
     </div>
   )
 }
+

@@ -7,6 +7,7 @@ import FreeSection from '../components/FreeSection'
 import TrustSection from '../components/TrustSection'
 import CTASection from '../components/CTASection'
 import ToolsDirectory from '../components/ToolsDirectory'
+import { Reveal, StaggerGroup, StaggerItem } from '../components/motion/Reveal'
 import { POPULAR, TOOLS } from '../lib/tools'
 
 const FEATURES: Feature[] = [
@@ -48,31 +49,41 @@ export default function Home() {
       {/* Most popular tools */}
       <section className="bg-white">
         <div className="container-x py-14">
-          <div className="mx-auto max-w-[640px] text-center">
-            <h2 className="h-display text-4xl">Most Popular PDF Tools</h2>
-            <p className="mt-3 text-lg text-ink-soft">
-              {TOOLS.length} tools to convert, compress, and edit PDFs — all free, no sign-up required.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Reveal>
+            <div className="mx-auto max-w-[640px] text-center">
+              <h2 className="h-display text-4xl">Most Popular PDF Tools</h2>
+              <p className="mt-3 text-lg text-ink-soft">
+                {TOOLS.length} tools to convert, compress, and edit PDFs — all free, no sign-up required.
+              </p>
+            </div>
+          </Reveal>
+          <StaggerGroup className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3" stagger={0.06}>
             {POPULAR.map((t) => (
-              <ToolCard key={t.slug} tool={t} />
+              <StaggerItem key={t.slug} className="h-full">
+                <ToolCard tool={t} />
+              </StaggerItem>
             ))}
-          </div>
-          <div className="mt-9 text-center">
-            <Link to="/pdf-tools" className="btn-primary btn-lg">See All PDF Tools</Link>
-          </div>
+          </StaggerGroup>
+          <Reveal delay={0.1}>
+            <div className="mt-9 text-center">
+              <Link to="/pdf-tools" className="btn-primary btn-lg">
+                See All PDF Tools
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Features */}
       <section className="bg-white">
-        <div className="container-x pt-8 text-center">
-          <h2 className="h-display text-4xl">Keep Your Simple Tasks Simple</h2>
-          <p className="mx-auto mt-3 max-w-[680px] text-lg text-ink-soft">
-            DocTrim is the first and only PDF software you'll love. We have all the tools you'll need to start, manage, and finish your work with digital documents.
-          </p>
-        </div>
+        <Reveal>
+          <div className="container-x pt-8 text-center">
+            <h2 className="h-display text-4xl">Keep Your Simple Tasks Simple</h2>
+            <p className="mx-auto mt-3 max-w-[680px] text-lg text-ink-soft">
+              DocTrim is the first and only PDF software you'll love. We have all the tools you'll need to start, manage, and finish your work with digital documents.
+            </p>
+          </div>
+        </Reveal>
         {FEATURES.map((f, i) => (
           <FeatureSection key={f.title} feature={f} reverse={i % 2 === 1} />
         ))}

@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, Download, Loader2, RefreshCw, Server, ShieldCheck } from 'lucide-react'
 import Dropzone from '../Dropzone'
 import ToolIcon from '../ToolIcon'
+import { EASE_OUT } from '../../lib/motion'
 import type { Tool } from '../../lib/tools'
 import { api } from '../../lib/api'
 import { saveBlob } from '../../lib/download'
@@ -87,10 +89,15 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
         </p>
 
         <div className="card mt-6 p-6 sm:p-8">
-          {!file && <Dropzone accept={tool.accept} onFiles={(fs) => setFile(fs[0])} label={tool.inputLabel} />}
+          <AnimatePresence mode="wait" initial={false}>
+          {!file && (
+            <motion.div key="drop" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.24, ease: EASE_OUT }}>
+            <Dropzone accept={tool.accept} onFiles={(fs) => setFile(fs[0])} label={tool.inputLabel} />
+            </motion.div>
+          )}
 
           {file && !result && (
-            <div>
+            <motion.div key="file" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.28, ease: EASE_OUT }}>
               <div className="flex items-center gap-3 rounded border border-line bg-white px-4 py-3">
                 <ShieldCheck size={18} className="text-brand" />
                 <span className="flex-1 truncate text-[14px] font-semibold text-ink">{file.name}</span>
@@ -127,22 +134,35 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
                 </button>
                 <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> Start over</button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {result && (
-            <div className="text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-light text-brand">
+            <motion.div
+              key="done"
+              className="text-center"
+              initial={{ opacity: 0, y: 12, scale: 0.985 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.42, ease: EASE_OUT }}
+            >
+              <motion.div
+                className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-light text-brand"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 340, damping: 18, delay: 0.08 }}
+              >
                 <ShieldCheck size={30} />
-              </div>
+              </motion.div>
               <h2 className="mt-4 text-2xl font-bold text-ink">Done!</h2>
               <p className="mt-2 text-[15px] text-ink-soft">{result.filename} · {formatSize(result.blob.size)}</p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <button onClick={download} className="btn-primary btn-lg"><Download size={18} /> Download</button>
                 <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> Start over</button>
               </div>
-            </div>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Gift, Lock, MousePointerClick, Infinity as InfinityIcon } from 'lucide-react'
 import { TOOLS } from '../lib/tools'
+import { Reveal, StaggerGroup, StaggerItem } from './motion/Reveal'
 
 const PERKS = [
   {
@@ -29,28 +30,32 @@ export default function FreeSection() {
   return (
     <section id="free" className="bg-white">
       <div className="container-x py-16">
-        <div className="mx-auto max-w-[660px] text-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-brand-light px-3.5 py-1.5 text-[13px] font-bold text-brand">
-            <Gift size={15} /> Free forever
-          </span>
-          <h2 className="h-display mt-4 text-4xl lg:text-[40px]">No Account. No Subscription. Just Free.</h2>
-          <p className="mt-3 text-lg text-ink-soft">
-            DocTrim has no plans and no pricing page — every tool is free and works right away, without creating an
-            account.
-          </p>
-        </div>
+        <Reveal>
+          <div className="mx-auto max-w-[660px] text-center">
+            <span className="inline-flex items-center gap-2 rounded-full bg-brand-light px-3.5 py-1.5 text-[13px] font-bold text-brand">
+              <Gift size={15} /> Free forever
+            </span>
+            <h2 className="h-display mt-4 text-4xl lg:text-[40px]">No Account. No Subscription. Just Free.</h2>
+            <p className="mt-3 text-lg text-ink-soft">
+              DocTrim has no plans and no pricing page — every tool is free and works right away, without creating an
+              account.
+            </p>
+          </div>
+        </Reveal>
 
-        <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <StaggerGroup className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {PERKS.map((p) => (
-            <div key={p.title} className="card p-7">
-              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-light text-brand">
-                <p.icon size={24} />
-              </span>
-              <h3 className="mt-4 text-lg font-bold text-ink">{p.title}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-ink-muted">{p.body}</p>
-            </div>
+            <StaggerItem key={p.title} className="h-full">
+              <div className="card dt-card-hover h-full p-7">
+                <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-light text-brand">
+                  <p.icon size={24} />
+                </span>
+                <h3 className="mt-4 text-lg font-bold text-ink">{p.title}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-ink-muted">{p.body}</p>
+              </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGroup>
 
         <div className="mt-10 text-center">
           <Link to="/pdf-tools" className="btn-primary btn-lg">

@@ -1,5 +1,6 @@
 import { ShieldCheck, BadgeCheck, UserX } from 'lucide-react'
 import { TOOLS } from '../lib/tools'
+import { Reveal, StaggerGroup, StaggerItem } from './motion/Reveal'
 
 const STATS = [
   { value: `${TOOLS.length}`, label: 'PDF tools' },
@@ -30,32 +31,37 @@ export default function TrustSection() {
   return (
     <section id="trust" className="bg-surface">
       <div className="container-x py-16">
-        <div className="mx-auto max-w-[640px] text-center">
-          <h2 className="h-display text-4xl lg:text-[40px]">Why Choose DocTrim?</h2>
-          <p className="mt-3 text-lg text-ink-soft">
-            People and businesses trust DocTrim to get their document work done — safely, simply and for free.
-          </p>
-        </div>
-        <div className="mx-auto mt-10 grid max-w-[820px] grid-cols-2 gap-6 md:grid-cols-4">
+        <Reveal>
+          <div className="mx-auto max-w-[640px] text-center">
+            <h2 className="h-display text-4xl lg:text-[40px]">Why Choose DocTrim?</h2>
+            <p className="mt-3 text-lg text-ink-soft">
+              People and businesses trust DocTrim to get their document work done — safely, simply and for free.
+            </p>
+          </div>
+        </Reveal>
+        <StaggerGroup className="mx-auto mt-10 grid max-w-[820px] grid-cols-2 gap-6 md:grid-cols-4" stagger={0.07}>
           {STATS.map((s) => (
-            <div key={s.label} className="text-center">
+            <StaggerItem key={s.label} className="text-center">
               <p className="text-3xl font-black text-brand">{s.value}</p>
               <p className="mt-1 text-[14px] text-ink-muted">{s.label}</p>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        </StaggerGroup>
+        <StaggerGroup className="mt-12 grid gap-6 md:grid-cols-3">
           {CARDS.map((c) => (
-            <div key={c.title} className="card p-7">
-              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-light text-brand">
-                <c.icon size={24} />
-              </span>
-              <h3 className="mt-4 text-lg font-bold text-ink">{c.title}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-ink-muted">{c.body}</p>
-            </div>
+            <StaggerItem key={c.title} className="h-full">
+              <div className="card dt-card-hover h-full p-7">
+                <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-light text-brand">
+                  <c.icon size={24} />
+                </span>
+                <h3 className="mt-4 text-lg font-bold text-ink">{c.title}</h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-ink-muted">{c.body}</p>
+              </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerGroup>
       </div>
     </section>
   )
 }
+

@@ -1,5 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { EASE_OUT } from '../lib/motion'
 import { ArrowLeft, Download, Loader2, RotateCw, ShieldCheck, FileText, RefreshCw, Trash2, ChevronUp, ChevronDown } from 'lucide-react'
 import Dropzone from '../components/Dropzone'
 import ToolIcon from '../components/ToolIcon'
@@ -562,10 +564,20 @@ function Runner({ tool }: { tool: Tool }) {
 
           {/* result */}
           {result && (
-            <div className="text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-light text-brand">
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 12, scale: 0.985 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.42, ease: EASE_OUT }}
+            >
+              <motion.div
+                className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-light text-brand"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 340, damping: 18, delay: 0.08 }}
+              >
                 <ShieldCheck size={30} />
-              </div>
+              </motion.div>
               <h2 className="mt-4 text-2xl font-bold text-ink">Done!</h2>
               {result.kind === 'pdf' && result.before != null && result.after != null && (
                 <p className="mt-2 text-[15px] text-ink-soft">
@@ -593,7 +605,7 @@ function Runner({ tool }: { tool: Tool }) {
                   ))}
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

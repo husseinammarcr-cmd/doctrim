@@ -1,3 +1,6 @@
+import { motion, useReducedMotion } from 'framer-motion'
+import { EASE_OUT, viewportOnce } from '../lib/motion'
+
 function StoreButton({ store }: { store: 'google' | 'apple' }) {
   return (
     <a href="#mobile" className="flex items-center gap-3 rounded-lg bg-ink px-4 py-2.5 text-white hover:bg-black">
@@ -69,10 +72,16 @@ function DevicesIllustration() {
 }
 
 export default function MobileSection() {
+  const reduce = useReducedMotion()
   return (
     <section id="mobile" className="bg-brand-lighter">
       <div className="container-x grid items-center gap-10 py-16 lg:grid-cols-2">
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ duration: 0.65, ease: EASE_OUT }}
+        >
           <h2 className="h-display text-4xl lg:text-[40px]">Get It on Mobile</h2>
           <p className="mt-4 max-w-[460px] text-lg leading-relaxed text-ink-soft">
             Create PDF scans, organize documents, and share files from all your connected devices with the DocTrim Mobile App—wherever you are.
@@ -81,10 +90,21 @@ export default function MobileSection() {
             <StoreButton store="google" />
             <StoreButton store="apple" />
           </div>
-        </div>
-        <div className="mx-auto w-full max-w-[520px]">
-          <DevicesIllustration />
-        </div>
+        </motion.div>
+        <motion.div
+          className="mx-auto w-full max-w-[520px]"
+          initial={{ opacity: 0, scale: 0.94, y: 22 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ duration: 0.8, ease: EASE_OUT, delay: 0.08 }}
+        >
+          <motion.div
+            animate={reduce ? undefined : { y: [0, -8, 0] }}
+            transition={reduce ? undefined : { duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <DevicesIllustration />
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   )

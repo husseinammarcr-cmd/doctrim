@@ -21,10 +21,26 @@
     @apply mx-auto w-full max-w-container px-6;
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded font-semibold transition-colors duration-150 cursor-pointer select-none;
+    @apply inline-flex items-center justify-center gap-2 rounded font-semibold cursor-pointer select-none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.25s ease,
+      transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+  .btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .btn:disabled {
+    transform: none;
+    box-shadow: none;
+    cursor: not-allowed;
   }
   .btn-primary {
     @apply btn bg-brand text-white hover:bg-brand-hover;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 10px 24px -12px rgba(0, 85, 255, 0.75);
   }
   .btn-outline {
     @apply btn border border-brand text-brand bg-white hover:bg-brand-lighter;
@@ -43,9 +59,66 @@
   }
   .nav-link {
     @apply text-[15px] font-semibold text-ink-soft hover:text-brand transition-colors;
+    @apply relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-link:hover::after,
+  .nav-link-active::after {
+    transform: scaleX(1);
+  }
+  .nav-link-active {
+    @apply text-brand;
   }
   .h-display {
     @apply font-bold text-ink tracking-tight;
+  }
+  /* static cards: gentle lift on hover (no JS needed) */
+  .dt-card-hover {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dt-card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 85, 255, 0.25);
+  }
+  /* "view all →" link: the arrow nudges forward on hover */
+  .dt-link-arrow span[aria-hidden] {
+    display: inline-block;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dt-link-arrow:hover span[aria-hidden] {
+    transform: translateX(4px);
+  }
+  .dt-logo {
+    display: inline-flex;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dt-logo:hover {
+    transform: translateY(-1px) scale(1.02);
+  }
+  .dt-dir-link svg {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dt-dir-link:hover svg {
+    transform: scale(1.12) rotate(-3deg);
+  }
+  .dt-drop-link {
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+  }
+  .dt-drop-link:hover {
+    transform: translateX(2px);
   }
 }
 
@@ -214,3 +287,29 @@
 .scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
 .scroll-thin::-webkit-scrollbar-thumb { background: #d9d9de; border-radius: 8px; }
 .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+
+/* Respect the OS "reduce motion" setting for every CSS-driven interaction.
+   (Framer Motion animations are handled by <MotionConfig reducedMotion="user">.) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .btn,
+  .dt-card-hover,
+  .dt-logo,
+  .dt-link-arrow span[aria-hidden],
+  .dt-dir-link svg,
+  .dt-drop-link,
+  .nav-link::after {
+    transition: none !important;
+  }
+  .btn:hover,
+  .btn:active,
+  .dt-card-hover:hover,
+  .dt-logo:hover,
+  .dt-dir-link:hover svg,
+  .dt-drop-link:hover,
+  .dt-link-arrow:hover span[aria-hidden] {
+    transform: none !important;
+  }
+}
