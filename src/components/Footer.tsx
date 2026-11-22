@@ -16,6 +16,7 @@ const COLS: { title: string; links: { label: string; to: string }[] }[] = [
     title: 'Company',
     links: [
       { label: 'About', to: '/about' },
+      { label: 'Blog & Guides', to: '/blog' },
       { label: 'Help Center', to: '/help' },
       { label: 'Privacy Policy', to: '/privacy' },
       { label: 'Terms of Service', to: '/terms' },

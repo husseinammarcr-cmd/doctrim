@@ -313,3 +313,159 @@
     transform: none !important;
   }
 }
+
+/* ------------------------------ article body ------------------------------ */
+/* Rendered from Markdown, so these rules style bare elements rather than classes. */
+.dt-article {
+  font-size: 17px;
+  line-height: 1.75;
+  color: #2f2f33;
+}
+.dt-article > :first-child {
+  margin-top: 0;
+}
+.dt-article h2 {
+  margin-top: 2.4em;
+  margin-bottom: 0.55em;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: #1a1a1a;
+  scroll-margin-top: 96px;
+}
+.dt-article h3 {
+  margin-top: 1.9em;
+  margin-bottom: 0.45em;
+  font-size: 18.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #1a1a1a;
+  scroll-margin-top: 96px;
+}
+.dt-article p {
+  margin-top: 1.05em;
+}
+.dt-article a {
+  color: #0055ff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 85, 255, 0.3);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.2s ease;
+}
+.dt-article a:hover {
+  text-decoration-color: #0055ff;
+}
+.dt-article strong {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.dt-article em {
+  font-style: italic;
+}
+.dt-article ul,
+.dt-article ol {
+  margin-top: 1em;
+  padding-left: 1.35em;
+}
+.dt-article ul {
+  list-style: disc;
+}
+.dt-article ol {
+  list-style: decimal;
+}
+.dt-article li {
+  margin-top: 0.4em;
+  padding-left: 0.15em;
+}
+.dt-article li::marker {
+  color: #0055ff;
+  font-weight: 700;
+}
+.dt-article li > p {
+  margin-top: 0.4em;
+}
+.dt-article blockquote {
+  margin: 1.5em 0;
+  border-left: 3px solid #0055ff;
+  border-radius: 0 8px 8px 0;
+  background: #f7f9ff;
+  padding: 0.9em 1.15em;
+  color: #2b3a55;
+}
+.dt-article blockquote p {
+  margin-top: 0.35em;
+}
+.dt-article blockquote > :first-child {
+  margin-top: 0;
+}
+.dt-article code {
+  background: #f4f5f7;
+  border: 1px solid #e8e8ec;
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.87em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #1a1a1a;
+  white-space: nowrap;
+}
+.dt-article pre {
+  margin: 1.5em 0;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: #1a1a1a;
+  padding: 1.1em 1.25em;
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.dt-article pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #f4f5f7;
+  white-space: pre;
+}
+.dt-article table {
+  display: block;
+  width: 100%;
+  margin: 1.6em 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+.dt-article thead th {
+  background: #f4f5f7;
+  font-weight: 700;
+  text-align: left;
+  color: #1a1a1a;
+}
+.dt-article th,
+.dt-article td {
+  border: 1px solid #e8e8ec;
+  padding: 0.6em 0.85em;
+  vertical-align: top;
+}
+.dt-article tbody tr:nth-child(even) {
+  background: #fafafb;
+}
+.dt-article hr {
+  margin: 2.4em 0;
+  border: 0;
+  border-top: 1px solid #e8e8ec;
+}
+.dt-article img {
+  margin: 1.6em 0;
+  max-width: 100%;
+  border: 1px solid #e8e8ec;
+  border-radius: 10px;
+}
+@media (max-width: 640px) {
+  .dt-article {
+    font-size: 16px;
+  }
+  .dt-article h2 {
+    font-size: 22px;
+  }
+}

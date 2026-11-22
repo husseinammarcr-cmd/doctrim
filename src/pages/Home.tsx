@@ -7,8 +7,11 @@ import FreeSection from '../components/FreeSection'
 import TrustSection from '../components/TrustSection'
 import CTASection from '../components/CTASection'
 import ToolsDirectory from '../components/ToolsDirectory'
+import BlogStrip from '../components/BlogStrip'
 import { Reveal, StaggerGroup, StaggerItem } from '../components/motion/Reveal'
 import { POPULAR, TOOLS } from '../lib/tools'
+import { usePageMeta } from '../lib/usePageMeta'
+import { useCanonical } from '../lib/seo'
 
 const FEATURES: Feature[] = [
   {
@@ -42,6 +45,12 @@ const FEATURES: Feature[] = [
 ]
 
 export default function Home() {
+  usePageMeta(
+    'DocTrim — We make PDF easy.',
+    'Free PDF tools that run in your browser: compress, merge, split, convert, sign and edit. No account, no subscription.'
+  )
+  useCanonical('/')
+
   return (
     <>
       <Hero />
@@ -92,6 +101,7 @@ export default function Home() {
       <MobileSection />
       <FreeSection />
       <TrustSection />
+      <BlogStrip />
       <CTASection />
       <ToolsDirectory compact />
     </>

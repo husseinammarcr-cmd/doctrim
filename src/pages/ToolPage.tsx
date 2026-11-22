@@ -9,6 +9,7 @@ import PageGrid, { type PageItem } from '../components/tool/PageGrid'
 import SignaturePad from '../components/tool/SignaturePad'
 import CropEditor, { type CropMarginsMm } from '../components/tool/CropEditor'
 import { getTool, type Tool } from '../lib/tools'
+import { usePageMeta } from '../lib/usePageMeta'
 import { serverConfigured } from '../lib/api'
 import ServerToolRunner from '../components/tool/ServerToolRunner'
 import EditPdfPage from './EditPdfPage'
@@ -62,6 +63,17 @@ const inputCls = selectCls
 export default function ToolPage() {
   const { slug } = useParams()
   const tool = getTool(slug || '')
+
+  // EditPdfPage owns a richer title/description for /edit-pdf.
+  usePageMeta(
+    !tool
+      ? 'Page not found — DocTrim'
+      : tool.slug === 'edit-pdf'
+        ? ''
+        : `${tool.name} — Free Online PDF Tool | DocTrim`,
+    tool && tool.slug !== 'edit-pdf' ? tool.desc : undefined
+  )
+
   if (!tool) return <NotFound />
   if (tool.slug === 'edit-pdf') return <EditPdfPage />
   if (tool.server) {

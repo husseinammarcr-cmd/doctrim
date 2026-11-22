@@ -13,6 +13,7 @@ const NAV = [
   { label: 'Merge', to: '/merge-pdf' },
   { label: 'Edit', to: '/edit-pdf' },
   { label: 'Sign', to: '/sign-pdf' },
+  { label: 'Blog', to: '/blog' },
 ]
 
 export default function Header() {
@@ -118,16 +119,24 @@ export default function Header() {
         </div>
 
         {/* primary nav */}
-        <nav className="hidden items-center gap-6 lg:flex">
+        <nav className="hidden items-center gap-5 lg:flex xl:gap-6">
           {NAV.map((n) => (
-            <Link key={n.label} to={n.to} className={`nav-link ${loc.pathname === n.to ? 'nav-link-active' : ''}`}>
+            <Link
+              key={n.label}
+              to={n.to}
+              className={`nav-link ${
+                loc.pathname === n.to || (n.to === '/blog' && loc.pathname.startsWith('/blog'))
+                  ? 'nav-link-active'
+                  : ''
+              }`}
+            >
               {n.label}
             </Link>
           ))}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-4 lg:flex">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-[13px] font-bold text-brand">
+        <div className="ml-auto hidden items-center gap-3 lg:flex xl:gap-4">
+          <span className="hidden items-center gap-1.5 rounded-full bg-brand-light px-3 py-1.5 text-[13px] font-bold text-brand xl:inline-flex">
             <Gift size={14} /> 100% Free
           </span>
           <Link to="/pdf-tools" className="btn-primary btn-md">
@@ -190,6 +199,7 @@ export default function Header() {
               <div className="mt-1 flex items-center gap-4 border-t border-line px-2 pt-3 text-[14px] font-semibold text-ink-soft">
                 <Link to="/about" className="hover:text-brand">About</Link>
                 <Link to="/help" className="hover:text-brand">Help</Link>
+                <Link to="/blog" className="hover:text-brand">Blog</Link>
               </div>
               <div className="mt-2 px-2">
                 <Link to="/pdf-tools" className="btn-primary btn-md w-full">

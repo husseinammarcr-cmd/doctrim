@@ -9,6 +9,8 @@ import ToolPage from './pages/ToolPage'
 
 import About from './pages/About'
 import Help from './pages/Help'
+import Blog from './pages/Blog'
+import BlogPost from './pages/BlogPost'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
@@ -28,6 +30,8 @@ export default function App() {
               <Route path="/pdf-tools" element={<AllTools />} />
               <Route path="/about" element={<About />} />
               <Route path="/help" element={<Help />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/:slug" element={<ToolPage />} />
