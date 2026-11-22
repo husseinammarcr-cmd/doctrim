@@ -12,7 +12,11 @@ run client-side in the frontend and do not need this service.
 - `POST /api/unlock` — file, password
 - `POST /api/office-to-pdf` — file (.docx/.xlsx/.pptx via LibreOffice)
 - `POST /api/pdf-to-word` — file (pdf2docx)
-- `POST /api/ocr` — file, lang (ocrmypdf/Tesseract)
+- `POST /api/pdf-to-excel` — file (PyMuPDF table finder → openpyxl, one sheet per table)
+- `POST /api/pdf-to-ppt` — file (PyMuPDF render → python-pptx, one slide per page)
+- `POST /api/flatten-pdf` — file (PyMuPDF bake: annotations + form widgets → page content)
+- `POST /api/ocr` — file, lang=eng|ara|fra|deu|spa (ocrmypdf/Tesseract)
+- `POST /api/force-download` — file, filename (echoes with Content-Disposition: attachment for iOS Safari)
 
 All POST endpoints are `multipart/form-data` and return the processed file.
 
