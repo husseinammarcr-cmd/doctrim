@@ -21,7 +21,16 @@ export default function Header() {
   // Paths that exist in both locales; anything else (blog, legal) falls back to home.
   const bilingual = (path: string) => {
     const clean = path.replace(/^\/ar(?=\/|$)/, '') || '/'
-    return clean === '/' || clean === '/pdf-tools' || clean === '/help' || clean === '/privacy' || /^\/[a-z0-9-]+$/.test(clean)
+    return (
+      clean === '/' ||
+      clean === '/pdf-tools' ||
+      clean === '/help' ||
+      clean === '/privacy' ||
+      clean === '/about' ||
+      clean === '/terms' ||
+      clean.startsWith('/blog') ||
+      /^\/[a-z0-9-]+$/.test(clean)
+    )
   }
   const switchTarget = localeHref(other, bilingual(sub) ? sub : '/')
 
@@ -31,7 +40,7 @@ export default function Header() {
     { label: t('nav.merge', 'Merge'), to: '/merge-pdf' },
     { label: t('nav.edit', 'Edit'), to: '/edit-pdf' },
     { label: t('nav.sign', 'Sign'), to: '/sign-pdf' },
-    ...(isAr ? [] : [{ label: t('nav.blog', 'Blog'), to: '/blog' }]),
+    { label: t('nav.blog', 'Blog'), to: '/blog' },
   ]
 
   useEffect(() => {
@@ -221,7 +230,7 @@ export default function Header() {
                   <>
                     <Link to={href('/help')} className="hover:text-brand">{t('nav.help', 'Help')}</Link>
                     <Link to={href('/privacy')} className="hover:text-brand">{t('nav.about', 'Privacy')}</Link>
-                    <Link to="/blog" className="hover:text-brand">Blog (EN)</Link>
+                    <Link to={href('/blog')} className="hover:text-brand">{t('nav.blog', 'المدونة')}</Link>
                   </>
                 ) : (
                   <>

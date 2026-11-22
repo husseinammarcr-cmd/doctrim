@@ -63,6 +63,27 @@ for (const file of (await readdir(blogDir)).sort()) {
 }
 posts.sort((a, b) => (a.date < b.date ? 1 : -1))
 
+// Arabic translations, one file per English slug
+const postsAr = []
+try {
+  for (const file of (await readdir(path.join(root, 'src/content/blog/ar'))).sort()) {
+    if (!file.endsWith('.md')) continue
+    const raw = await readFile(path.join(root, 'src/content/blog/ar', file), 'utf8')
+    const fm = /^---\n([\s\S]*?)\n---/.exec(raw)?.[1] ?? ''
+    const grab = (k) => new RegExp(`^${k}:\\s*"([\\s\\S]*?)"`, 'm').exec(fm)?.[1]
+    postsAr.push({
+      slug: file.replace(/\.md$/, ''),
+      title: grab('title'),
+      description: grab('description'),
+      date: grab('date'),
+      category: grab('category'),
+    })
+  }
+} catch {
+  /* no Arabic posts yet */
+}
+postsAr.sort((a, b) => (a.date < b.date ? 1 : -1))
+
 // ---------------------------------------------------------------- static pages
 // Titles/descriptions are the same strings the pages set at runtime.
 const STATIC_PAGES = [
@@ -348,13 +369,51 @@ for (const t of tools) {
   }
 }
 
+// Arabic blog posts
+for (const p of postsAr) {
+  meta[`ar/blog/${p.slug}`] = {
+    title: `${p.title} — مدونة DocTrim`,
+    description: p.description,
+    image: `/og/ar-blog-${p.slug}.png`,
+    type: 'article',
+    published: p.date,
+    locale: 'ar_AR',
+    jsonld: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: p.title,
+        description: p.description,
+        datePublished: p.date,
+        dateModified: p.date,
+        inLanguage: 'ar',
+        image: `${SITE}/og/ar-blog-${p.slug}.png`,
+        mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE}/ar/blog/${p.slug}` },
+        author: { '@type': 'Organization', name: 'DocTrim', url: `${SITE}/` },
+        publisher: ORG,
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'الرئيسية', item: `${SITE}/ar` },
+          { '@type': 'ListItem', position: 2, name: 'المدونة', item: `${SITE}/ar/blog` },
+          { '@type': 'ListItem', position: 3, name: p.title, item: `${SITE}/ar/blog/${p.slug}` },
+        ],
+      },
+    ],
+  }
+}
+
 // hreflang pairs, both directions
 const PAIRS = [
   ['/', '/ar'],
   ['/pdf-tools', '/ar/pdf-tools'],
   ['/help', '/ar/help'],
   ['/privacy', '/ar/privacy'],
+  ['/blog', '/ar/blog'],
   ...tools.map((t) => [`/${t.slug}`, `/ar/${t.slug}`]),
+  ...postsAr.map((p) => [`/blog/${p.slug}`, `/ar/blog/${p.slug}`]),
 ]
 for (const [en, ar] of PAIRS) {
   const enKey = en.replace(/^\//, '')
@@ -377,6 +436,7 @@ const ogData = {
     home: { title: 'أدوات PDF بالعربية.', desc: arCopy.meta['home.desc'] },
     tools: tools.map((t) => ({ slug: t.slug, name: arName(t.slug), desc: arDesc(t.slug), color: t.color })),
     static: AR_STATIC.map((s) => ({ key: s.key, title: s.title.split(' — ')[0], desc: s.desc })),
+    posts: postsAr.map((p) => ({ slug: p.slug, title: p.title, desc: p.description })),
   },
 }
 await writeFile(path.join(root, 'scripts/og-data.json'), `${JSON.stringify(ogData, null, 2)}\n`, 'utf8')

@@ -37,6 +37,19 @@ for (const file of await readdir(blogDir)) {
 }
 posts.sort((a, b) => (a.date < b.date ? 1 : -1))
 
+const postsAr = []
+try {
+  for (const file of await readdir(path.join(root, 'src/content/blog/ar'))) {
+    if (!file.endsWith('.md')) continue
+    const raw = await readFile(path.join(root, 'src/content/blog/ar', file), 'utf8')
+    const date = /^date:\s*"?(\d{4}-\d{2}-\d{2})"?/m.exec(raw)?.[1]
+    postsAr.push({ slug: file.replace(/\.md$/, ''), date })
+  }
+} catch {
+  /* no Arabic posts yet */
+}
+postsAr.sort((a, b) => (a.date < b.date ? 1 : -1))
+
 const url = (loc, { priority = '0.6', changefreq = 'monthly', lastmod, alt } = {}) =>
   [
     '  <url>',
@@ -70,13 +83,24 @@ const enUrls = [
     const pair = { en: `/${slug}`, ar: `/ar/${slug}` }
     return url(slug, { priority: '0.8', changefreq: 'monthly', alt: pair })
   }),
-  ...posts.map((p) => url(`blog/${p.slug}`, { priority: '0.7', changefreq: 'monthly', lastmod: p.date })),
+  ...posts.map((p) => {
+    const pair = { en: `/blog/${p.slug}`, ar: `/ar/blog/${p.slug}` }
+    return url(`blog/${p.slug}`, { priority: '0.7', changefreq: 'monthly', lastmod: p.date, alt: pair })
+  }),
 ]
 
 const arUrls = [
   ...BILINGUAL.map((b) => url(b.ar.replace(/^\//, ''), { priority: b.priority, changefreq: 'weekly', alt: { en: b.en, ar: b.ar } })),
   ...toolSlugs.map((slug) =>
     url(`ar/${slug}`, { priority: '0.8', changefreq: 'monthly', alt: { en: `/${slug}`, ar: `/ar/${slug}` } })
+  ),
+  ...postsAr.map((p) =>
+    url(`ar/blog/${p.slug}`, {
+      priority: '0.7',
+      changefreq: 'monthly',
+      lastmod: p.date,
+      alt: { en: `/blog/${p.slug}`, ar: `/ar/blog/${p.slug}` },
+    })
   ),
 ]
 

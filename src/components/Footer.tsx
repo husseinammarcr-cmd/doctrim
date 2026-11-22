@@ -19,9 +19,11 @@ export default function Footer() {
       title: t('footer.company', 'Company'),
       links: isAr
         ? [
+            { label: t('footer.about', 'About'), to: '/about' },
+            { label: t('nav.blog', 'المدونة'), to: '/blog' },
             { label: t('footer.help', 'Help'), to: '/help' },
             { label: t('footer.privacy', 'Privacy'), to: '/privacy' },
-            { label: 'English site', to: '/about' },
+            { label: t('footer.terms', 'Terms'), to: '/terms' },
           ]
         : [
             { label: t('footer.about', 'About'), to: '/about' },

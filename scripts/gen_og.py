@@ -354,11 +354,11 @@ def chrome_ar(img, d):
     ar_text(d, W - MARGIN, 550, "27 أداة مجانية  ·  بدون تسجيل  ·  بدون علامة مائية", f_strip, hex_rgb(SOFT))
 
 
-def ar_block(d, title, desc, sizes, max_w, top, desc_size=28, desc_lines=2, gap=24):
+def ar_block(d, title, desc, sizes, max_w, top, desc_size=28, desc_lines=2, gap=24, max_title_lines=2):
     for size in sizes:
         f_title = arfont(size, 800)
         title_lines = ar_wrap(d, title, f_title, max_w)
-        if len(title_lines) > 2:
+        if len(title_lines) > max_title_lines:
             continue
         title_h = int(size * 1.28) * len(title_lines)
         f_desc = arfont(desc_size, 400)
@@ -408,6 +408,17 @@ def ar_fit(d, text, max_w, sizes, weight=800):
     return arfont(sizes[-1], weight), sizes[-1]
 
 
+def ar_post(post):
+    img, d = canvas()
+    paper_stack(img, BRAND, cx=290, cy=320, mirror=-1)
+    d = ImageDraw.Draw(img)
+    f_eye = arfont(21, 700)
+    ar_text(d, W - MARGIN, 166, "مدونة DocTrim", f_eye, hex_rgb(BRAND))
+    ar_block(d, post["title"], post["desc"], [58, 52, 46, 42], 610, 200, desc_size=23, desc_lines=2, max_title_lines=3)
+    chrome_ar(img, d)
+    return img
+
+
 def ar_home(data):
     img, d = canvas()
     paper_stack(img, BRAND, cx=290, cy=320, mirror=-1)
@@ -455,6 +466,8 @@ def main():
             save(ar_card(t), f"ar-{t['slug']}")
         for s in ardata["static"]:
             save(ar_simple(s["title"], s["desc"], s["key"]), f"ar-{s['key']}")
+        for p in ardata.get("posts", []):
+            save(ar_post(p), f"ar-blog-{p['slug']}")
 
     total = sum(f.stat().st_size for f in OUT.glob("*.png"))
     print(f"{written} cards written to public/og ({total / 1024:.0f} KB)")

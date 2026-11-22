@@ -11,6 +11,9 @@ import AllTools from './pages/AllTools'
 import ArHome from './pages/ArHome'
 import ArHelp from './pages/ArHelp'
 import ArPrivacy from './pages/ArPrivacy'
+import ArBlog from './pages/ArBlog'
+import ArAbout from './pages/ArAbout'
+import ArTerms from './pages/ArTerms'
 import ToolPage from './pages/ToolPage'
 
 import About from './pages/About'
@@ -56,6 +59,10 @@ export default function App() {
                 <Route path="/ar/pdf-tools" element={<AllTools />} />
                 <Route path="/ar/help" element={<ArHelp />} />
                 <Route path="/ar/privacy" element={<ArPrivacy />} />
+                <Route path="/ar/about" element={<ArAbout />} />
+                <Route path="/ar/terms" element={<ArTerms />} />
+                <Route path="/ar/blog" element={<ArBlog />} />
+                <Route path="/ar/blog/:slug" element={<BlogPost />} />
 
                 {/* tools exist in both locales */}
                 <Route path="/:slug" element={<ToolPage />} />

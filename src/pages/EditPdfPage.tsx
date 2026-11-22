@@ -8,15 +8,21 @@ import { getTool } from '../lib/tools'
 import { fileToBytes } from '../lib/pdf/engine'
 import { usePageMeta } from '../lib/usePageMeta'
 import NotFound from './NotFound'
+import { useI18n } from '../i18n'
 
 export default function EditPdfPage() {
+  const { isAr, t, toolName, toolDesc, href } = useI18n()
   const tool = getTool('edit-pdf')
   const [file, setFile] = useState<File | null>(null)
   const [bytes, setBytes] = useState<Uint8Array | null>(null)
 
   usePageMeta(
-    'Edit PDF — rewrite text, add anything, sign and redact | DocTrim',
-    'A full PDF editor in your browser: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Files never leave your device.',
+    isAr
+      ? 'تعديل PDF — أعد كتابة النص، أضف أي شيء، وقّع واحجب | DocTrim'
+      : 'Edit PDF — rewrite text, add anything, sign and redact | DocTrim',
+    isAr
+      ? 'محرر PDF كامل داخل متصفحك: أعد كتابة النص الموجود، وأضف نصاً وصوراً وأشكالاً وتوقيعات، ولوّن أو احجب، ثم نزّل الملف. لا يغادر ملفك جهازك.'
+      : 'A full PDF editor in your browser: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Files never leave your device.',
   )
 
   if (!tool) return <NotFound />
@@ -24,24 +30,24 @@ export default function EditPdfPage() {
   return (
     <div className="bg-surface/60 min-h-[70vh]">
       <div className="container-x py-10">
-        <Link to="/pdf-tools" className="inline-flex items-center gap-1 text-[14px] font-semibold text-ink-muted hover:text-brand">
-          <ArrowLeft size={15} /> All tools
+        <Link to={href('/pdf-tools')} className="inline-flex items-center gap-1 text-[14px] font-semibold text-ink-muted hover:text-brand">
+          <ArrowLeft size={15} className="rtl:rotate-180" /> {t('nav.allTools', 'All tools')}
         </Link>
         <div className="mt-4 flex items-center gap-4">
           <ToolIcon icon={tool.icon} color={tool.color} size={52} radius={13} />
           <div>
-            <h1 className="text-3xl font-bold text-ink">{tool.name}</h1>
-            <p className="mt-0.5 text-[15px] text-ink-muted">{tool.desc}</p>
+            <h1 className="text-3xl font-bold text-ink">{toolName(tool)}</h1>
+            <p className="mt-0.5 text-[15px] text-ink-muted">{toolDesc(tool)}</p>
           </div>
         </div>
         <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-[13px] font-semibold text-brand">
-          <ShieldCheck size={14} /> Edited in your browser — the file never leaves your device.
+          <ShieldCheck size={14} /> {isAr ? 'التحرير يتم داخل متصفحك — الملف لا يغادر جهازك.' : 'Edited in your browser — the file never leaves your device.'}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px] font-semibold text-ink-muted">
           {[
-            { icon: TextCursorInput, label: 'Rewrite existing text' },
-            { icon: Highlighter, label: 'Highlight & redact' },
-            { icon: Signature, label: 'Sign and date' },
+            { icon: TextCursorInput, label: isAr ? 'أعد كتابة النص الموجود' : 'Rewrite existing text' },
+            { icon: Highlighter, label: isAr ? 'تلوين وحجب' : 'Highlight & redact' },
+            { icon: Signature, label: isAr ? 'توقيع وتاريخ' : 'Sign and date' },
           ].map(({ icon: Icon, label }) => (
             <span key={label} className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1">
               <Icon size={13} className="text-brand" /> {label}

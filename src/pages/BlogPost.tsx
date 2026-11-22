@@ -15,20 +15,23 @@ import NotFound from './NotFound'
 import PostCard, { CategoryPill } from '../components/blog/PostCard'
 import ToolIcon from '../components/ToolIcon'
 import { Reveal } from '../components/motion/Reveal'
-import { adjacentPosts, categoryColor, formatDateLong, getPost, relatedPosts, type Post } from '../lib/blog'
+import { adjacentIn, categoryColor, categoryLabel, formatDateLong, getPostIn, relatedIn, type Post } from '../lib/blog'
 import { renderMarkdown } from '../lib/markdown'
 import { getTool } from '../lib/tools'
 import { usePageMeta } from '../lib/usePageMeta'
 import { SITE_URL, useCanonical, useJsonLd } from '../lib/seo'
+import { useI18n } from '../i18n'
 
 export default function BlogPost() {
   const { slug } = useParams()
-  const post = getPost(slug)
+  const { locale } = useI18n()
+  const post = getPostIn(locale, slug)
   if (!post) return <NotFound />
   return <PostView post={post} />
 }
 
 function PostView({ post }: { post: Post }) {
+  const { locale, isAr, t, href, toolName, toolDesc } = useI18n()
   const navigate = useNavigate()
   const articleRef = useRef<HTMLDivElement>(null)
   const [progress, setProgress] = useState(0)
@@ -36,12 +39,17 @@ function PostView({ post }: { post: Post }) {
   const [copied, setCopied] = useState(false)
 
   const { html, toc } = useMemo(() => renderMarkdown(post.body), [post.body])
+  // Arabic articles live under /ar, so in-body links to tools and posts must too.
+  const articleHtml = useMemo(
+    () => (isAr ? html.replace(/href="\/(?!ar\/|#|https?:)/g, 'href="/ar/') : html),
+    [html, isAr]
+  )
   const tool = post.tool ? getTool(post.tool) : undefined
-  const related = useMemo(() => relatedPosts(post, 3), [post])
-  const { newer, older } = useMemo(() => adjacentPosts(post), [post])
+  const related = useMemo(() => relatedIn(locale, post, 3), [locale, post])
+  const { newer, older } = useMemo(() => adjacentIn(locale, post), [locale, post])
 
-  usePageMeta(`${post.title} — DocTrim Blog`, post.description)
-  useCanonical(`/blog/${post.slug}`)
+  usePageMeta(`${post.title}${isAr ? ' — مدونة DocTrim' : ' — DocTrim Blog'}`, post.description)
+  useCanonical(isAr ? `/ar/blog/${post.slug}` : `/blog/${post.slug}`)
   useJsonLd([
     {
       '@context': 'https://schema.org',
@@ -52,17 +60,18 @@ function PostView({ post }: { post: Post }) {
       dateModified: post.date,
       author: { '@type': 'Organization', name: 'DocTrim' },
       publisher: { '@type': 'Organization', name: 'DocTrim', url: SITE_URL },
-      mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+      mainEntityOfPage: `${SITE_URL}${isAr ? '/ar/blog/' : '/blog/'}${post.slug}`,
       keywords: post.tags.join(', '),
-      articleSection: post.category,
+      articleSection: categoryLabel(post.category, locale),
+      inLanguage: locale,
     },
     {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}/blog` },
-        { '@type': 'ListItem', position: 3, name: post.title, item: `${SITE_URL}/blog/${post.slug}` },
+        { '@type': 'ListItem', position: 1, name: isAr ? 'الرئيسية' : 'Home', item: isAr ? `${SITE_URL}/ar` : SITE_URL },
+        { '@type': 'ListItem', position: 2, name: isAr ? 'المدونة' : 'Blog', item: `${SITE_URL}${isAr ? '/ar/blog' : '/blog'}` },
+        { '@type': 'ListItem', position: 3, name: post.title, item: `${SITE_URL}${isAr ? '/ar/blog/' : '/blog/'}${post.slug}` },
       ],
     },
   ])
@@ -114,7 +123,7 @@ function PostView({ post }: { post: Post }) {
     }
   }
 
-  const shareUrl = `${SITE_URL}/blog/${post.slug}`
+  const shareUrl = `${SITE_URL}${isAr ? '/ar/blog/' : '/blog/'}${post.slug}`
   const shareText = encodeURIComponent(post.title)
 
   return (
@@ -131,22 +140,22 @@ function PostView({ post }: { post: Post }) {
       <section className="border-b border-line bg-surface">
         <div className="container-x py-12 lg:py-16">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[13px] font-semibold text-ink-muted">
-            <Link to="/" className="hover:text-brand">
-              Home
+            <Link to={href('/')} className="hover:text-brand">
+              {isAr ? 'الرئيسية' : 'Home'}
             </Link>
-            <ChevronRight size={13} />
-            <Link to="/blog" className="hover:text-brand">
-              Blog
+            <ChevronRight size={13} className="rtl:rotate-180" />
+            <Link to={href('/blog')} className="hover:text-brand">
+              {isAr ? 'المدونة' : 'Blog'}
             </Link>
-            <ChevronRight size={13} />
-            <span className="truncate text-ink-soft">{post.category}</span>
+            <ChevronRight size={13} className="rtl:rotate-180" />
+            <span className="truncate text-ink-soft">{categoryLabel(post.category, locale)}</span>
           </nav>
 
           <div className="mt-6 max-w-[860px]">
             <div className="flex flex-wrap items-center gap-3">
-              <CategoryPill category={post.category} solid />
+              <CategoryPill category={categoryLabel(post.category, locale)} solid />
               <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-ink-muted">
-                <Clock size={13} /> {post.minutes} min read
+                <Clock size={13} /> {post.minutes} {isAr ? 'دقائق قراءة' : 'min read'}
               </span>
             </div>
             <h1 className="h-display mt-4 text-[34px] leading-[1.12] sm:text-[42px] lg:text-[46px]">
@@ -160,9 +169,9 @@ function PostView({ post }: { post: Post }) {
                   DT
                 </span>
                 <div>
-                  <p className="text-[14px] font-bold text-ink">DocTrim Team</p>
+                  <p className="text-[14px] font-bold text-ink">{isAr ? 'فريق DocTrim' : 'DocTrim Team'}</p>
                   <p className="text-[12.5px] text-ink-muted">
-                    <time dateTime={post.date}>{formatDateLong(post.date)}</time>
+                    <time dateTime={post.date}>{formatDateLong(post.date, locale)}</time>
                   </p>
                 </div>
               </div>
@@ -172,7 +181,7 @@ function PostView({ post }: { post: Post }) {
                   href={`https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(shareUrl)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Share on X"
+                  aria-label={isAr ? 'شارك على X' : 'Share on X'}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-ink-soft transition-colors hover:border-brand/40 hover:text-brand"
                 >
                   <Twitter size={15} />
@@ -181,7 +190,7 @@ function PostView({ post }: { post: Post }) {
                   href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Share on LinkedIn"
+                  aria-label={isAr ? 'شارك على LinkedIn' : 'Share on LinkedIn'}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-ink-soft transition-colors hover:border-brand/40 hover:text-brand"
                 >
                   <Linkedin size={15} />
@@ -192,7 +201,7 @@ function PostView({ post }: { post: Post }) {
                   className="inline-flex h-9 items-center gap-1.5 rounded-full border border-line bg-white px-3 text-[13px] font-semibold text-ink-soft transition-colors hover:border-brand/40 hover:text-brand"
                 >
                   {copied ? <Check size={14} /> : <Link2 size={14} />}
-                  {copied ? 'Copied' : 'Copy link'}
+                  {copied ? (isAr ? 'تم النسخ' : 'Copied') : isAr ? 'انسخ الرابط' : 'Copy link'}
                 </button>
               </div>
             </div>
@@ -205,18 +214,18 @@ function PostView({ post }: { post: Post }) {
         <div className="grid gap-12 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-16">
           {/* TOC */}
           {toc.length > 1 && (
-            <nav className="hidden lg:block" aria-label="On this page">
+            <nav className="hidden lg:block" aria-label={isAr ? 'في هذه الصفحة' : 'On this page'}>
               <div className="sticky top-28">
                 <p className="mb-3 text-[11px] font-bold uppercase tracking-wide text-ink-muted">
-                  On this page
+                  {isAr ? 'في هذه الصفحة' : 'On this page'}
                 </p>
-                <ul className="space-y-1 border-l border-line">
+                <ul className="space-y-1 border-s border-line">
                   {toc.map((item) => (
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
-                        className={`-ml-px block border-l py-1 pl-3 text-[13px] leading-snug transition-colors ${
-                          item.level === 3 ? 'pl-5 text-[12.5px]' : ''
+                        className={`-ms-px block border-s py-1 ps-3 text-[13px] leading-snug transition-colors ${
+                          item.level === 3 ? 'ps-5 text-[12.5px]' : ''
                         } ${
                           activeId === item.id
                             ? 'border-brand font-semibold text-brand'
@@ -229,15 +238,17 @@ function PostView({ post }: { post: Post }) {
                   ))}
                 </ul>
                 <div className="mt-6 rounded-lg border border-line bg-surface p-3">
-                  <p className="text-[12px] font-bold uppercase tracking-wide text-ink-muted">In a hurry?</p>
+                  <p className="text-[12px] font-bold uppercase tracking-wide text-ink-muted">
+                    {isAr ? 'مستعجل؟' : 'In a hurry?'}
+                  </p>
                   <p className="mt-1 text-[13px] leading-snug text-ink-soft">
-                    Skip to the tool and get the file done.
+                    {isAr ? 'انتقل مباشرة إلى الأداة وأنجز ملفك.' : 'Skip to the tool and get the file done.'}
                   </p>
                   <Link
-                    to={tool ? `/${tool.slug}` : '/pdf-tools'}
+                    to={tool ? href(`/${tool.slug}`) : href('/pdf-tools')}
                     className="mt-2 inline-flex items-center gap-1 text-[13px] font-semibold text-brand hover:underline"
                   >
-                    {tool ? tool.name : 'All PDF tools'} <ArrowRight size={13} />
+                    {tool ? toolName(tool) : isAr ? 'كل أدوات PDF' : 'All PDF tools'} <ArrowRight size={13} className="rtl:rotate-180" />
                   </Link>
                 </div>
               </div>
@@ -267,13 +278,15 @@ function PostView({ post }: { post: Post }) {
               ref={articleRef}
               onClick={onArticleClick}
               className="dt-article max-w-[720px]"
-              dangerouslySetInnerHTML={{ __html: html }}
+              dangerouslySetInnerHTML={{ __html: articleHtml }}
             />
 
             {/* Tags */}
             {post.tags.length > 0 && (
               <div className="mt-10 flex flex-wrap items-center gap-2 border-t border-line pt-6">
-                <span className="text-[12px] font-bold uppercase tracking-wide text-ink-muted">Tags</span>
+                <span className="text-[12px] font-bold uppercase tracking-wide text-ink-muted">
+                  {isAr ? 'الوسوم' : 'Tags'}
+                </span>
                 {post.tags.map((t) => (
                   <span key={t} className="rounded-full bg-surface px-2.5 py-1 text-[12.5px] text-ink-soft">
                     {t}
@@ -289,13 +302,13 @@ function PostView({ post }: { post: Post }) {
                 {tool && <ToolIcon icon={tool.icon} color={tool.color} size={44} radius={11} />}
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-bold uppercase tracking-wide text-ink-muted">
-                    Do it in your browser
+                    {isAr ? 'أنجزها في متصفحك' : 'Do it in your browser'}
                   </p>
                   <p className="mt-1 text-[16px] font-bold text-ink">
-                    {tool ? tool.name : 'All DocTrim PDF tools'}
+                    {tool ? toolName(tool) : isAr ? 'كل أدوات DocTrim' : 'All DocTrim PDF tools'}
                   </p>
                   <p className="mt-0.5 text-[13.5px] text-ink-muted">
-                    {tool ? tool.desc : 'Compress, merge, convert and edit — free, no sign-up.'}
+                    {tool ? toolDesc(tool) : isAr ? 'ضغط، دمج، تحويل وتعديل — مجاناً وبدون تسجيل.' : 'Compress, merge, convert and edit — free, no sign-up.'}
                   </p>
                 </div>
                 <Link to={tool ? `/${tool.slug}` : '/pdf-tools'} className="btn-primary btn-md shrink-0">
@@ -364,7 +377,7 @@ function PostView({ post }: { post: Post }) {
           <div className="container-x py-12 lg:py-16">
             <Reveal>
               <div className="flex flex-wrap items-end justify-between gap-3">
-                <h2 className="h-display text-2xl lg:text-3xl">Keep reading</h2>
+                <h2 className="h-display text-2xl lg:text-3xl">{isAr ? 'اقرأ أيضاً' : 'Keep reading'}</h2>
                 <Link to="/blog" className="dt-link-arrow inline-flex items-center gap-1 text-[14px] font-semibold text-brand">
                   All guides
                   <span aria-hidden>

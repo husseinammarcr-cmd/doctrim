@@ -10,6 +10,7 @@ import { api } from '../../lib/api'
 import { saveBlob } from '../../lib/download'
 import { formatSize } from '../../lib/pdf/engine'
 import { track } from '../../lib/analytics'
+import { useI18n } from '../../i18n'
 
 const inputCls = 'w-full rounded border border-line bg-white px-3 py-2 text-[14px] text-ink focus:border-brand focus:outline-none'
 
@@ -28,6 +29,7 @@ function outName(tool: Tool, file: File): string {
 }
 
 export default function ServerToolRunner({ tool }: { tool: Tool }) {
+  const { isAr, t, toolName, toolDesc } = useI18n()
   const [file, setFile] = useState<File | null>(null)
   const [password, setPassword] = useState('')
   const [lang, setLang] = useState('eng')
@@ -82,17 +84,17 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
     <div className="bg-surface/60 min-h-[70vh]">
       <div className="container-x py-10">
         <Link to="/pdf-tools" className="inline-flex items-center gap-1 text-[14px] font-semibold text-ink-muted hover:text-brand">
-          <ArrowLeft size={15} /> All tools
+          <ArrowLeft size={15} className="rtl:rotate-180" /> {t('nav.allTools', 'All tools')}
         </Link>
         <div className="mt-4 flex items-center gap-4">
           <ToolIcon icon={tool.icon} color={tool.color} size={52} radius={13} />
           <div>
-            <h1 className="text-3xl font-bold text-ink">{tool.name}</h1>
-            <p className="mt-0.5 text-[15px] text-ink-muted">{tool.desc}</p>
+            <h1 className="text-3xl font-bold text-ink">{toolName(tool)}</h1>
+            <p className="mt-0.5 text-[15px] text-ink-muted">{toolDesc(tool)}</p>
           </div>
         </div>
         <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-[13px] font-semibold text-brand">
-          <Server size={14} /> Securely processed on the DocTrim server, then deleted.
+          <Server size={14} /> {isAr ? 'تُعالج بأمان على سيرفر DocTrim ثم تُحذف.' : 'Securely processed on the DocTrim server, then deleted.'}
         </p>
 
         <div className="card mt-6 p-6 sm:p-8">
@@ -114,21 +116,23 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
               {needsPassword && (
                 <div className="mt-4 max-w-[420px]">
                   <label className="mb-1 block text-[13px] font-semibold text-ink-soft">
-                    {tool.slug === 'protect-pdf' ? 'Set a password' : 'Enter the password'}
+                    {tool.slug === 'protect-pdf' ? (isAr ? 'عيّن كلمة مرور' : 'Set a password') : isAr ? 'أدخل كلمة المرور' : 'Enter the password'}
                   </label>
-                  <input type="password" className={inputCls} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+                  <input type="password" className={inputCls} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={isAr ? 'كلمة المرور' : 'Password'} />
                 </div>
               )}
 
               {isOcr && (
                 <div className="mt-4 max-w-[420px]">
-                  <label className="mb-1 block text-[13px] font-semibold text-ink-soft">Document language</label>
+                  <label className="mb-1 block text-[13px] font-semibold text-ink-soft">
+                    {isAr ? 'لغة المستند' : 'Document language'}
+                  </label>
                   <select className={inputCls} value={lang} onChange={(e) => setLang(e.target.value)}>
-                    <option value="eng">English</option>
-                    <option value="ara">Arabic</option>
-                    <option value="fra">French</option>
-                    <option value="deu">German</option>
-                    <option value="spa">Spanish</option>
+                    <option value="eng">{isAr ? 'الإنجليزية' : 'English'}</option>
+                    <option value="ara">{isAr ? 'العربية' : 'Arabic'}</option>
+                    <option value="fra">{isAr ? 'الفرنسية' : 'French'}</option>
+                    <option value="deu">{isAr ? 'الألمانية' : 'German'}</option>
+                    <option value="spa">{isAr ? 'الإسبانية' : 'Spanish'}</option>
                   </select>
                 </div>
               )}
@@ -137,9 +141,9 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <button onClick={process} disabled={!canProcess} className="btn-primary btn-lg disabled:opacity-50">
-                  {processing ? (<><Loader2 size={18} className="animate-spin" /> Processing…</>) : (<><Download size={18} /> {tool.name}</>)}
+                  {processing ? (<><Loader2 size={18} className="animate-spin" /> {t('tool.processingLabel', 'Processing…')}</>) : (<><Download size={18} /> {toolName(tool)}</>)}
                 </button>
-                <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> Start over</button>
+                <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> {t('tool.startOver', 'Start over')}</button>
               </div>
             </motion.div>
           )}
@@ -161,11 +165,11 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
               >
                 <ShieldCheck size={30} />
               </motion.div>
-              <h2 className="mt-4 text-2xl font-bold text-ink">Done!</h2>
+              <h2 className="mt-4 text-2xl font-bold text-ink">{t('tool.done', 'Done!')}</h2>
               <p className="mt-2 text-[15px] text-ink-soft">{result.filename} · {formatSize(result.blob.size)}</p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
-                <button onClick={download} className="btn-primary btn-lg"><Download size={18} /> Download</button>
-                <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> Start over</button>
+                <button onClick={download} className="btn-primary btn-lg"><Download size={18} /> {t('tool.download', 'Download')}</button>
+                <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> {t('tool.startOver', 'Start over')}</button>
               </div>
             </motion.div>
           )}

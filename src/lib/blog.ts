@@ -34,6 +34,13 @@ const FILES = import.meta.glob('../content/blog/*.md', {
   eager: true,
 }) as Record<string, string>
 
+/** Arabic translations live in their own folder, one file per English slug. */
+const FILES_AR = import.meta.glob('../content/blog/ar/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>
+
 /* ----------------------------- frontmatter ----------------------------- */
 
 type Front = Record<string, string | string[] | boolean>
@@ -106,20 +113,20 @@ export function readingMinutes(markdown: string): number {
   return Math.max(1, Math.round(words / 220))
 }
 
-export function formatDate(iso: string): string {
+export function formatDate(iso: string, locale: 'en' | 'ar' = 'en'): string {
   const [y, m, d] = iso.split('-').map(Number)
   if (!y || !m || !d) return iso
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+  return new Date(y, m - 1, d).toLocaleDateString(locale === 'ar' ? 'ar-IQ-u-nu-latn' : 'en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   })
 }
 
-export function formatDateLong(iso: string): string {
+export function formatDateLong(iso: string, locale: 'en' | 'ar' = 'en'): string {
   const [y, m, d] = iso.split('-').map(Number)
   if (!y || !m || !d) return iso
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+  return new Date(y, m - 1, d).toLocaleDateString(locale === 'ar' ? 'ar-IQ-u-nu-latn' : 'en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
@@ -161,7 +168,44 @@ export const POSTS: Post[] = Object.entries(FILES)
   .map(([path, raw]) => toPost(path, raw))
   .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.title.localeCompare(b.title)))
 
+export const POSTS_AR: Post[] = Object.entries(FILES_AR)
+  .map(([path, raw]) => toPost(path, raw))
+  .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : a.title.localeCompare(b.title)))
+
 export const CATEGORIES: string[] = Array.from(new Set(POSTS.map((p) => p.category))).sort()
+
+/** Posts for a locale. Arabic falls back to English only if a translation is missing. */
+export function postsFor(locale: 'en' | 'ar'): Post[] {
+  return locale === 'ar' && POSTS_AR.length ? POSTS_AR : POSTS
+}
+
+export function getPostIn(locale: 'en' | 'ar', slug: string | undefined): Post | undefined {
+  if (!slug) return undefined
+  return postsFor(locale).find((p) => p.slug === slug)
+}
+
+export function relatedIn(locale: 'en' | 'ar', post: Post, count = 3): Post[] {
+  const all = postsFor(locale)
+  const score = (p: Post) => (p.tool && p.tool === post.tool ? 2 : 0) + (p.category === post.category ? 1 : 0)
+  return all
+    .filter((p) => p.slug !== post.slug)
+    .map((p) => ({ p, s: score(p) }))
+    .sort((a, b) => b.s - a.s || (a.p.date < b.p.date ? 1 : -1))
+    .slice(0, count)
+    .map(({ p }) => p)
+}
+
+/** Arabic category labels for the English category keys. */
+export const CATEGORY_AR: Record<string, string> = {
+  'How-to': 'إرشادات عملية',
+  Guides: 'أدلة',
+  Privacy: 'الخصوصية',
+  Standards: 'المعايير',
+}
+
+export function categoryLabel(category: string, locale: 'en' | 'ar' = 'en'): string {
+  return locale === 'ar' ? CATEGORY_AR[category] ?? category : category
+}
 
 export function getPost(slug: string | undefined): Post | undefined {
   if (!slug) return undefined
@@ -183,4 +227,10 @@ export function relatedPosts(post: Post, count = 3): Post[] {
 export function adjacentPosts(post: Post): { newer?: Post; older?: Post } {
   const i = POSTS.findIndex((p) => p.slug === post.slug)
   return { newer: POSTS[i - 1], older: POSTS[i + 1] }
+}
+
+export function adjacentIn(locale: 'en' | 'ar', post: Post): { newer?: Post; older?: Post } {
+  const all = postsFor(locale)
+  const i = all.findIndex((p) => p.slug === post.slug)
+  return { newer: all[i - 1], older: all[i + 1] }
 }
