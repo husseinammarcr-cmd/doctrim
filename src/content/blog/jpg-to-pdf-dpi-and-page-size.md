@@ -27,7 +27,7 @@ Working backwards, the usual targets:
 
 For ordinary text, 300 dpi is the honest ceiling of what most office printers and print shops can use. Above that you are storing detail nobody will see, at four times the file size.
 
-## "Fit" and "A4" are different pagers
+## "Fit" and "A4" produce different page sizes
 
 A JPG-to-PDF converter has to answer one question: should the page shrink to the photo, or the photo fit the page?
 
