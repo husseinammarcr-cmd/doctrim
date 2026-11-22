@@ -49,6 +49,82 @@
   }
 }
 
+/* hero illustration: cursor travels to the "Hello!" text and clicks it.
+   Resting position and look are unchanged — motion only. */
+.dt-cursor-move {
+  animation: dt-cursor-move 5.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
+.dt-cursor-press {
+  transform-box: fill-box;
+  transform-origin: 0 0;
+  animation: dt-cursor-press 5.6s ease-in-out infinite;
+  will-change: transform;
+}
+.dt-click-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: dt-click-ring 5.6s ease-out infinite;
+}
+
+@keyframes dt-cursor-move {
+  0%, 10% {
+    transform: translate(0, 0);
+  }
+  14% {
+    transform: translate(-7px, -8px); /* small anticipation */
+    animation-timing-function: cubic-bezier(0.45, 0, 0.15, 1);
+  }
+  36% {
+    transform: translate(-208px, -121px); /* tip lands on "Hello!" */
+  }
+  60% {
+    transform: translate(-208px, -121px);
+    animation-timing-function: cubic-bezier(0.42, 0, 0.55, 1);
+  }
+  82%, 100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes dt-cursor-press {
+  0%, 36% {
+    transform: scale(1);
+  }
+  39% {
+    transform: scale(0.86);
+  }
+  44%, 100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes dt-click-ring {
+  0%, 35% {
+    opacity: 0;
+    transform: scale(0.25);
+  }
+  40% {
+    opacity: 0.85;
+    transform: scale(1.15);
+  }
+  58%, 100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dt-cursor-move,
+  .dt-cursor-press {
+    animation: none;
+  }
+  .dt-click-ring {
+    display: none;
+  }
+}
+
 /* thin scrollbar for tool panels */
 .scroll-thin::-webkit-scrollbar { width: 8px; height: 8px; }
 .scroll-thin::-webkit-scrollbar-thumb { background: #d9d9de; border-radius: 8px; }

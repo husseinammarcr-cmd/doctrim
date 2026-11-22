@@ -136,9 +136,14 @@ export default function HeroIllustration() {
         <path d="M200 500 l9 9 M209 500 l-9 9" />
       </g>
 
-      {/* cursor arrow */}
+      {/* cursor arrow — glides to the "Hello!" text, clicks it, returns */}
       <g transform="translate(455,430)">
-        <path d="M0 0 L0 30 L8 22 L13 34 L18 32 L13 20 L23 20z" fill="#1A1A1A" stroke="#fff" strokeWidth={1.6} />
+        <g className="dt-cursor-move">
+          <g className="dt-cursor-press">
+            <path d="M0 0 L0 30 L8 22 L13 34 L18 32 L13 20 L23 20z" fill="#1A1A1A" stroke="#fff" strokeWidth={1.6} />
+          </g>
+          <circle className="dt-click-ring" cx={2} cy={2} r={9} fill="none" stroke="#0055FF" strokeWidth={1.6} aria-hidden="true" />
+        </g>
       </g>
     </svg>
   )
