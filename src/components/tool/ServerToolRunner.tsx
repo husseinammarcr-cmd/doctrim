@@ -45,7 +45,7 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
   const { isAr, t, toolName, toolDesc } = useI18n()
   const [file, setFile] = useState<File | null>(null)
   const [password, setPassword] = useState('')
-  const [lang, setLang] = useState('eng')
+  const [lang, setLang] = useState('ara+eng')
   const [processing, setProcessing] = useState(false)
   const [result, setResult] = useState<{ blob: Blob; filename: string } | null>(null)
   const [error, setError] = useState('')
@@ -147,11 +147,12 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
                     {isAr ? 'لغة المستند' : 'Document language'}
                   </label>
                   <select className={inputCls} value={lang} onChange={(e) => setLang(e.target.value)}>
-                    <option value="eng">{isAr ? 'الإنجليزية' : 'English'}</option>
-                    <option value="ara">{isAr ? 'العربية' : 'Arabic'}</option>
-                    <option value="fra">{isAr ? 'الفرنسية' : 'French'}</option>
-                    <option value="deu">{isAr ? 'الألمانية' : 'German'}</option>
-                    <option value="spa">{isAr ? 'الإسبانية' : 'Spanish'}</option>
+                    <option value="ara+eng">{isAr ? 'عربي + إنجليزي (موصى به)' : 'Arabic + English (recommended)'}</option>
+                    <option value="ara">{isAr ? 'عربي فقط' : 'Arabic only'}</option>
+                    <option value="eng">{isAr ? 'إنجليزي فقط' : 'English only'}</option>
+                    <option value="fra+eng">{isAr ? 'فرنسي + إنجليزي' : 'French + English'}</option>
+                    <option value="deu+eng">{isAr ? 'ألماني + إنجليزي' : 'German + English'}</option>
+                    <option value="spa+eng">{isAr ? 'إسباني + إنجليزي' : 'Spanish + English'}</option>
                   </select>
                 </div>
               )}
