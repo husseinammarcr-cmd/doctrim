@@ -36,7 +36,7 @@ const COLORS = ['#111827', '#e11d48', '#2563eb', '#16a34a', '#f59e0b', '#7c3aed'
 
 export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fileName: string }) {
   const hostRef = useRef<HTMLDivElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const canvasHostRef = useRef<HTMLDivElement>(null)
   const docRef = useRef<PdfJsDoc | null>(null)
   const dragRef = useRef<{ id: string; startX: number; startY: number; ox: number; oy: number } | null>(null)
   const drawRef = useRef<{ x: number; y: number } | null>(null)
@@ -95,8 +95,8 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
         canvas.style.width = '100%'
         canvas.style.height = 'auto'
         canvas.style.display = 'block'
-        canvasRef.current = canvas
-        if (hostRef.current) hostRef.current.replaceChildren(canvas)
+        // append into a dedicated host that React never renders children into
+        if (canvasHostRef.current) canvasHostRef.current.replaceChildren(canvas)
         setPxPerPt(targetW / base.width)
         setPageSize({ w: base.width, h: base.height })
         setLoading(false)
@@ -442,6 +442,8 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
             </div>
           )}
 
+          {/* canvas lives here — React never renders children into this node */}
+          <div ref={canvasHostRef} />
           {!loading && (
             <div className="pointer-events-none absolute inset-0">
               {pageItems.map((it) => {
