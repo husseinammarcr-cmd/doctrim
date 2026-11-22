@@ -1310,12 +1310,14 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
                           className="w-full resize-none overflow-hidden rounded-[2px] border-[1.5px] border-brand px-1 py-0.5 shadow-[0_8px_24px_rgba(0,85,255,.18)] outline-none"
                           style={{
                             ...editorTextStyle,
-                            height:
+                            height: Math.max(
                               Math.max(1, editorLayout?.lines.length || 1) *
                                 (editorSource?.size || style.size) *
                                 (editorSource?.lineHeight || 1.25) *
                                 scale +
-                              12,
+                                12,
+                              editing?.kind === 'block' ? editing.block.h * scale + 8 : 0,
+                            ),
                           }}
                         />
                         <div className="absolute -bottom-9 left-0 z-40 flex items-center gap-1 rounded-md border border-line bg-white p-1 shadow-lift">
