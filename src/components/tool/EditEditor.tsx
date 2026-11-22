@@ -54,6 +54,7 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
   const [history, setHistory] = useState<Record<number, Item[]>[]>([])
   const [pendingInk, setPendingInk] = useState<[number, number][] | null>(null)
   const [pendingRect, setPendingRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null)
+  const [focusId, setFocusId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -128,6 +129,7 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
     const item: TextItem = { id: uid(), type: 'text', x, y, text: 'Text', size: fontSize, color }
     commit(page, [...pageItems, item])
     setSelected(item.id)
+    setFocusId(item.id)
     setMode('select')
   }
 
@@ -460,10 +462,25 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
                       <span
                         contentEditable
                         suppressContentEditableWarning
+                        ref={(el) => {
+                          if (el && focusId === it.id) {
+                            el.focus()
+                            const sel = window.getSelection()
+                            const range = document.createRange()
+                            range.selectNodeContents(el)
+                            sel?.removeAllRanges()
+                            sel?.addRange(range)
+                            setFocusId(null)
+                          }
+                        }}
                         onPointerDown={(e) => e.stopPropagation()}
-                        onBlur={(e) =>
-                          commit(page, pageItems.map((i) => (i.id === it.id ? { ...it, text: e.currentTarget.innerText } : i)))
-                        }
+                        onInput={(e) => {
+                          const text = e.currentTarget.innerText
+                          setItems((prev) => ({
+                            ...prev,
+                            [page]: (prev[page] || []).map((i) => (i.id === it.id ? { ...it, text } : i)),
+                          }))
+                        }}
                         className={`block whitespace-pre-wrap outline-none ${isSel ? 'ring-1 ring-brand' : ''}`}
                         style={{ minWidth: 12, padding: 1 }}
                       >
