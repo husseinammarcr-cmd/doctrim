@@ -309,6 +309,12 @@ meta['ar'] = {
 }
 
 const AR_STATIC = [
+  {
+    key: 'blog',
+    title: 'مدونة DocTrim — أدلة PDF بالعربية',
+    desc: 'أدلة عملية بالعربية عن حجم ملفات PDF وحجم الصفحات وحدود التعديل والحجب والتوقيع الإلكتروني — مكتوبة من فريق DocTrim.',
+    image: '/og/ar-blog.png',
+  },
   { key: 'pdf-tools', title: arCopy.meta['tools.title'], desc: arCopy.meta['tools.desc'], image: '/og/ar-pdf-tools.png' },
   { key: 'help', title: arCopy.meta['help.title'], desc: arCopy.meta['help.desc'], image: '/og/ar-help.png' },
   { key: 'privacy', title: arCopy.meta['privacy.title'], desc: arCopy.meta['privacy.desc'], image: '/og/ar-privacy.png' },

@@ -70,6 +70,7 @@ const url = (loc, { priority = '0.6', changefreq = 'monthly', lastmod, alt } = {
 const BILINGUAL = [
   { en: '/', ar: '/ar', loc: '', priority: '1.0' },
   { en: '/pdf-tools', ar: '/ar/pdf-tools', loc: 'pdf-tools', priority: '0.9' },
+  { en: '/blog', ar: '/ar/blog', loc: 'blog', priority: '0.9' },
   { en: '/help', ar: '/ar/help', loc: 'help', priority: '0.5' },
   { en: '/privacy', ar: '/ar/privacy', loc: 'privacy', priority: '0.3' },
 ]
