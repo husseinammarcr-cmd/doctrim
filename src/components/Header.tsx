@@ -112,6 +112,10 @@ export default function Header() {
               </Link>
             ))}
             <Link to="/pdf-tools" className="rounded px-2 py-2 text-[15px] font-semibold text-brand">All PDF tools</Link>
+            <div className="mt-1 flex items-center gap-4 border-t border-line px-2 pt-3 text-[14px] font-semibold text-ink-soft">
+              <Link to="/about" className="hover:text-brand">About</Link>
+              <Link to="/help" className="hover:text-brand">Help</Link>
+            </div>
             <div className="mt-2 px-2">
               <Link to="/pdf-tools" className="btn-primary btn-md w-full">
                 All PDF Tools — Free

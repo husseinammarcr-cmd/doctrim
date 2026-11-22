@@ -15,8 +15,8 @@ const COLS: { title: string; links: { label: string; to: string }[] }[] = [
   {
     title: 'Company',
     links: [
-      { label: 'About', to: '/' },
-      { label: 'Help', to: '/' },
+      { label: 'About', to: '/about' },
+      { label: 'Help', to: '/help' },
       { label: 'Blog', to: '/' },
       { label: 'Careers', to: '/' },
       { label: 'PDF Statistics', to: '/' },
@@ -49,7 +49,7 @@ export default function Footer() {
           <div>
             <Logo />
             <p className="mt-3 text-[15px] text-ink-soft">We make PDF easy.</p>
-            <p className="mt-2 text-[13px] text-ink-muted">Free forever. No account, no subscription.</p>
+            <p className="mt-2 text-[13px] text-ink-muted">Free forever. No account, no subscription — supported by ads.</p>
           </div>
           {COLS.map((col) => (
             <div key={col.title}>

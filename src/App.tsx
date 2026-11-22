@@ -6,6 +6,9 @@ import Home from './pages/Home'
 import AllTools from './pages/AllTools'
 import ToolPage from './pages/ToolPage'
 
+import About from './pages/About'
+import Help from './pages/Help'
+
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
   useEffect(() => {
@@ -30,6 +33,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/pdf-tools" element={<AllTools />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/help" element={<Help />} />
           <Route path="/:slug" element={<ToolPage />} />
         </Routes>
       </main>
