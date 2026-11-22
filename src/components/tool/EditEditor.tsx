@@ -194,6 +194,7 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
       setSelected(null)
       return
     }
+    e.preventDefault() // keep the pointer from moving text focus / selecting
     if (mode === 'text') {
       addText(e.clientX, e.clientY)
       return
@@ -464,12 +465,16 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
                         suppressContentEditableWarning
                         ref={(el) => {
                           if (el && focusId === it.id) {
-                            el.focus()
-                            const sel = window.getSelection()
-                            const range = document.createRange()
-                            range.selectNodeContents(el)
-                            sel?.removeAllRanges()
-                            sel?.addRange(range)
+                            // defer: the click that created this box would otherwise
+                            // steal focus back to <body> right after mount
+                            window.setTimeout(() => {
+                              el.focus()
+                              const sel = window.getSelection()
+                              const range = document.createRange()
+                              range.selectNodeContents(el)
+                              sel?.removeAllRanges()
+                              sel?.addRange(range)
+                            }, 0)
                             setFocusId(null)
                           }
                         }}
