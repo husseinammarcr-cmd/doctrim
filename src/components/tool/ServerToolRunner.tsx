@@ -6,7 +6,7 @@ import Dropzone from '../Dropzone'
 import ToolIcon from '../ToolIcon'
 import { EASE_OUT } from '../../lib/motion'
 import type { Tool } from '../../lib/tools'
-import { api } from '../../lib/api'
+import { postWithProgress } from '../../lib/api'
 import { saveBlob } from '../../lib/download'
 import { formatSize } from '../../lib/pdf/engine'
 import { track } from '../../lib/analytics'
@@ -28,6 +28,19 @@ function outName(tool: Tool, file: File): string {
   }
 }
 
+const ENDPOINT: Record<string, string> = {
+  'protect-pdf': '/api/protect',
+  'unlock-pdf': '/api/unlock',
+  'pdf-to-word': '/api/pdf-to-word',
+  'pdf-to-excel': '/api/pdf-to-excel',
+  'pdf-to-ppt': '/api/pdf-to-ppt',
+  'flatten-pdf': '/api/flatten-pdf',
+  'pdf-ocr': '/api/ocr',
+  'word-to-pdf': '/api/office-to-pdf',
+  'excel-to-pdf': '/api/office-to-pdf',
+  'ppt-to-pdf': '/api/office-to-pdf',
+}
+
 export default function ServerToolRunner({ tool }: { tool: Tool }) {
   const { isAr, t, toolName, toolDesc } = useI18n()
   const [file, setFile] = useState<File | null>(null)
@@ -37,6 +50,8 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
   const [result, setResult] = useState<{ blob: Blob; filename: string } | null>(null)
   const [error, setError] = useState('')
   const [slow, setSlow] = useState(false)
+  const [note, setNote] = useState<string | null>(null)
+  const [pct, setPct] = useState(0)
 
   const needsPassword = tool.slug === 'protect-pdf' || tool.slug === 'unlock-pdf'
   const isOcr = tool.slug === 'pdf-ocr'
@@ -47,29 +62,23 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
 
   const process = async () => {
     if (!file) return
-    setProcessing(true); setError(''); setResult(null); setSlow(false)
-    // conversions can legitimately take a minute; say so instead of looking frozen
+    setProcessing(true); setError(''); setResult(null); setSlow(false); setNote(null); setPct(0)
     const slowTimer = window.setTimeout(() => setSlow(true), 20000)
     const started = performance.now()
     track('file_added', { t: tool.slug, v: Math.round(file.size / 1024) })
     track('run_start', { t: tool.slug })
     try {
-      let blob: Blob
-      switch (tool.slug) {
-        case 'protect-pdf': blob = await api.protect(file, password); break
-        case 'unlock-pdf': blob = await api.unlock(file, password); break
-        case 'pdf-to-word': blob = await api.pdfToWord(file); break
-        case 'pdf-to-excel': blob = await api.pdfToExcel(file); break
-        case 'pdf-to-ppt': blob = await api.pdfToPpt(file); break
-        case 'flatten-pdf': blob = await api.flattenPdf(file); break
-        case 'pdf-ocr': blob = await api.ocr(file, lang); break
-        default: blob = await api.officeToPdf(file)
-      }
+      const fields: Record<string, string> = {}
+      if (needsPassword) fields.password = password
+      if (isOcr) fields.lang = lang
+
+      const { blob, note: serverNote } = await postWithProgress(ENDPOINT[tool.slug] ?? '/api/office-to-pdf', file, fields, setPct)
+      setNote(serverNote)
       setResult({ blob, filename: outName(tool, file) })
       track('run_ok', { t: tool.slug, v: Math.round(performance.now() - started) })
     } catch (e: any) {
       const raw = String(e?.message || '')
-      const network = /load failed|failed to fetch|networkerror|network error|aborted/i.test(raw)
+      const network = /load failed|failed to fetch|networkerror|network error|aborted|timeout/i.test(raw)
       const msg = network
         ? isAr
           ? 'تعذّر الوصول إلى السيرفر. تحقّق من اتصالك بالإنترنت ثم أعد المحاولة.'
@@ -148,6 +157,13 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
               )}
 
               {error && <p className="mt-4 rounded bg-red-50 px-4 py-3 text-[14px] text-accent-red">{error}</p>}
+              {tool.slug === 'pdf-to-word' && !error && (
+                <p className="mt-4 rounded bg-brand-lighter px-4 py-3 text-[13px] leading-relaxed text-ink-soft">
+                  {isAr
+                    ? 'إن كان ملفك ممسوحاً ضوئياً (صورة) فالناتج سيكون صور الصفحات دون نص قابل للتعديل — استخدم أداة OCR أولاً للحصول على نص.'
+                    : 'If your PDF is a scan (page images), the Word file will contain page images, not editable text — run PDF OCR first for real text.'}
+                </p>
+              )}
               {processing && slow && (
                 <p className="mt-3 text-[13px] text-ink-muted">
                   {isAr
@@ -158,7 +174,20 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <button onClick={process} disabled={!canProcess} className="btn-primary btn-lg disabled:opacity-50">
-                  {processing ? (<><Loader2 size={18} className="animate-spin" /> {t('tool.processingLabel', 'Processing…')}</>) : (<><Download size={18} /> {toolName(tool)}</>)}
+                  {processing ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      {pct < 99
+                        ? isAr
+                          ? `رفع الملف… ${pct}%`
+                          : `Uploading… ${pct}%`
+                        : isAr
+                          ? 'جاري التحويل…'
+                          : 'Converting…'}
+                    </>
+                  ) : (
+                    <><Download size={18} /> {toolName(tool)}</>
+                  )}
                 </button>
                 <button onClick={reset} className="btn-ghost btn-lg"><RefreshCw size={16} /> {t('tool.startOver', 'Start over')}</button>
               </div>
@@ -183,6 +212,13 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
                 <ShieldCheck size={30} />
               </motion.div>
               <h2 className="mt-4 text-2xl font-bold text-ink">{t('tool.done', 'Done!')}</h2>
+              {note === 'scanned' && (
+                <p className="mx-auto mt-3 max-w-[520px] rounded bg-brand-lighter px-4 py-3 text-[13px] leading-relaxed text-ink-soft">
+                  {isAr
+                    ? 'هذا الملف ممسوح ضوئياً، لذلك الناتج صور صفحات داخل Word. للحصول على نص قابل للتعديل استخدم أداة OCR على الملف نفسه.'
+                    : 'This PDF is a scan, so the Word file holds page images. Run PDF OCR on the same file to get editable text.'}
+                </p>
+              )}
               <p className="mt-2 text-[15px] text-ink-soft">{result.filename} · {formatSize(result.blob.size)}</p>
               <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <button onClick={download} className="btn-primary btn-lg"><Download size={18} /> {t('tool.download', 'Download')}</button>
