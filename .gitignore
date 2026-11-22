@@ -7,3 +7,4 @@ dist-ssr
 .env.*
 npm-debug.log*
 *.tsbuildinfo
+__pycache__/
