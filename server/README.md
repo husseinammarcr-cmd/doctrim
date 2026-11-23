@@ -57,7 +57,8 @@ uvicorn main:app --host 127.0.0.1 --port 8090
 | `DOCTRIM_RL_HEAVY_MIN` | 15 | heavy jobs (OCR, Office, compress…) per visitor per minute |
 | `DOCTRIM_RL_HEAVY_HOUR` | 200 | heavy jobs per visitor per hour |
 | `DOCTRIM_RL_LIGHT_MIN` | 120 | any request per visitor per minute |
-| `DOCTRIM_RL_CONCURRENCY` | 5 | heavy jobs running at once, server-wide |
+| `DOCTRIM_RL_CONCURRENCY` | 24 | requests accepted at once for heavy tools (the rest get an instant 429) |
+| `DOCTRIM_DOCX_WORKERS` | cores − 1 | processes that convert PDF → DOCX |
 | `DOCTRIM_RL_GLOBAL_MIN` | 120 | heavy jobs per minute for the whole box |
 | `DOCTRIM_RL_GLOBAL_DAY` | 6000 | heavy jobs per day for the whole box |
 
@@ -95,3 +96,17 @@ Manual use:
 Reads `TELEGRAM_BOT_TOKEN` from the environment (falls back to `~/.hermes/.env`)
 and pages `DOCTRIM_ALERT_CHAT`. Knobs: `DOCTRIM_MIN_FREE_GB`,
 `DOCTRIM_REMIND_SECS`, `DOCTRIM_CONFIRM`. Log: `/opt/doctrim/monitor.log`.
+
+## Why pdf-to-word runs in a process pool
+
+`pdf2docx` is pure Python, so a conversion holds the GIL: in a thread it pins one
+core and every other request queues behind it. Measured on this box before the
+pool: 50 simultaneous conversions took **38 s** (1.3 jobs/s) with 5 of 6 cores
+idle. After moving the conversion into a shared `ProcessPoolExecutor` (spawn,
+cores − 1 workers): **9.6 s** (5.2 jobs/s), same memory headroom.
+
+The pool is created lazily on the first conversion and lives for the life of the
+process. Warm single-file time is ~0.7 s; the first request after a restart pays
+~1 s extra for the spawn. `DOCTRIM_DOCX_WORKERS` overrides the worker count —
+keep it below the core count so OCR (`ocrmypdf`), Ghostscript and LibreOffice
+subprocesses still have CPU.

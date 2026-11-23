@@ -9,13 +9,17 @@ Run:  uvicorn main:app --host 127.0.0.1 --port 8090
 """
 from __future__ import annotations
 
+import asyncio
 import io
+import multiprocessing as mp
 import os
 import re
 import shutil
 import subprocess
 import tempfile
+import threading
 import uuid
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -69,6 +73,57 @@ async def _save(upload: UploadFile, d: Path) -> Path:
 
 def _cleanup(d: Path):
     shutil.rmtree(d, ignore_errors=True)
+
+
+# --- pdf-to-word conversion pool -------------------------------------------
+# pdf2docx is pure Python, so every conversion is bound by the GIL: one request
+# saturates one core no matter how many threads the app uses (measured: 50
+# simultaneous jobs took 38 s at 1.3 jobs/s while 5 of the 6 cores sat idle).
+# A conversion therefore runs in its own process; the pool is shared by every
+# request and sized below the core count so the subprocess tools (OCR, gs,
+# LibreOffice) still have room.
+_DOCX_POOL: ProcessPoolExecutor | None = None
+_DOCX_POOL_LOCK = threading.Lock()
+
+
+def _docx_worker(src: str, dest: str) -> None:
+    """Runs inside a pool process. Paths only — nothing else is pickled."""
+    from pdf2docx import Converter
+
+    cv = Converter(src)
+    try:
+        cv.convert(dest, multi_processing=False)
+    finally:
+        cv.close()
+
+
+def _docx_pool() -> ProcessPoolExecutor:
+    global _DOCX_POOL
+    if _DOCX_POOL is None:
+        with _DOCX_POOL_LOCK:
+            if _DOCX_POOL is None:
+                workers = int(os.getenv("DOCTRIM_DOCX_WORKERS", "0")) or max(
+                    1, (os.cpu_count() or 2) - 1
+                )
+                # spawn, not fork: forking a process that runs an event loop and
+                # worker threads is deprecated (and unsafe) on modern Python.
+                _DOCX_POOL = ProcessPoolExecutor(
+                    max_workers=workers, mp_context=mp.get_context("spawn")
+                )
+    return _DOCX_POOL
+
+
+async def _convert_docx(src: Path, dest: Path, timeout: float = 600.0) -> None:
+    loop = asyncio.get_running_loop()
+    fut = loop.run_in_executor(_docx_pool(), _docx_worker, str(src), str(dest))
+    try:
+        await asyncio.wait_for(fut, timeout)
+    except asyncio.TimeoutError:
+        raise HTTPException(504, "Conversion timed out")
+    except HTTPException:
+        raise
+    except Exception as exc:  # noqa: BLE001 - surfaced to the client as-is
+        raise HTTPException(500, f"Conversion failed: {exc}")
 
 
 def _run(cmd: list[str], timeout: int = 180):
@@ -218,7 +273,6 @@ async def pdf_to_word(file: UploadFile = File(...)):
     try:
         src = await _save(file, d)
         out = d / (src.stem + ".docx")
-        from pdf2docx import Converter
 
         def page_count() -> int:
             try:
@@ -246,22 +300,8 @@ async def pdf_to_word(file: UploadFile = File(...)):
             except Exception:
                 return False
 
-        # pdf2docx is single-threaded by default; pages are independent, so
-        # spreading them over a few cores cuts conversion time roughly 3x on this box.
-        workers = max(1, min(4, os.cpu_count() or 1))
-
-        def convert(src_path: Path, dest: Path) -> None:
-            cv = Converter(str(src_path))
-            try:
-                cv.convert(str(dest), multi_processing=workers > 1, cpu_count=workers)
-            except Exception:
-                # multi-processing can fail on odd page content; never lose the job
-                cv.convert(str(dest))
-            cv.close()
-
-        # Scanned PDFs carry full-resolution page images (300 dpi+), so pdf2docx
-        # emits a huge .docx (12 scanned pages ≈ 30 MB). Downsample those first;
-        # for mixed/text PDFs convert as-is and only retry when the result is big.
+        # The conversion itself runs in the shared process pool: pdf2docx is
+        # GIL-bound, so threads would serialise every request onto one core.
         scan_like = _looks_like_scan(src)
         pages = page_count()
 
@@ -274,7 +314,7 @@ async def pdf_to_word(file: UploadFile = File(...)):
 
         small_pdf = d / "downsampled.pdf"
         pre = scan_like and downsample(small_pdf, first_dpi)
-        convert(small_pdf if pre else src, out)
+        await _convert_docx(small_pdf if pre else src, out)
 
         # Still oversized? One more pass at a lower resolution, keep the smaller file.
         if out.exists() and out.stat().st_size > 20 * 1024 * 1024:
@@ -282,7 +322,7 @@ async def pdf_to_word(file: UploadFile = File(...)):
             retry_dpi = max(96, first_dpi - 40) if pre else 150
             if downsample(alt_pdf, retry_dpi):
                 alt = d / "alt.docx"
-                convert(alt_pdf, alt)
+                await _convert_docx(alt_pdf, alt)
                 if alt.exists() and alt.stat().st_size < out.stat().st_size:
                     alt.replace(out)
 

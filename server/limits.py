@@ -45,7 +45,10 @@ HEAVY_PATHS = {
 HEAVY_MIN = int(os.getenv("DOCTRIM_RL_HEAVY_MIN", "15"))
 HEAVY_HOUR = int(os.getenv("DOCTRIM_RL_HEAVY_HOUR", "200"))
 LIGHT_MIN = int(os.getenv("DOCTRIM_RL_LIGHT_MIN", "120"))
-MAX_INFLIGHT = int(os.getenv("DOCTRIM_RL_CONCURRENCY", "5"))
+# 5 conversion workers plus a short queue: a burst is served as 24
+# concurrent jobs (the rest get an instant "busy" instead of a dead tab), and
+# memory stays bounded because each in-flight request holds its upload in RAM.
+MAX_INFLIGHT = int(os.getenv("DOCTRIM_RL_CONCURRENCY", "24"))
 # Server-wide ceilings: whatever the identity of the caller — even a botnet with
 # thousands of addresses — this box never runs more than this per minute/day.
 GLOBAL_HEAVY_MIN = int(os.getenv("DOCTRIM_RL_GLOBAL_MIN", "120"))
