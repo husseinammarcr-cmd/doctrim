@@ -33,10 +33,11 @@ const SECTIONS: LegalSection[] = [
         </p>
         <p>
           <strong className="text-ink">Server-backed tools.</strong> A small number of tools (for
-          example Office conversion, OCR, and password protection) need processing on our server
+          example Office conversion, OCR, password protection and text editing) need processing on our server
           because browsers cannot do that work reliably. When you use one of those tools, the file is
           uploaded over HTTPS, processed, returned to you, and deleted from the server disk
-          immediately afterwards. We do not open, inspect, index, or share these files, and they are
+          immediately afterwards — a text-editing session that is abandoned is swept within 30
+          minutes. We do not open, inspect, index, or share these files, and they are
           never used to train anything.
         </p>
         <p>

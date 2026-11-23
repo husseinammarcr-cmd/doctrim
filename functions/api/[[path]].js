@@ -28,6 +28,10 @@ const ALLOWED = new Set([
   'ocr',
   'force-download',
   'analytics/collect',
+  'edit/analyze',
+  'edit/words',
+  'edit/page',
+  'edit/apply',
 ])
 
 export async function onRequest(context) {

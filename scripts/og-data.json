@@ -26,6 +26,12 @@
       "color": "#CA41FC"
     },
     {
+      "slug": "edit-text",
+      "name": "Edit Text in PDF",
+      "desc": "Rewrite the real text inside the file — the old words are deleted, not covered",
+      "color": "#14B8A6"
+    },
+    {
       "slug": "edit-pdf",
       "name": "Edit PDF",
       "desc": "A full PDF editor in your browser: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Files never leave your device.",
@@ -217,7 +223,7 @@
     {
       "key": "pdf-tools",
       "title": "All PDF Tools",
-      "desc": "Every DocTrim tool in one place: 27 free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no limits, no watermarks."
+      "desc": "Every DocTrim tool in one place: 28 free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no limits, no watermarks."
     },
     {
       "key": "blog",
@@ -274,6 +280,12 @@
         "name": "توقيع PDF",
         "desc": "أنشئ توقيعاً إلكترونياً ووقّع مستنداتك",
         "color": "#CA41FC"
+      },
+      {
+        "slug": "edit-text",
+        "name": "edit-text",
+        "desc": "",
+        "color": "#14B8A6"
       },
       {
         "slug": "edit-pdf",
