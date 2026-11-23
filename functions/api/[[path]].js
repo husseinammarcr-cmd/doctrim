@@ -60,7 +60,9 @@ export async function onRequest(context) {
     return new Response('Method not allowed', { status: 405 })
   }
 
+  // The query string is part of the API: /api/edit/words?doc=…&page=… .
   const target = new URL(`/api/${path}`, ORIGIN)
+  target.search = new URL(request.url).search
   const headers = new Headers(request.headers)
   // The VPS must see the real visitor: it uses this for analytics and rate limits.
   // Cloudflare rewrites x-forwarded-for with its own edge IP on subrequests, so
