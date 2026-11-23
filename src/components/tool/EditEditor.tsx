@@ -12,11 +12,11 @@ import {
 import { openPdfJs, renderPage, type PdfJsDoc } from '../../lib/pdf/pdfjs'
 import { initMetrics, layoutText, textHeight, fitTextWidth } from '../../lib/pdf/edit/metrics'
 import {
-  blockReplacement,
   extractTextBlocks,
   type SourceBlock,
 } from '../../lib/pdf/edit/textlayer'
 import { exportEditedPdf } from '../../lib/pdf/edit/export'
+import { rewriteText } from '../../lib/editText'
 import {
   FONT_STACK,
   cssFont,
@@ -115,6 +115,11 @@ async function imageFileToPng(file: File): Promise<{ dataUrl: string; aspect: nu
 }
 
 export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fileName: string }) {
+  // The document itself can change under us: rewriting existing text rebuilds
+  // the page content stream on the server and hands back a new file.
+  const [sourceBytes, setSourceBytes] = useState(bytes)
+  useEffect(() => setSourceBytes(bytes), [bytes])
+
   const docRef = useRef<PdfJsDoc | null>(null)
   const canvasHostRef = useRef<HTMLDivElement>(null)
   const pageBoxRef = useRef<HTMLDivElement>(null)
@@ -144,6 +149,7 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
   const [tool, setTool] = useState<ToolId>('select')
   const [shapeKind, setShapeKind] = useState<ShapeKind>('rect')
   const [selected, setSelected] = useState<string | null>(null)
+  const [rewriting, setRewriting] = useState(false)
   const [editing, setEditing] = useState<EditState | null>(null)
   const [style, setStyle] = useState<DraftStyle>({
     color: '#111827',
@@ -221,7 +227,7 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
       setError('')
       try {
         await initMetrics()
-        const doc = await openPdfJs(bytes)
+        const doc = await openPdfJs(sourceBytes)
         if (cancelled) {
           void doc.destroy()
           return
@@ -252,7 +258,7 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
       void docRef.current?.destroy()
       docRef.current = null
     }
-  }, [bytes])
+  }, [sourceBytes])
 
   // stage width observer
   useEffect(() => {
@@ -464,17 +470,67 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
       setEditing(null)
       return
     }
-    pushSnapshot(editing.snapshot)
-    const replacements = blockReplacement(editing.block, value)
-    const next = {
-      ...itemsRef.current,
-      [page.id]: [...(itemsRef.current[page.id] || []), ...replacements].map(normalizeItem),
-    }
-    itemsRef.current = next
-    const last = replacements[replacements.length - 1]
-    setSelected(last?.type === 'text' ? last.id : null)
+    void rewriteBlock(editing.block, value)
     setEditing(null)
-    forceRender()
+  }
+
+  /**
+   * Replaces existing text for real: the glyphs are deleted from the page and
+   * the new words are drawn in the document's own font, so nothing is hidden
+   * under a rectangle and the old text is gone from the file.
+   *
+   * Any additions already placed on the page are baked into the PDF first, so
+   * the rebase does not throw the user's work away.
+   */
+  const rewriteBlock = async (block: SourceBlock, value: string) => {
+    if (!page) return
+    const oldLines = block.lines?.length
+      ? block.lines
+      : [{ x: block.x, y: block.y, w: block.w, h: block.h } as SourceBlock['lines'][number]]
+    const typed = value.split('\n')
+    const runs = oldLines.map((line, i) => ({
+      page: page.srcIndex,
+      rect: [line.x - 1, line.y - 1, line.x + line.w + 1, line.y + line.h + 1] as [number, number, number, number],
+      text: typed[i] ?? '',
+      before: (line as { text?: string }).text ?? '',
+    }))
+    if (typed.length > oldLines.length) {
+      runs[runs.length - 1].text = typed.slice(oldLines.length - 1).join(' ')
+    }
+    // Only touch the lines the user actually changed: rewriting an identical
+    // line would re-draw it for no reason and can shift it by a hair.
+    const changed = runs
+      .filter((r) => r.text.trim() !== r.before.trim())
+      .map(({ page: pg, rect, text }) => ({ page: pg, rect, text: text.trim() ? text : '' }))
+    if (!changed.length) {
+      setRewriting(false)
+      return
+    }
+
+    setRewriting(true)
+    try {
+      const baked = await exportEditedPdf({
+        bytes: sourceBytes,
+        pages,
+        items: itemsRef.current,
+        flattenRedactions: false,
+        pdfjsDoc: docRef.current,
+      })
+      const { bytes: out, warnings } = await rewriteText(baked, changed)
+      // the rebased document already contains everything that was on the page
+      itemsRef.current = {}
+      pastRef.current = []
+      futureRef.current = []
+      setHistState({ past: 0, future: 0 })
+      blocksRef.current = {}
+      setSelected(null)
+      setSourceBytes(out)
+      setToast(warnings[0] || 'Text rewritten in the original document')
+    } catch (e) {
+      setToast(e instanceof Error ? `Could not rewrite the text: ${e.message}` : 'Could not rewrite the text')
+    } finally {
+      setRewriting(false)
+    }
   }
 
   /* ------------------------------------------------------------------ */
@@ -974,7 +1030,7 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
       if (editing) commitEdit()
       await new Promise((r) => setTimeout(r, 30))
       const out = await exportEditedPdf({
-        bytes,
+        bytes: sourceBytes,
         pages,
         items: itemsRef.current,
         flattenRedactions,
@@ -1360,7 +1416,7 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
               </span>
             )}
             <span className="ml-auto inline-flex items-center gap-1">
-              <ShieldCheck size={13} /> Edits never leave your browser
+              <ShieldCheck size={13} /> Additions stay in your browser · text rewrites run on our server
             </span>
             {totalEdits > 0 && (
               <button

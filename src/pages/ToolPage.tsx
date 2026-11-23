@@ -13,7 +13,6 @@ import { usePageMeta } from '../lib/usePageMeta'
 import { serverConfigured } from '../lib/api'
 import ServerToolRunner from '../components/tool/ServerToolRunner'
 import EditPdfPage from './EditPdfPage'
-import EditTextPage from './EditTextPage'
 import NotFound from './NotFound'
 import { openPdfJs, thumbnail } from '../lib/pdf/pdfjs'
 import * as E from '../lib/pdf/engine'
@@ -72,7 +71,7 @@ export default function ToolPage() {
   usePageMeta(
     !tool
       ? 'Page not found — DocTrim'
-      : tool.slug === 'edit-pdf' || tool.slug === 'edit-text'
+      : tool.slug === 'edit-pdf'
         ? ''
         : isAr
           ? `${toolName(tool)} — أداة PDF مجانية أونلاين | DocTrim`
@@ -82,7 +81,6 @@ export default function ToolPage() {
 
   if (!tool) return <NotFound />
   if (tool.slug === 'edit-pdf') return <EditPdfPage />
-  if (tool.slug === 'edit-text') return <EditTextPage />
   if (tool.server) {
     if (!serverConfigured()) return <ComingSoon tool={tool} />
     return <ServerToolRunner key={tool.slug} tool={tool} />

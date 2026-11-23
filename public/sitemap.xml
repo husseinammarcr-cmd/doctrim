@@ -89,14 +89,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://doctrim.pages.dev/edit-text</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/edit-text" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/edit-text" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/edit-text" />
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://doctrim.pages.dev/edit-pdf</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/edit-pdf" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/edit-pdf" />
@@ -428,14 +420,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/sign-pdf" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/sign-pdf" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/sign-pdf" />
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://doctrim.pages.dev/ar/edit-text</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://doctrim.pages.dev/edit-text" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://doctrim.pages.dev/ar/edit-text" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://doctrim.pages.dev/edit-text" />
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

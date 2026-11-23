@@ -22,7 +22,7 @@ export default function EditPdfPage() {
       : 'Edit PDF — rewrite text, add anything, sign and redact | DocTrim',
     isAr
       ? 'محرر PDF كامل داخل متصفحك: أعد كتابة النص الموجود، وأضف نصاً وصوراً وأشكالاً وتوقيعات، ولوّن أو احجب، ثم نزّل الملف. لا يغادر ملفك جهازك.'
-      : 'A full PDF editor in your browser: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Files never leave your device.',
+      : 'A full PDF editor: rewrite text in place, add text, images, shapes and signatures, highlight or redact, then download. Rewriting existing text runs on our server so the old words are truly replaced; everything else stays in your browser.',
   )
 
   if (!tool) return <NotFound />
@@ -41,7 +41,10 @@ export default function EditPdfPage() {
           </div>
         </div>
         <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-[13px] font-semibold text-brand">
-          <ShieldCheck size={14} /> {isAr ? 'التحرير يتم داخل متصفحك — الملف لا يغادر جهازك.' : 'Edited in your browser — the file never leaves your device.'}
+          <ShieldCheck size={14} />{' '}
+          {isAr
+            ? 'الإضافات والصور والتوقيع داخل متصفحك. إعادة كتابة النص الموجود تتم على سيرفرنا (يُحذف فور الانتهاء).'
+            : 'Additions, images and signatures stay in your browser. Rewriting existing text runs on our server, and the upload is discarded as soon as the rewrite is done.'}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px] font-semibold text-ink-muted">
           {[

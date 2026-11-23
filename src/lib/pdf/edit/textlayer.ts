@@ -50,6 +50,8 @@ export interface SourceBlock {
   lineCount: number
   lineHeight: number
   dir: 'ltr' | 'rtl'
+  /** Per-line geometry, used by the true text-rewrite path. */
+  lines: SourceLine[]
 }
 
 function familyFromFont(name: string, generic = ''): FontFamily {
@@ -184,6 +186,7 @@ export async function extractTextBlocks(doc: PdfJsDoc, pageNumber: number, canva
         prev.h = bottom - prev.y
         prev.lineCount += 1
         prev.dir = detectDir(prev.text)
+        prev.lines.push(line)
       } else {
         blocks.push({
           id: uid(),
@@ -203,6 +206,7 @@ export async function extractTextBlocks(doc: PdfJsDoc, pageNumber: number, canva
           lineCount: 1,
           lineHeight: 1.25,
           dir: detectDir(line.text),
+          lines: [line],
         })
       }
     }
