@@ -42,10 +42,14 @@ HEAVY_PATHS = {
     "/api/force-download",
 }
 
-HEAVY_MIN = int(os.getenv("DOCTRIM_RL_HEAVY_MIN", "12"))
-HEAVY_HOUR = int(os.getenv("DOCTRIM_RL_HEAVY_HOUR", "150"))
-LIGHT_MIN = int(os.getenv("DOCTRIM_RL_LIGHT_MIN", "90"))
+HEAVY_MIN = int(os.getenv("DOCTRIM_RL_HEAVY_MIN", "15"))
+HEAVY_HOUR = int(os.getenv("DOCTRIM_RL_HEAVY_HOUR", "200"))
+LIGHT_MIN = int(os.getenv("DOCTRIM_RL_LIGHT_MIN", "120"))
 MAX_INFLIGHT = int(os.getenv("DOCTRIM_RL_CONCURRENCY", "5"))
+# Server-wide ceilings: whatever the identity of the caller — even a botnet with
+# thousands of addresses — this box never runs more than this per minute/day.
+GLOBAL_HEAVY_MIN = int(os.getenv("DOCTRIM_RL_GLOBAL_MIN", "120"))
+GLOBAL_HEAVY_DAY = int(os.getenv("DOCTRIM_RL_GLOBAL_DAY", "6000"))
 
 _BUSY_MSG = (
     "The server is handling a lot of files right now. "
@@ -139,9 +143,13 @@ def install(app) -> None:
 
         heavy = path in HEAVY_PATHS
         if heavy:
-            wait = _window.hit("heavy-min", client, HEAVY_MIN, 60) or _window.hit(
-                "heavy-hour", client, HEAVY_HOUR, 3600
-            )
+            wait = _window.hit("global-min", "all", GLOBAL_HEAVY_MIN, 60)
+            if not wait:
+                wait = _window.hit("global-day", "all", GLOBAL_HEAVY_DAY, 86400)
+            if not wait:
+                wait = _window.hit("heavy-min", client, HEAVY_MIN, 60)
+            if not wait:
+                wait = _window.hit("heavy-hour", client, HEAVY_HOUR, 3600)
             if wait:
                 return _reject(wait, _RATE_MSG.format(secs=wait))
 

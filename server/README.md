@@ -47,3 +47,23 @@ uvicorn main:app --host 127.0.0.1 --port 8090
 - Max upload size: `DOCTRIM_MAX_MB` (default 50).
 - CORS origins: `DOCTRIM_ORIGINS` (comma-separated).
 - Temp files are cleaned up after each response.
+
+## Abuse protection
+
+`limits.py` guards every request (installed before the routes in `main.py`):
+
+| env var | default | meaning |
+|---|---|---|
+| `DOCTRIM_RL_HEAVY_MIN` | 15 | heavy jobs (OCR, Office, compress…) per visitor per minute |
+| `DOCTRIM_RL_HEAVY_HOUR` | 200 | heavy jobs per visitor per hour |
+| `DOCTRIM_RL_LIGHT_MIN` | 120 | any request per visitor per minute |
+| `DOCTRIM_RL_CONCURRENCY` | 5 | heavy jobs running at once, server-wide |
+| `DOCTRIM_RL_GLOBAL_MIN` | 120 | heavy jobs per minute for the whole box |
+| `DOCTRIM_RL_GLOBAL_DAY` | 6000 | heavy jobs per day for the whole box |
+
+Visitors are identified by `x-doctrim-client`, which the Pages Function fills from
+`cf-connecting-ip` — Cloudflare overwrites `x-forwarded-for` with its own edge IP
+on subrequests, so that header is useless for limits and analytics.
+
+The origin also refuses (404) any request that does not come from Cloudflare's
+edge ranges, because the Pages Function is its only legitimate caller.
