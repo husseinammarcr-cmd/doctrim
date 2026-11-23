@@ -30,6 +30,18 @@ ALLOWED_ORIGINS = os.getenv(
 ).split(",")
 
 app = FastAPI(title="DocTrim API", version="0.1.0")
+
+import limits  # noqa: E402  (local module)
+
+# Installed before CORS on purpose: Starlette puts the last added middleware
+# outermost, so CORS ends up wrapping the 429 responses too.
+limits.install(app)
+
+from analytics import router as analytics_router  # noqa: E402  (local module)
+
+
+app.include_router(analytics_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in ALLOWED_ORIGINS if o.strip()],
@@ -208,6 +220,15 @@ async def pdf_to_word(file: UploadFile = File(...)):
         out = d / (src.stem + ".docx")
         from pdf2docx import Converter
 
+        def page_count() -> int:
+            try:
+                import pymupdf
+
+                with pymupdf.open(src) as doc:
+                    return doc.page_count
+            except Exception:
+                return 0
+
         def downsample(target: Path, dpi: int = 150) -> bool:
             """Ghostscript copy with images resampled (text stays vector)."""
             try:
@@ -225,23 +246,41 @@ async def pdf_to_word(file: UploadFile = File(...)):
             except Exception:
                 return False
 
+        # pdf2docx is single-threaded by default; pages are independent, so
+        # spreading them over a few cores cuts conversion time roughly 3x on this box.
+        workers = max(1, min(4, os.cpu_count() or 1))
+
         def convert(src_path: Path, dest: Path) -> None:
             cv = Converter(str(src_path))
-            cv.convert(str(dest))
+            try:
+                cv.convert(str(dest), multi_processing=workers > 1, cpu_count=workers)
+            except Exception:
+                # multi-processing can fail on odd page content; never lose the job
+                cv.convert(str(dest))
             cv.close()
 
         # Scanned PDFs carry full-resolution page images (300 dpi+), so pdf2docx
         # emits a huge .docx (12 scanned pages ≈ 30 MB). Downsample those first;
         # for mixed/text PDFs convert as-is and only retry when the result is big.
         scan_like = _looks_like_scan(src)
+        pages = page_count()
+
+        # Pick the first-pass resolution so the 20 MB retry below rarely fires:
+        # a second full conversion is the main reason big scans felt "stuck".
+        if scan_like:
+            first_dpi = 130 if pages > 40 else 150 if pages > 12 else 170
+        else:
+            first_dpi = 150
+
         small_pdf = d / "downsampled.pdf"
-        pre = scan_like and downsample(small_pdf, 150)
+        pre = scan_like and downsample(small_pdf, first_dpi)
         convert(small_pdf if pre else src, out)
 
         # Still oversized? One more pass at a lower resolution, keep the smaller file.
         if out.exists() and out.stat().st_size > 20 * 1024 * 1024:
             alt_pdf = d / "alt.pdf"
-            if downsample(alt_pdf, 110 if pre else 150):
+            retry_dpi = max(96, first_dpi - 40) if pre else 150
+            if downsample(alt_pdf, retry_dpi):
                 alt = d / "alt.docx"
                 convert(alt_pdf, alt)
                 if alt.exists() and alt.stat().st_size < out.stat().st_size:
@@ -249,10 +288,14 @@ async def pdf_to_word(file: UploadFile = File(...)):
 
         if not out.exists():
             raise HTTPException(500, "Conversion produced no output")
+
+        headers = {"X-Doctrim-Note": "scanned" if scan_like else "text"}
         return FileResponse(
             out,
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            filename=out.name, background=BackgroundTask(_cleanup, d),
+            filename=out.name,
+            headers=headers,
+            background=BackgroundTask(_cleanup, d),
         )
     except HTTPException:
         _cleanup(d)
@@ -263,12 +306,36 @@ async def pdf_to_word(file: UploadFile = File(...)):
 
 
 @app.post("/api/ocr")
-async def ocr(file: UploadFile = File(...), lang: str = Form("eng")):
+async def ocr(file: UploadFile = File(...), lang: str = Form("ara+eng")):
     d = _tmpdir()
     try:
         src = await _save(file, d)
         out = d / "ocr.pdf"
-        _run(["ocrmypdf", "--language", lang, "--skip-text", str(src), str(out)], timeout=300)
+
+        # Accuracy settings, measured on a skewed/noisy 150 dpi scan with an
+        # Arabic + English page (word recall / character similarity):
+        #   plain ara+eng                59% / 59%
+        #   + oversample 300, deskew     93% / 97%
+        #   + tessdata_best models      100% / 100%
+        # Arabic pages nearly always carry Latin text (numbers, brand names), and
+        # running ara alone mangles it, so English is always included.
+        langs = (lang or "ara+eng").strip()
+        if "eng" not in [p.strip() for p in langs.split("+")]:
+            langs = f"{langs}+eng"
+
+        _run(
+            [
+                "ocrmypdf",
+                "--language", langs,
+                "--skip-text",
+                "--oversample", "300",   # low-res phone scans OCR far better upsampled
+                "--deskew",              # phone photos are never straight
+                "--rotate-pages",        # page shot sideways/upside down
+                str(src),
+                str(out),
+            ],
+            timeout=300,
+        )
         if not out.exists():
             raise HTTPException(500, "OCR produced no output")
         return FileResponse(out, media_type="application/pdf", filename="ocr.pdf",

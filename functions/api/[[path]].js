@@ -59,8 +59,14 @@ export async function onRequest(context) {
   const target = new URL(`/api/${path}`, ORIGIN)
   const headers = new Headers(request.headers)
   // The VPS must see the real visitor: it uses this for analytics and rate limits.
+  // Cloudflare rewrites x-forwarded-for with its own edge IP on subrequests, so
+  // the visitor has to travel in a header of our own. The origin only accepts
+  // Cloudflare edge IPs (Caddy), so this cannot be spoofed from the internet.
   const ip = request.headers.get('cf-connecting-ip')
-  if (ip) headers.set('x-forwarded-for', ip)
+  if (ip) {
+    headers.set('x-doctrim-client', ip)
+    headers.set('x-forwarded-for', ip)
+  }
   headers.delete('host')
   headers.delete('cf-connecting-ip')
   headers.delete('cf-ray')
