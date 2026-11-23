@@ -117,6 +117,14 @@ export async function onRequest(context) {
   const type = res.headers.get('content-type') || ''
   if (!type.includes('text/html')) return next()
 
+  // Retired routes: the standalone "Edit Text in PDF" tool became the text
+  // rewrite inside Edit PDF. `_redirects` alone is not enough — this handler
+  // answers every HTML path itself.
+  if (path === 'edit-text' || path === 'ar/edit-text') {
+    const to = path.startsWith('ar/') ? '/ar/edit-pdf' : '/edit-pdf'
+    return Response.redirect(new URL(to, url).toString(), 301)
+  }
+
   const meta = META[path]
   const isArPath = path === 'ar' || path.startsWith('ar/')
   const html = await res.text()
