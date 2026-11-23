@@ -79,11 +79,23 @@ export default function ServerToolRunner({ tool }: { tool: Tool }) {
     } catch (e: any) {
       const raw = String(e?.message || '')
       const network = /load failed|failed to fetch|networkerror|network error|aborted|timeout/i.test(raw)
+      // 429 from the API: either this network sent too many jobs or the box is
+      // saturated. Say so plainly and give the wait, instead of echoing English.
+      const limited = /too many requests|handling a lot of files/i.test(raw)
+      const secs = (raw.match(/wait (\d+)s/i) || [])[1]
       const msg = network
         ? isAr
           ? 'تعذّر الوصول إلى السيرفر. تحقّق من اتصالك بالإنترنت ثم أعد المحاولة.'
           : 'Could not reach the server. Check your connection and try again.'
-        : raw || (isAr ? 'تعذّر على السيرفر معالجة هذا الملف.' : 'The server could not process this file.')
+        : limited
+          ? isAr
+            ? secs
+              ? `الطلبات كثيرة من شبكتك الآن. انتظر ${secs} ثانية ثم أعد المحاولة.`
+              : 'السيرفر مشغول بملفات كثيرة الآن. أعد المحاولة بعد لحظات.'
+            : secs
+              ? `Too many requests from your network right now. Try again in ${secs}s.`
+              : 'The server is busy with other files right now. Try again in a moment.'
+          : raw || (isAr ? 'تعذّر على السيرفر معالجة هذا الملف.' : 'The server could not process this file.')
       setError(msg)
       track('run_fail', { t: tool.slug, m: msg, v: Math.round(performance.now() - started) })
     } finally {
