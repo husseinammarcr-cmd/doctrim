@@ -1,0 +1,10 @@
+[Unit]
+Description=DocTrim uptime monitor (health, conversion round-trip, service, disk)
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/doctrim
+ExecStart=/opt/doctrim/venv/bin/python /opt/doctrim/monitor.py
+TimeoutStartSec=240
+Nice=10

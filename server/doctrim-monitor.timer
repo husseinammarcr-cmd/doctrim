@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the DocTrim monitor every 5 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=doctrim-monitor.service
+
+[Install]
+WantedBy=timers.target

@@ -67,3 +67,31 @@ on subrequests, so that header is useless for limits and analytics.
 
 The origin also refuses (404) any request that does not come from Cloudflare's
 edge ranges, because the Pages Function is its only legitimate caller.
+
+## Monitoring
+
+`monitor.py` runs every 5 minutes from `doctrim-monitor.timer` and pages Telegram
+only on a change of state (first alert after 2 consecutive failures, a reminder
+every 30 min, one message on recovery). Checks: public `/api/health`, a real
+`/api/compress` round-trip through the Pages proxy, `doctrim-api` + port 8090,
+and free disk.
+
+Install:
+
+```bash
+sudo cp server/doctrim-monitor.{service,timer} /etc/systemd/system/
+sudo cp server/monitor.py /opt/doctrim/monitor.py
+sudo systemctl daemon-reload && sudo systemctl enable --now doctrim-monitor.timer
+```
+
+Manual use:
+
+```bash
+/opt/doctrim/venv/bin/python /opt/doctrim/monitor.py            # one pass
+/opt/doctrim/venv/bin/python /opt/doctrim/monitor.py --no-send   # print, don't page
+/opt/doctrim/venv/bin/python /opt/doctrim/monitor.py --notify "text"  # one-off page
+```
+
+Reads `TELEGRAM_BOT_TOKEN` from the environment (falls back to `~/.hermes/.env`)
+and pages `DOCTRIM_ALERT_CHAT`. Knobs: `DOCTRIM_MIN_FREE_GB`,
+`DOCTRIM_REMIND_SECS`, `DOCTRIM_CONFIRM`. Log: `/opt/doctrim/monitor.log`.
