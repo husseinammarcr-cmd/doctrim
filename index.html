@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="description" content="DocTrim — We make PDF easy. Free tools to compress, merge, split, convert and edit PDF files." />
     <title>DocTrim — We make PDF easy.</title>
     <meta property="og:type" content="website" />
@@ -21,6 +21,18 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Keep the page at a fixed zoom: a stray pinch while selecting PDF text
+      // left people staring at a half-zoomed page. The PDF viewers have their
+      // own zoom buttons, so nothing is lost.
+      (function () {
+        document.addEventListener('gesturestart', function (e) { e.preventDefault() }, { passive: false })
+        document.addEventListener('gesturechange', function (e) { e.preventDefault() }, { passive: false })
+        document.addEventListener('touchmove', function (e) {
+          if (e.touches && e.touches.length > 1) e.preventDefault()
+        }, { passive: false })
+      })()
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

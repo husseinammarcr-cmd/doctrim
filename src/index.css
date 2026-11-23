@@ -7,12 +7,23 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    touch-action: manipulation;          /* kills double-tap zoom */
+    -webkit-text-size-adjust: 100%;
   }
   body {
     @apply bg-white text-ink font-sans;
   }
   ::selection {
     @apply bg-brand/20;
+  }
+  /* iOS zooms the whole page when a field smaller than 16px gets focus —
+     that reads as the site "jumping". Keep mobile fields at 16px. */
+  @media (max-width: 640px) {
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
   }
   /* Arabic: Noto Sans Arabic has proper Arabic shaping and a taller x-height
      than Source Sans 3, so line-height gets a small bump. */
