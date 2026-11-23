@@ -32,6 +32,7 @@ const ALLOWED = new Set([
   'edit/words',
   'edit/page',
   'edit/apply',
+  'edit/download',
 ])
 
 export async function onRequest(context) {

@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ArrowLeft, Check, Loader2, MousePointerClick, RefreshCw, Server, Undo2, X } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Download, Loader2, MousePointerClick, RotateCcw, Server } from 'lucide-react'
 import Dropzone from '../components/Dropzone'
 import ToolIcon from '../components/ToolIcon'
 import { getTool } from '../lib/tools'
@@ -32,11 +32,11 @@ interface DocInfo {
   pages: PageMeta[]
 }
 
-interface Staged {
+interface Change {
   page: number
-  rect: [number, number, number, number]
-  text: string
-  original: string
+  before: string
+  after: string
+  warning?: string
 }
 
 const union = (a: number[], b: number[]): [number, number, number, number] => [
@@ -53,15 +53,19 @@ export default function EditTextPage() {
   const [doc, setDoc] = useState<DocInfo | null>(null)
   const [pageIdx, setPageIdx] = useState(0)
   const [words, setWords] = useState<Word[]>([])
+  const [rev, setRev] = useState(0)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [staged, setStaged] = useState<Staged[]>([])
+  const [changes, setChanges] = useState<Change[]>([])
   const [draft, setDraft] = useState<{ rect: number[]; text: string; words: Word[] } | null>(null)
-  const [result, setResult] = useState<{ url: string; name: string; warnings: string[] } | null>(null)
-  const [zoom, setZoom] = useState(1)
+  const [fitScale, setFitScale] = useState(1)
+  const [zoomMul, setZoomMul] = useState(1)
+  const [finished, setFinished] = useState(false)
+  const [loadingDoc, setLoadingDoc] = useState(false)
 
   const wrapRef = useRef<HTMLDivElement | null>(null)
   const stageRef = useRef<HTMLDivElement | null>(null)
+  const fileRef = useRef<File | null>(null)
   const dragging = useRef<Word[] | null>(null)
 
   usePageMeta(
@@ -72,52 +76,60 @@ export default function EditTextPage() {
   )
 
   const page = doc?.pages[pageIdx]
+  const scale = Math.max(0.2, Math.min(3, fitScale * zoomMul))
 
+  /* fit the page to its column and keep it fitted --------------------------------- */
   useEffect(() => {
-    if (!page || !wrapRef.current) return
+    const el = wrapRef.current
+    if (!el || !page) return
     const fit = () => {
-      const w = wrapRef.current?.clientWidth || 800
-      setZoom(Math.max(0.45, Math.min(1.6, (w - 8) / page.width)))
+      const w = el.clientWidth - 16
+      setFitScale(Math.max(0.3, Math.min(1.15, w / page.width)))
     }
     fit()
-    window.addEventListener('resize', fit)
-    return () => window.removeEventListener('resize', fit)
+    const ro = new ResizeObserver(fit)
+    ro.observe(el)
+    return () => ro.disconnect()
   }, [page])
+
+  const loadWords = useCallback(
+    async (docId: string, index: number) => {
+      const r = await fetch(`${BASE}/api/edit/words?doc=${docId}&page=${index}`)
+      if (!r.ok) throw new Error(isAr ? 'انتهت الجلسة — ارفع الملف من جديد.' : 'This session expired — upload the file again.')
+      const j = await r.json()
+      setWords(j.words || [])
+    },
+    [isAr],
+  )
 
   useEffect(() => {
     if (!doc) return
-    let cancelled = false
     setWords([])
-    fetch(`${BASE}/api/edit/words?doc=${doc.doc_id}&page=${pageIdx}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`words ${r.status}`))))
-      .then((j) => !cancelled && setWords(j.words || []))
-      .catch(() => !cancelled && setWords([]))
-    return () => {
-      cancelled = true
-    }
-  }, [doc, pageIdx])
+    loadWords(doc.doc_id, pageIdx).catch(() => setWords([]))
+  }, [doc, pageIdx, loadWords])
 
   const upload = useCallback(async (f: File) => {
+    setLoadingDoc(true)
     setError(null)
-    setResult(null)
-    setStaged([])
-    setBusy('Uploading and reading the text layer…')
+    setChanges([])
+    setFinished(false)
+    setWords([])
     try {
       const fd = new FormData()
       fd.append('file', f)
       const r = await fetch(`${BASE}/api/edit/analyze`, { method: 'POST', body: fd })
       const j = await r.json()
       if (!r.ok) throw new Error(j.detail || `Upload failed (${r.status})`)
+      fileRef.current = f
       setDoc(j)
       setPageIdx(0)
+      setRev((v) => v + 1)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Upload failed')
     } finally {
-      setBusy(null)
+      setLoadingDoc(false)
     }
   }, [])
-
-  const pageEdits = useMemo(() => staged.filter((s) => s.page === pageIdx), [staged, pageIdx])
 
   const wordAt = (clientX: number, clientY: number): Word | null => {
     const el = stageRef.current
@@ -125,12 +137,11 @@ export default function EditTextPage() {
     const r = el.getBoundingClientRect()
     const x = (clientX - r.left) / scale
     const y = (clientY - r.top) / scale
-    return (
-      words.find((w) => x >= w.rect[0] - 1 && x <= w.rect[2] + 1 && y >= w.rect[1] - 1 && y <= w.rect[3] + 1) || null
-    )
+    return words.find((w) => x >= w.rect[0] - 1 && x <= w.rect[2] + 1 && y >= w.rect[1] - 1 && y <= w.rect[3] + 1) || null
   }
 
   const startSelect = (e: React.PointerEvent) => {
+    if (busy || finished) return
     const w = wordAt(e.clientX, e.clientY)
     if (!w) return
     dragging.current = [w]
@@ -152,24 +163,14 @@ export default function EditTextPage() {
     dragging.current = null
   }
 
-  const commit = () => {
-    if (!draft) return
-    const text = draft.text
+  /* the edit lands the moment it is confirmed — no Apply button ---------------- */
+  const commit = async () => {
+    if (!draft || !doc) return
     const rects = draft.words.map((w) => w.rect).reduce((a, b) => union(a, b), draft.rect as number[])
-    setStaged((s) => [
-      ...s.filter((x) => !(x.page === pageIdx && x.rect.join() === (rects as number[]).join())),
-      { page: pageIdx, rect: rects as [number, number, number, number], text, original: draft.words.map((w) => w.text).join(' ') },
-    ])
+    const before = draft.words.map((w) => w.text).join(' ')
+    const text = draft.text
     setDraft(null)
-  }
-
-  const apply = async () => {
-    if (!doc) return
-    if (!staged.length) {
-      setError(isAr ? 'غيّر كلمة أولاً.' : 'Change at least one word first.')
-      return
-    }
-    setBusy(isAr ? 'جاري إعادة كتابة النص…' : 'Rewriting the text…')
+    setBusy(isAr ? 'جاري التعديل…' : 'Applying…')
     setError(null)
     try {
       const r = await fetch(`${BASE}/api/edit/apply`, {
@@ -177,41 +178,19 @@ export default function EditTextPage() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           doc_id: doc.doc_id,
-          edits: staged.map((s) => ({ page: s.page, rect: s.rect, text: s.text })),
+          commit: true,
+          edits: [{ page: pageIdx, rect: rects, text }],
         }),
       })
-      if (!r.ok) {
-        const j = await r.json().catch(() => ({ detail: `Failed (${r.status})` }))
-        throw new Error(j.detail || `Failed (${r.status})`)
-      }
-      const blob = await r.blob()
-      let warn: string[] = []
-      try {
-        const rep = JSON.parse(r.headers.get('x-doctrim-report') || '{}')
-        warn = rep.warnings || []
-        for (const e of rep.edits || []) if (e.warning) warn.push(`p${e.page}: ${e.warning}`)
-      } catch {
-        /* header not json */
-      }
-      const url = URL.createObjectURL(blob)
-      setResult({ url, name: `doctrim-edited.pdf`, warnings: warn })
-      setStaged([])
-      try {
-        const fd = new FormData()
-        fd.append('file', new File([blob], 'edited.pdf', { type: 'application/pdf' }))
-        const a2 = await fetch(`${BASE}/api/edit/analyze`, { method: 'POST', body: fd })
-        if (a2.ok) {
-          const j2 = await a2.json()
-          setDoc(j2)
-          setPageIdx((i) => Math.min(i, j2.page_count - 1))
-        }
-      } catch {
-        /* preview refresh is best-effort */
-      }
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'doctrim-edited.pdf'
-      a.click()
+      const j = await r.json()
+      if (!r.ok) throw new Error(j.detail || `Failed (${r.status})`)
+      const rep = j.report || {}
+      const warning =
+        (rep.warnings || [])[0] ||
+        (rep.edits || []).map((e: { warning?: string }) => e.warning).find((w?: string) => !!w)
+      setChanges((c) => [...c, { page: pageIdx, before, after: text, warning }])
+      setRev((v) => v + 1)
+      await loadWords(doc.doc_id, pageIdx).catch(() => setWords([]))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed')
     } finally {
@@ -221,8 +200,6 @@ export default function EditTextPage() {
 
   if (!tool) return <NotFound />
 
-  const scale = zoom
-
   return (
     <div className="bg-surface/60 min-h-[70vh]">
       <div className="container-x py-10">
@@ -231,26 +208,28 @@ export default function EditTextPage() {
         </Link>
         <div className="mt-4 flex items-center gap-4">
           <ToolIcon icon={tool.icon} color={tool.color} size={52} radius={13} />
-          <div>
+          <div className="min-w-0">
             <h1 className="text-3xl font-bold text-ink">{toolName(tool)}</h1>
             <p className="mt-0.5 text-[15px] text-ink-muted">{toolDesc(tool)}</p>
           </div>
         </div>
-        <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[13px] font-semibold text-amber-700">
-          <Server size={14} />{' '}
-          {isAr
-            ? 'تعمل على سيرفرنا: يُرفع الملف ليُعالج، ويُحذف فور تنزيل النتيجة (أو خلال ٣٠ دقيقة إذا أغلقت الصفحة).'
-            : 'Runs on our server: the file is uploaded for processing and deleted as soon as you download the result (or within 30 minutes if you close the page).'}
+        <p className="mt-3 inline-flex items-start gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[13px] font-semibold text-amber-700">
+          <Server size={14} className="mt-0.5 shrink-0" />
+          <span>
+            {isAr
+              ? 'تعمل على سيرفرنا: يُرفع الملف ليُعالج، ويُحذف فور تنزيل النتيجة (أو خلال ٣٠ دقيقة).'
+              : 'Runs on our server: the file is uploaded for processing and deleted as soon as you download the result (or within 30 minutes).'}
+          </span>
         </p>
 
-        <div className="card mt-6 p-4 sm:p-6">
-          {!doc && (
+        <div className="card mt-6 p-3 sm:p-6">
+          {!doc && !loadingDoc && (
             <Dropzone accept=".pdf" label={isAr ? 'ملف PDF' : 'PDF file'} onFiles={(fs) => fs[0] && upload(fs[0])} />
           )}
 
-          {busy && (
-            <div className="flex items-center gap-2 py-6 text-[14px] font-semibold text-ink-muted">
-              <Loader2 size={16} className="animate-spin" /> {busy}
+          {loadingDoc && (
+            <div className="flex items-center gap-2 py-8 text-[14px] font-semibold text-ink-muted">
+              <Loader2 size={16} className="animate-spin" /> {isAr ? 'جاري قراءة النص…' : 'Reading the text layer…'}
             </div>
           )}
 
@@ -261,22 +240,62 @@ export default function EditTextPage() {
           )}
 
           {doc && page && (
-            <div className="mt-2 grid gap-5 lg:grid-cols-[1fr_300px]">
-              <div>
+            <div className="mt-1 grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_290px]">
+              <div className="min-w-0">
                 <div className="mb-2 flex flex-wrap items-center gap-2 text-[13px]">
-                  <span className="font-semibold text-ink">{doc.name}</span>
-                  <span className="text-ink-muted">· {doc.page_count} {isAr ? 'صفحة' : doc.page_count === 1 ? 'page' : 'pages'}</span>
+                  <span className="min-w-0 max-w-[55%] truncate font-semibold text-ink">{doc.name}</span>
+                  <span className="text-ink-muted">· {doc.page_count}</span>
                   <div className="ms-auto flex items-center gap-1">
+                    <button
+                      className="btn-ghost px-2 py-1"
+                      aria-label="zoom out"
+                      disabled={zoomMul <= 1}
+                      onClick={() => setZoomMul((z) => Math.max(1, Math.round((z - 0.5) * 10) / 10))}
+                    >
+                      −
+                    </button>
+                    <button
+                      className="btn-ghost px-2 py-1"
+                      aria-label="zoom in"
+                      disabled={zoomMul >= 3}
+                      onClick={() => setZoomMul((z) => Math.min(3, Math.round((z + 0.5) * 10) / 10))}
+                    >
+                      +
+                    </button>
                     <button className="btn-ghost px-2 py-1" disabled={pageIdx === 0} onClick={() => setPageIdx((i) => i - 1)}>←</button>
-                    <span className="text-ink-muted">{pageIdx + 1} / {doc.page_count}</span>
+                    <span className="whitespace-nowrap text-ink-muted">{pageIdx + 1} / {doc.page_count}</span>
                     <button className="btn-ghost px-2 py-1" disabled={pageIdx + 1 >= doc.page_count} onClick={() => setPageIdx((i) => i + 1)}>→</button>
                   </div>
                 </div>
 
-                <div ref={wrapRef} className="overflow-auto rounded-xl border border-line bg-white p-2">
+                {page.word_count === 0 && (
+                  <div className="mb-2 rounded-xl bg-amber-50 px-3 py-2 text-[13px] font-semibold text-amber-800">
+                    {isAr
+                      ? 'هذه الصفحة ما بيها طبقة نص (ممسوحة ضوئياً). شغّل OCR عليها أولاً ثم ارجع لهنا. '
+                      : 'This page has no text layer (it is a scan). Run OCR on it first, then come back. '}
+                    <Link to={href('/ocr-pdf')} className="underline">
+                      {isAr ? 'أداة OCR' : 'OCR tool'}
+                    </Link>
+                  </div>
+                )}
+
+                <div className="mb-2 flex items-center gap-2 lg:hidden">
+                  <a
+                    className={`btn-primary flex-1 ${finished ? 'pointer-events-none opacity-60' : ''}`}
+                    href={`${BASE}/api/edit/download?doc=${doc.doc_id}`}
+                    onClick={() => setFinished(true)}
+                  >
+                    <Download size={15} /> {isAr ? 'تنزيل PDF' : 'Download PDF'}
+                  </a>
+                  <span className="rounded-lg bg-white px-2 py-1 text-[12px] font-semibold text-ink-muted">
+                    {changes.length} {isAr ? 'تعديل' : 'edits'}
+                  </span>
+                </div>
+
+                <div ref={wrapRef} className="max-w-full overflow-auto rounded-xl border border-line bg-white p-2">
                   <div className="relative mx-auto" style={{ width: page.width * scale, height: page.height * scale }}>
                     <img
-                      src={`${BASE}/api/edit/page?doc=${doc.doc_id}&index=${pageIdx}&dpi=${Math.round(110 * scale)}`}
+                      src={`${BASE}/api/edit/page?doc=${doc.doc_id}&index=${pageIdx}&dpi=${Math.round(110 * Math.max(scale, 0.6))}&v=${rev}`}
                       alt=""
                       draggable={false}
                       className="absolute inset-0 h-full w-full select-none"
@@ -307,18 +326,7 @@ export default function EditTextPage() {
                         )
                       })}
                     </div>
-                    {pageEdits.map((s, i) => (
-                      <div
-                        key={`e${i}`}
-                        className="pointer-events-none absolute rounded-[2px] bg-emerald-300/40 ring-1 ring-emerald-500/70"
-                        style={{
-                          left: (s.rect[0] - 1) * scale,
-                          top: (s.rect[1] - 1) * scale,
-                          width: (s.rect[2] - s.rect[0] + 2) * scale,
-                          height: (s.rect[3] - s.rect[1] + 2) * scale,
-                        }}
-                      />
-                    ))}
+
                     {draft && (
                       <input
                         autoFocus
@@ -332,71 +340,71 @@ export default function EditTextPage() {
                         onBlur={() => setTimeout(() => setDraft((d) => (d === draft ? null : d)), 150)}
                         className="absolute z-10 rounded-md border-2 border-brand bg-white px-1.5 py-0.5 text-[13px] shadow-lg outline-none"
                         style={{
-                          left: draft.rect[0] * scale,
-                          top: (draft.rect[1] - 8) * scale,
-                          minWidth: Math.max(90, (draft.rect[2] - draft.rect[0]) * scale + 30),
+                          left: Math.max(0, Math.min(draft.rect[0] * scale, page.width * scale - 120)),
+                          top: Math.max(0, (draft.rect[1] - 8) * scale),
+                          minWidth: Math.max(96, (draft.rect[2] - draft.rect[0]) * scale + 40),
                         }}
                       />
                     )}
+
+                    {busy && (
+                      <div className="absolute inset-x-0 top-2 mx-auto flex w-fit items-center gap-2 rounded-full bg-white/95 px-3 py-1 text-[12px] font-semibold text-ink shadow">
+                        <Loader2 size={13} className="animate-spin" /> {busy}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <p className="mt-2 flex items-center gap-1.5 text-[12px] text-ink-muted">
-                  <MousePointerClick size={13} />{' '}
-                  {isAr ? 'اضغط كلمة لتعديلها، أو اسحب عبر عدة كلمات.' : 'Click a word to edit it, or drag across several words.'}
+                <p className="mt-2 flex items-start gap-1.5 text-[12px] text-ink-muted">
+                  <MousePointerClick size={13} className="mt-0.5 shrink-0" />
+                  {isAr
+                    ? 'اضغط كلمة واكتب البديل: يتغيّر الملف فوراً. اسحب عبر عدة كلمات لتعديل جملة كاملة.'
+                    : 'Tap a word and type: the change lands immediately. Drag across words to edit a whole phrase.'}
                 </p>
               </div>
 
-              <aside className="space-y-3">
+              <aside className="min-w-0 space-y-3">
                 <div className="rounded-xl border border-line bg-white p-3">
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-bold text-ink">{isAr ? 'التعديلات' : 'Changes'}</span>
-                    <span className="text-[12px] text-ink-muted">{staged.length}</span>
+                    <span className="text-[12px] text-ink-muted">{changes.length}</span>
                   </div>
-                  <ul className="mt-2 space-y-1.5">
-                    {staged.length === 0 && (
-                      <li className="text-[12px] text-ink-muted">{isAr ? 'لا يوجد بعد.' : 'Nothing yet.'}</li>
-                    )}
-                    {staged.map((s, i) => (
+                  <ul className="mt-2 max-h-56 space-y-1.5 overflow-auto">
+                    {changes.length === 0 && <li className="text-[12px] text-ink-muted">{isAr ? 'لا يوجد بعد.' : 'Nothing yet.'}</li>}
+                    {changes.map((c, i) => (
                       <li key={i} className="rounded-lg bg-surface px-2 py-1.5 text-[12px]">
-                        <div className="text-ink-muted line-through">{s.original || '—'}</div>
-                        <div className="flex items-center gap-1 font-semibold text-emerald-700">
-                          <Check size={12} /> {s.text || (isAr ? '(حذف)' : '(deleted)')}
-                        </div>
-                        <button
-                          className="mt-1 inline-flex items-center gap-1 text-[11px] text-ink-muted hover:text-brand"
-                          onClick={() => setStaged((all) => all.filter((_, j) => j !== i))}
-                        >
-                          <Undo2 size={11} /> {isAr ? 'تراجع' : 'undo'}
-                        </button>
+                        <div className="break-words text-ink-muted line-through">{c.before || '—'}</div>
+                        <div className="break-words font-semibold text-emerald-700">{c.after || (isAr ? '(حذف)' : '(deleted)')}</div>
+                        {c.warning && <div className="mt-0.5 break-words text-[11px] text-amber-700">{c.warning}</div>}
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <button className="btn-primary w-full" disabled={!!busy || !staged.length} onClick={apply}>
-                  {busy ? <Loader2 size={15} className="animate-spin" /> : <RefreshCw size={15} />}{' '}
-                  {isAr ? 'طبّق ونزّل' : 'Apply & download'}
-                </button>
+                <a
+                  className={`btn-primary w-full ${finished ? 'pointer-events-none opacity-60' : ''}`}
+                  href={`${BASE}/api/edit/download?doc=${doc.doc_id}`}
+                  onClick={() => setFinished(true)}
+                >
+                  <Download size={15} /> {isAr ? 'تنزيل PDF' : 'Download PDF'}
+                </a>
 
-                {result && (
-                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-[12px] text-emerald-800">
-                    <div className="font-semibold">{isAr ? 'تم. الملف نُزّل.' : 'Done — file downloaded.'}</div>
-                    <a className="mt-1 inline-block underline" href={result.url} download={result.name}>
-                      {isAr ? 'تنزيل مرة أخرى' : 'Download again'}
-                    </a>
-                    {result.warnings.length > 0 && (
-                      <ul className="mt-2 list-disc space-y-0.5 ps-4 text-amber-800">
-                        {result.warnings.slice(0, 5).map((w, i) => <li key={i}>{w}</li>)}
-                      </ul>
-                    )}
-                  </div>
-                )}
+                <button className="btn-ghost w-full" onClick={() => fileRef.current && upload(fileRef.current)}>
+                  <RotateCcw size={14} /> {isAr ? 'ابدأ من الأصل' : 'Start from the original'}
+                </button>
 
                 <p className="text-[11px] leading-relaxed text-ink-muted">
                   {isAr
-                    ? 'النص القديم يُحذف من الملف فعلياً، والبديل يُكتب بخط المستند نفسه، ويبقى قابلاً للتحديد والبحث. الممسوح ضوئياً يحتاج OCR أولاً.'
-                    : 'The old text is deleted from the file itself and the replacement uses the document’s own font, so it stays selectable and searchable. Scanned PDFs need OCR first.'}
+                    ? 'النص القديم يُحذف من الملف فعلياً، والبديل يُكتب بخط المستند نفسه، ويبقى قابلاً للتحديد والبحث.'
+                    : 'The old text is deleted from the file itself and the replacement uses the document’s own font, so it stays selectable and searchable.'}
                 </p>
+
+                {finished && (
+                  <p className="rounded-lg bg-emerald-50 px-2 py-1.5 text-[11px] font-semibold text-emerald-800">
+                    {isAr
+                      ? 'نُزّل الملف وحُذف من السيرفر. للتحرير من جديد اضغط «ابدأ من الأصل».'
+                      : 'Downloaded and removed from the server. Press “Start from the original” to edit again.'}
+                  </p>
+                )}
               </aside>
             </div>
           )}
