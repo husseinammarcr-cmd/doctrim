@@ -1085,7 +1085,12 @@ export default function EditEditor({ bytes, fileName }: { bytes: Uint8Array; fil
   const editorTextStyle = editorSource
     ? {
         fontFamily: FONT_STACK[editorSource.family],
-        fontSize: editorSource.size * scale,
+        // Phones: never below 16px, or iOS zooms the page when the field gets
+        // focus. Desktop keeps the exact on-page size.
+        fontSize:
+          typeof window !== 'undefined' && window.innerWidth <= 640
+            ? Math.max(16, editorSource.size * scale)
+            : editorSource.size * scale,
         fontWeight: editorSource.bold ? 700 : 400,
         fontStyle: editorSource.italic ? 'italic' : 'normal',
         lineHeight: editorSource.lineHeight,
