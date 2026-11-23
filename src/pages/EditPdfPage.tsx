@@ -21,7 +21,7 @@ export default function EditPdfPage() {
       ? 'تعديل PDF — أعد كتابة النص، أضف أي شيء، وقّع واحجب | DocTrim'
       : 'Edit PDF — rewrite text, add anything, sign and redact | DocTrim',
     isAr
-      ? 'محرر PDF كامل داخل متصفحك: أعد كتابة النص الموجود، وأضف نصاً وصوراً وأشكالاً وتوقيعات، ولوّن أو احجب، ثم نزّل الملف. لا يغادر ملفك جهازك.'
+      ? 'محرر PDF كامل: أعد كتابة النص الموجود، وأضف نصاً وصوراً وأشكالاً وتوقيعات، ولوّن أو احجب، ثم نزّل الملف. إعادة كتابة النص تتم على سيرفرنا ليُحذف النص القديم فعلياً، وبقية التعديلات داخل متصفحك.'
       : 'A full PDF editor: rewrite text in place, add text, images, shapes and signatures, highlight or redact, then download. Rewriting existing text runs on our server so the old words are truly replaced; everything else stays in your browser.',
   )
 
