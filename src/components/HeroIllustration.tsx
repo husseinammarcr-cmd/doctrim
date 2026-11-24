@@ -51,9 +51,15 @@ function Handles({ x, y, w, h }: { x: number; y: number; w: number; h: number })
   )
 }
 
-export default function HeroIllustration() {
+export default function HeroIllustration({ ar = false }: { ar?: boolean }) {
   return (
-    <svg viewBox="0 0 640 530" className="h-auto w-full" role="img" aria-label="DocTrim PDF editor preview">
+    <svg
+      viewBox="0 0 640 530"
+      className="h-auto w-full"
+      role="img"
+      aria-label={ar ? 'معاينة محرر PDF من DocTrim' : 'DocTrim PDF editor preview'}
+      style={{ direction: 'ltr' }}
+    >
       {/* tilted backdrop shapes */}
       <rect x={200} y={40} width={235} height={235} rx={14} fill="#F2F6FF" transform="rotate(-112 317 157)" />
       <rect x={60} y={260} width={170} height={170} rx={14} fill="#F2F6FF" transform="rotate(70 145 345)" />
@@ -93,7 +99,21 @@ export default function HeroIllustration() {
         <Handles x={369} y={261} w={52} h={52} />
         {/* Hello text box */}
         <rect x={225} y={300} width={70} height={24} rx={3} fill="#fff" stroke="#0055FF" strokeWidth={1.2} />
-        <text x={236} y={316} fontFamily="Source Sans 3, sans-serif" fontSize={13} fontWeight={600} fill="#1A1A1A">Hello!</text>
+        {ar ? (
+          <text
+            x={260}
+            y={316}
+            textAnchor="middle"
+            fontFamily="Noto Sans Arabic, Source Sans 3, sans-serif"
+            fontSize={12}
+            fontWeight={600}
+            fill="#1A1A1A"
+          >
+            مرحباً
+          </text>
+        ) : (
+          <text x={236} y={316} fontFamily="Source Sans 3, sans-serif" fontSize={13} fontWeight={600} fill="#1A1A1A">Hello!</text>
+        )}
         {/* red scribble */}
         <path d="M330 405 q14 -18 28 0 t28 0 t28 0" fill="none" stroke="#FF5400" strokeWidth={2.4} strokeLinecap="round" />
       </g>
