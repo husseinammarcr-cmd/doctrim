@@ -155,8 +155,8 @@ const SECTIONS: LegalSection[] = [
         <p>
           We do not place our own tracking cookies, and we do not use cookies to identify you as a
           person across other websites. The only things DocTrim stores in your browser are your
-          language choice and, if analytics is available, the fact that you asked it not to be
-          recorded.
+          language choice, a signature you explicitly choose to save in the PDF editor (it stays on
+          your device and can be removed by clearing site data), and your analytics opt-out flag.
         </p>
       </>
     ),
