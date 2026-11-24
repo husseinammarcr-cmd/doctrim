@@ -66,6 +66,6 @@ The redaction tool in the [PDF editor](/edit-pdf) removes the content under each
 
 Be aware of the trade-off before you use it: any page you redact becomes an image, so it is no longer searchable and its text will not be read by assistive technology. If you need searchable text after redaction, rebuild the document instead of flattening it.
 
-And a note on the workflow itself: because the editor runs in your browser, the unredacted original never leaves your machine. For a document sensitive enough to need redaction, that matters as much as the rectangle.
+And a note on the workflow itself: the redaction and flattening run in your browser, so the unredacted original never leaves your machine. (Rewriting existing text is the only editor step that uses our server; if you use it, the file is uploaded, the text replaced, and the copy deleted immediately.) For a document sensitive enough to need redaction, that matters as much as the rectangle.
 
 [Open the PDF editor →](/edit-pdf)

@@ -28,7 +28,7 @@
     {
       "slug": "edit-pdf",
       "name": "Edit PDF",
-      "desc": "A full PDF editor in your browser: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Files never leave your device.",
+      "desc": "A full PDF editor: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Text rewrites run on our server; everything else stays in your browser.",
       "color": "#00C0FF"
     },
     {
@@ -212,43 +212,43 @@
     {
       "key": "home",
       "title": "DocTrim",
-      "desc": "Free PDF tools that run in your browser: compress, merge, split, convert, sign and edit. No account, no subscription."
+      "desc": "Free PDF tools for everyday work: compress, merge, split, convert, sign and edit. Most run in your browser; no account, no subscription."
     },
     {
       "key": "pdf-tools",
       "title": "All PDF Tools",
-      "desc": "Every DocTrim tool in one place: 27 free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no limits, no watermarks."
+      "desc": "Every DocTrim tool in one place: 27 free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no watermarks, no subscription."
     },
     {
       "key": "blog",
       "title": "PDF guides and how-tos",
-      "desc": "Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free browser tools."
+      "desc": "Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free PDF tools."
     },
     {
       "key": "about",
       "title": "About DocTrim",
-      "desc": "DocTrim is a small independent project building a free, privacy-friendly PDF toolkit that runs in your browser. No account, no installs, no paywalls."
+      "desc": "DocTrim is a small independent project building a free, privacy-friendly PDF toolkit where most tools run in your browser. No account, no installs, no paywalls."
     },
     {
       "key": "help",
       "title": "Help Center",
-      "desc": "Answers to common questions about DocTrim: how tools work, where your files are processed, file limits, troubleshooting, and how the site stays free."
+      "desc": "Answers to common questions about DocTrim: how tools work, which ones use our server, where your files are processed, file limits, privacy and analytics, troubleshooting, and how the site stays free."
     },
     {
       "key": "privacy",
       "title": "Privacy Policy",
-      "desc": "How DocTrim handles your files and data: browser-side processing, no accounts, short-lived server logs, and the cookies used by advertising."
+      "desc": "How DocTrim handles your files and data: browser-side processing, short-lived server jobs, first-party analytics without cookies, and the cookies used by advertising."
     },
     {
       "key": "terms",
       "title": "Terms of Service",
-      "desc": "The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, and the limits of our liability."
+      "desc": "The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, fair-use limits, and the limits of our liability."
     }
   ],
   "ar": {
     "home": {
       "title": "أدوات PDF بالعربية.",
-      "desc": "27 أداة PDF مجانية بالعربية تعمل داخل متصفحك: دمج وضغط وتحويل وتوقيع وتعديل ملفات PDF بدون حساب وبدون رفع ملفاتك."
+      "desc": "27 أداة PDF مجانية بالعربية: دمج وضغط وتحويل وتوقيع وتعديل ملفات PDF بدون حساب. معظم الأدوات تعمل داخل متصفحك، والباقي على سيرفر DocTrim مع حذف الملف فوراً."
     },
     "tools": [
       {
@@ -443,7 +443,7 @@
       {
         "key": "privacy",
         "title": "سياسة الخصوصية",
-        "desc": "كيف يتعامل DocTrim مع ملفاتك: معالجة داخل المتصفح، بدون حساب، بدون تتبّع عبر المواقع، وحذف الملفات من السيرفر فوراً."
+        "desc": "كيف يتعامل DocTrim مع ملفاتك: معالجة داخل المتصفح أو على سيرفرنا مع حذف فوري، إحصاءات بدون كوكيز، وحساب بدون تسجيل."
       }
     ],
     "posts": [

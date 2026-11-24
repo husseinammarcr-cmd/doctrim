@@ -1,5 +1,6 @@
 import LegalPage, { type LegalSection } from '../components/LegalPage'
 import { usePageMeta } from '../lib/usePageMeta'
+import { TOOLS } from '../lib/tools'
 
 const SECTIONS: LegalSection[] = [
   {
@@ -18,10 +19,10 @@ const SECTIONS: LegalSection[] = [
     title: 'What the Service is',
     body: (
       <p>
-        DocTrim provides browser-based and server-based tools to convert, compress, organise, edit and
-        sign PDF documents. Tools are free to use, require no account, and are offered as they are.
-        Features may be added, changed, or withdrawn at any time, and a tool marked as unavailable is
-        not yet part of the Service.
+        DocTrim provides {TOOLS.length} browser-based and server-based tools to convert, compress, organise, edit,
+        protect and sign PDF documents. Tools are free to use, require no account, and are offered as
+        they are. Features may be added, changed, or withdrawn at any time, and a tool marked as
+        unavailable is not yet part of the Service.
       </p>
     ),
   },
@@ -47,7 +48,9 @@ const SECTIONS: LegalSection[] = [
         <p>
           For browser tools, nothing is transmitted. For server-backed tools, you grant us a limited,
           temporary permission to process the file solely to perform the action you requested; that
-          permission ends when the processed file is returned and the temporary copy is deleted.
+          permission ends when the processed file is returned and the copy is deleted. Text rewrites
+          in the editor are stateless: the server keeps no copy, and any temporary file expires within
+          30 minutes at the latest.
         </p>
         <p>
           You are responsible for having the right to handle the files you upload and for keeping your
@@ -65,13 +68,36 @@ const SECTIONS: LegalSection[] = [
         <ul className="list-disc space-y-2 pl-5">
           <li>process material that is unlawful, infringing, or that you have no permission to handle;</li>
           <li>attempt to disrupt, overload, probe, or gain unauthorised access to the Service or its infrastructure;</li>
-          <li>use automated means to bulk-extract results, resell the Service, or present it as your own product;</li>
+          <li>
+            use automated means to bulk-extract results, resell the Service, or present it as your own
+            product — including scripts that ignore the published rate limits;
+          </li>
           <li>remove or obscure attribution where it appears, or use the DocTrim name and logo without permission;</li>
           <li>use the Service in a way that breaks applicable law, including data-protection and export rules.</li>
         </ul>
         <p>
           We may limit or block access — technically or by IP — where we reasonably believe use is
           abusive, and we may report unlawful activity to the relevant authorities.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: 'limits',
+    title: 'Availability and fair use',
+    body: (
+      <>
+        <p>
+          The Service is free and runs on a shared server. Server-backed tools accept files up to
+          50 MB each, may queue during busy periods, and are subject to per-visitor and site-wide
+          rate limits. If a limit is reached, the tool tells you to wait and try again; the limit
+          resets automatically. These measures exist to keep the Service usable for everyone, not to
+          meter normal use.
+        </p>
+        <p>
+          We do not guarantee uptime, processing speed, or that any particular format will convert
+          perfectly. Large, damaged, encrypted, or unusually structured documents may fail or take
+          longer.
         </p>
       </>
     ),
@@ -178,14 +204,14 @@ const SECTIONS: LegalSection[] = [
 export default function Terms() {
   usePageMeta(
     'Terms of Service — DocTrim',
-    'The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, and the limits of our liability.'
+    'The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, fair-use limits, and the limits of our liability.'
   )
   return (
     <LegalPage
       eyebrow="Legal"
       title="Terms of Service"
       intro="The rules that apply when you use DocTrim — short, readable, and without surprises buried in the middle."
-      updated="November 22, 2026"
+      updated="November 24, 2026"
       sections={SECTIONS}
     />
   )

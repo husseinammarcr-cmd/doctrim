@@ -332,7 +332,12 @@ function Runner({ tool }: { tool: Tool }) {
           </div>
         </div>
         <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-brand-light px-3 py-1 text-[13px] font-semibold text-brand">
-          <ShieldCheck size={14} /> {t('tool.privacy', 'Files are processed in your browser — they never leave your device.')}
+          <ShieldCheck size={14} />{' '}
+          {tool.server
+            ? t('tool.serverPrivacy', 'Processed on the DocTrim server, then deleted immediately.')
+            : tool.slug === 'edit-pdf'
+              ? t('tool.editPrivacy', 'Edits stay in your browser; text rewrites use our server.')
+              : t('tool.privacy', 'Files are processed in your browser — they never leave your device.')}
         </p>
 
         <div className="card mt-6 p-6 sm:p-8">

@@ -83,6 +83,6 @@ In those cases the clean answer is to rebuild the page — clear the affected bl
 
 Editing text is exactly the moment when the most sensitive version of a document exists: before the fix. Some online editors upload the file to a server to do the work, which means the pre-edit file leaves your machine.
 
-DocTrim's editor runs in the browser using pdf-lib and pdf.js. The file is read from your device, edited in memory, and downloaded back to your device. Nothing is uploaded, and nothing is retained after you close the tab — which is also why there is no account and no edit history to worry about.
+DocTrim's editor opens and lays out the document in your browser using pdf-lib and pdf.js. Adding text, images, shapes and signatures, and redacting pages, all happen on your device. Rewriting existing text is the one step that needs a server: the PDF is uploaded over HTTPS, the original glyphs are replaced, the result comes back, and the temporary copy is deleted immediately — and any temporary copy expires within 30 minutes at most. There is no account and no edit history to worry about.
 
 [Open the PDF editor →](/edit-pdf)

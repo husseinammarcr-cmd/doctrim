@@ -3,7 +3,7 @@
 export default {
   "": {
     "title": "DocTrim — We make PDF easy.",
-    "description": "Free PDF tools that run in your browser: compress, merge, split, convert, sign and edit. No account, no subscription.",
+    "description": "Free PDF tools for everyday work: compress, merge, split, convert, sign and edit. Most run in your browser; no account, no subscription.",
     "image": "/og/home.png",
     "type": "website",
     "jsonld": [
@@ -12,7 +12,7 @@ export default {
         "@type": "WebSite",
         "name": "DocTrim",
         "url": "https://doctrim.pages.dev/",
-        "description": "Free browser-based PDF tools. No account, no uploads for most tools.",
+        "description": "Free PDF tools with no account. Most run in your browser; files sent to our server are deleted immediately.",
         "publisher": {
           "@type": "Organization",
           "name": "DocTrim",
@@ -88,7 +88,7 @@ export default {
   },
   "about": {
     "title": "About DocTrim — We make PDF easy",
-    "description": "DocTrim is a small independent project building a free, privacy-friendly PDF toolkit that runs in your browser. No account, no installs, no paywalls.",
+    "description": "DocTrim is a small independent project building a free, privacy-friendly PDF toolkit where most tools run in your browser. No account, no installs, no paywalls.",
     "image": "/og/about.png",
     "type": "website",
     "jsonld": [
@@ -96,7 +96,7 @@ export default {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "About DocTrim — We make PDF easy",
-        "description": "DocTrim is a small independent project building a free, privacy-friendly PDF toolkit that runs in your browser. No account, no installs, no paywalls.",
+        "description": "DocTrim is a small independent project building a free, privacy-friendly PDF toolkit where most tools run in your browser. No account, no installs, no paywalls.",
         "url": "https://doctrim.pages.dev/about",
         "isPartOf": {
           "@type": "WebSite",
@@ -130,7 +130,7 @@ export default {
   },
   "ar": {
     "title": "أدوات PDF مجانية بالعربية — دمج، ضغط، تحويل وتوقيع | DocTrim",
-    "description": "27 أداة PDF مجانية بالعربية تعمل داخل متصفحك: دمج وضغط وتحويل وتوقيع وتعديل ملفات PDF بدون حساب وبدون رفع ملفاتك.",
+    "description": "27 أداة PDF مجانية بالعربية: دمج وضغط وتحويل وتوقيع وتعديل ملفات PDF بدون حساب. معظم الأدوات تعمل داخل متصفحك، والباقي على سيرفر DocTrim مع حذف الملف فوراً.",
     "image": "/og/ar-home.png",
     "type": "website",
     "locale": "ar_AR",
@@ -141,7 +141,7 @@ export default {
         "name": "DocTrim",
         "url": "https://doctrim.pages.dev/ar",
         "inLanguage": "ar",
-        "description": "27 أداة PDF مجانية بالعربية تعمل داخل متصفحك: دمج وضغط وتحويل وتوقيع وتعديل ملفات PDF بدون حساب وبدون رفع ملفاتك.",
+        "description": "27 أداة PDF مجانية بالعربية: دمج وضغط وتحويل وتوقيع وتعديل ملفات PDF بدون حساب. معظم الأدوات تعمل داخل متصفحك، والباقي على سيرفر DocTrim مع حذف الملف فوراً.",
         "publisher": {
           "@type": "Organization",
           "name": "DocTrim",
@@ -2140,7 +2140,7 @@ export default {
   },
   "ar/privacy": {
     "title": "سياسة الخصوصية — DocTrim",
-    "description": "كيف يتعامل DocTrim مع ملفاتك: معالجة داخل المتصفح، بدون حساب، بدون تتبّع عبر المواقع، وحذف الملفات من السيرفر فوراً.",
+    "description": "كيف يتعامل DocTrim مع ملفاتك: معالجة داخل المتصفح أو على سيرفرنا مع حذف فوري، إحصاءات بدون كوكيز، وحساب بدون تسجيل.",
     "image": "/og/ar-privacy.png",
     "type": "website",
     "locale": "ar_AR",
@@ -2149,7 +2149,7 @@ export default {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "سياسة الخصوصية — DocTrim",
-        "description": "كيف يتعامل DocTrim مع ملفاتك: معالجة داخل المتصفح، بدون حساب، بدون تتبّع عبر المواقع، وحذف الملفات من السيرفر فوراً.",
+        "description": "كيف يتعامل DocTrim مع ملفاتك: معالجة داخل المتصفح أو على سيرفرنا مع حذف فوري، إحصاءات بدون كوكيز، وحساب بدون تسجيل.",
         "url": "https://doctrim.pages.dev/ar/privacy",
         "inLanguage": "ar",
         "isPartOf": {
@@ -2683,7 +2683,7 @@ export default {
   },
   "blog": {
     "title": "PDF guides and how-tos — DocTrim Blog",
-    "description": "Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free browser tools.",
+    "description": "Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free PDF tools.",
     "image": "/og/blog.png",
     "type": "website",
     "jsonld": [
@@ -2691,7 +2691,7 @@ export default {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "PDF guides and how-tos — DocTrim Blog",
-        "description": "Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free browser tools.",
+        "description": "Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free PDF tools.",
         "url": "https://doctrim.pages.dev/blog",
         "isPartOf": {
           "@type": "WebSite",
@@ -3386,7 +3386,7 @@ export default {
   },
   "edit-pdf": {
     "title": "Edit PDF — rewrite text, add anything, sign and redact | DocTrim",
-    "description": "A full PDF editor in your browser: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Files never leave your device.",
+    "description": "A full PDF editor: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Text rewrites run on our server; everything else stays in your browser.",
     "image": "/og/edit-pdf.png",
     "type": "website",
     "jsonld": [
@@ -3399,7 +3399,7 @@ export default {
         "operatingSystem": "Any (web browser)",
         "browserRequirements": "Requires JavaScript",
         "url": "https://doctrim.pages.dev/edit-pdf",
-        "description": "A full PDF editor in your browser: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Files never leave your device.",
+        "description": "A full PDF editor: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Text rewrites run on our server; everything else stays in your browser.",
         "offers": {
           "@type": "Offer",
           "price": "0",
@@ -3642,7 +3642,7 @@ export default {
   },
   "help": {
     "title": "Help Center — DocTrim",
-    "description": "Answers to common questions about DocTrim: how tools work, where your files are processed, file limits, troubleshooting, and how the site stays free.",
+    "description": "Answers to common questions about DocTrim: how tools work, which ones use our server, where your files are processed, file limits, privacy and analytics, troubleshooting, and how the site stays free.",
     "image": "/og/help.png",
     "type": "website",
     "jsonld": [
@@ -3650,7 +3650,7 @@ export default {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "Help Center — DocTrim",
-        "description": "Answers to common questions about DocTrim: how tools work, where your files are processed, file limits, troubleshooting, and how the site stays free.",
+        "description": "Answers to common questions about DocTrim: how tools work, which ones use our server, where your files are processed, file limits, privacy and analytics, troubleshooting, and how the site stays free.",
         "url": "https://doctrim.pages.dev/help",
         "isPartOf": {
           "@type": "WebSite",
@@ -4388,7 +4388,7 @@ export default {
   },
   "pdf-tools": {
     "title": "All PDF Tools — 27 free PDF tools | DocTrim",
-    "description": "Every DocTrim tool in one place: 27 free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no limits, no watermarks.",
+    "description": "Every DocTrim tool in one place: 27 free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no watermarks, no subscription.",
     "image": "/og/pdf-tools.png",
     "type": "website",
     "jsonld": [
@@ -4396,7 +4396,7 @@ export default {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "All PDF Tools — 27 free PDF tools | DocTrim",
-        "description": "Every DocTrim tool in one place: 27 free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no limits, no watermarks.",
+        "description": "Every DocTrim tool in one place: 27 free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no watermarks, no subscription.",
         "url": "https://doctrim.pages.dev/pdf-tools",
         "isPartOf": {
           "@type": "WebSite",
@@ -4558,7 +4558,7 @@ export default {
   },
   "privacy": {
     "title": "Privacy Policy — DocTrim",
-    "description": "How DocTrim handles your files and data: browser-side processing, no accounts, short-lived server logs, and the cookies used by advertising.",
+    "description": "How DocTrim handles your files and data: browser-side processing, short-lived server jobs, first-party analytics without cookies, and the cookies used by advertising.",
     "image": "/og/privacy.png",
     "type": "website",
     "jsonld": [
@@ -4566,7 +4566,7 @@ export default {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "Privacy Policy — DocTrim",
-        "description": "How DocTrim handles your files and data: browser-side processing, no accounts, short-lived server logs, and the cookies used by advertising.",
+        "description": "How DocTrim handles your files and data: browser-side processing, short-lived server jobs, first-party analytics without cookies, and the cookies used by advertising.",
         "url": "https://doctrim.pages.dev/privacy",
         "isPartOf": {
           "@type": "WebSite",
@@ -4856,7 +4856,7 @@ export default {
   },
   "terms": {
     "title": "Terms of Service — DocTrim",
-    "description": "The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, and the limits of our liability.",
+    "description": "The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, fair-use limits, and the limits of our liability.",
     "image": "/og/terms.png",
     "type": "website",
     "jsonld": [
@@ -4864,7 +4864,7 @@ export default {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "Terms of Service — DocTrim",
-        "description": "The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, and the limits of our liability.",
+        "description": "The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, fair-use limits, and the limits of our liability.",
         "url": "https://doctrim.pages.dev/terms",
         "isPartOf": {
           "@type": "WebSite",

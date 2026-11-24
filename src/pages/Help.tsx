@@ -21,12 +21,12 @@ const GROUPS: Group[] = [
         a: 'Every tool follows the same three steps: choose your file (drag and drop or click to browse), adjust the options on the page, then press the action button. The processed file downloads to your device automatically.',
       },
       {
-        q: 'Which tools work entirely in my browser?',
-        a: 'Merge, Split, Rotate, Organize, Delete pages, Extract pages, JPG to PDF, PNG to PDF, PDF to JPG, PDF to PNG, Compress, Crop, Watermark, Number pages, Sign and PDF Reader all run locally on your device. No upload happens.',
+        q: 'Which tools work in my browser, and which use your server?',
+        a: 'Merge, Split, Rotate, Organize, Delete pages, Extract pages, JPG to PDF, PNG to PDF, PDF to JPG, PDF to PNG, Compress, Crop, Watermark, Number pages, Sign, PDF Reader — and the layout and annotation tools in the PDF editor — run locally on your device. Ten tools need our server: PDF to Word, PDF to Excel, PDF to PPT, OCR, Word to PDF, Excel to PDF, PPT to PDF, Protect, Unlock and Flatten, plus the step in the editor that rewrites existing text. A server job is deleted the moment it finishes.',
       },
       {
-        q: 'Some tools say “coming soon”. When will they be ready?',
-        a: 'Conversion to and from Office formats, OCR, and password protection all need work on our servers rather than your browser. They are being rolled out one at a time, and each one goes live the moment it is tested. There is nothing you need to do — no waitlist, no sign-up.',
+        q: 'Are all the tools live?',
+        a: 'Yes — every tool listed on the site works today, with no waitlist and no account. The Android and Windows apps are still in development; the website already does everything the apps will do.',
       },
     ],
   },
@@ -35,19 +35,19 @@ const GROUPS: Group[] = [
     items: [
       {
         q: 'Where are my files processed?',
-        a: 'For browser tools, inside your own browser, in memory. Your PDF is opened with pdf.js or pdf-lib, modified on your device, and saved straight back to your downloads folder. Nothing is transmitted.',
+        a: 'For browser tools, inside your own browser, in memory. Your PDF is opened with pdf.js or pdf-lib, modified on your device, and saved straight back to your downloads folder. Nothing is transmitted. Server tools upload the file over HTTPS to our own server, process it, return the result, and delete the temporary copy immediately. Editor text rewrites are stateless too; any temporary file expires within 30 minutes at the latest.',
       },
       {
         q: 'Do you keep a copy of my documents?',
-        a: 'No. We have no document storage, no history, and no “recent files”. When you close the tab, the file is gone from memory.',
+        a: 'No. We have no document storage, no history, and no “recent files”. Browser tools leave nothing behind, and a server job is deleted as soon as it finishes. Editor rewrites keep no copy either; any temporary file expires within 30 minutes at the latest.',
       },
       {
         q: 'Can I use DocTrim for confidential documents?',
-        a: 'For the browser-based tools, yes — the file never leaves your computer, which is the same trust level as opening it in a desktop PDF app. For the few server-backed tools, the file is deleted immediately after processing and is never retained.',
+        a: 'For the browser-based tools, yes — the file never leaves your computer, which is the same trust level as opening it in a desktop PDF app. For the server tools, the file is uploaded to our own server (not a third party), deleted immediately after processing, and never retained. If a document must not leave your machine at all, stick to the browser tools.',
       },
       {
         q: 'Do you track me or sell my data?',
-        a: 'We do not sell data and we do not build profiles of users. The site needs no account, so there is no personal data to attach to a file in the first place. Advertising on the site is what keeps it free; ad networks may set their own cookies, which you can block in your browser settings without breaking any tool.',
+        a: 'We do not sell data and we do not build profiles of users. We run our own first-party analytics, not a third-party tracker: it records event names, page paths, tool names, processing time and short error messages — never file names, file contents or document text. There are no analytics cookies, and your IP address is not stored; it is turned into a hash that changes every day, only to count unique visitors. Turn on “Do Not Track” in your browser to switch analytics off entirely. Advertising is what keeps the site free; ad networks may set their own cookies, which you can block without breaking any tool.',
       },
     ],
   },
@@ -56,7 +56,11 @@ const GROUPS: Group[] = [
     items: [
       {
         q: 'Is there a maximum file size?',
-        a: 'We do not impose a fixed limit. Browser tools are limited by your device’s available memory — most laptops handle files up to roughly 100–200 MB comfortably. Very large or image-heavy PDFs may take longer, so keep the tab open until the download starts.',
+        a: 'Browser tools are limited by your device’s available memory — most laptops handle files up to roughly 100–200 MB comfortably. Server tools accept up to 50 MB per file. Very large or image-heavy PDFs may take longer, so keep the tab open until the download starts.',
+      },
+      {
+        q: 'Why did a conversion ask me to wait?',
+        a: 'Server tools use fair-use rate limits and a concurrency cap so one script cannot occupy the machine and slow everyone down. If you hit a limit, the tool tells you how many seconds to wait; the counter resets automatically. Normal manual use rarely reaches it.',
       },
       {
         q: 'Can I process more than one file at once?',
@@ -81,7 +85,7 @@ const GROUPS: Group[] = [
       },
       {
         q: 'My PDF asks for a password and won’t open.',
-        a: 'Encrypted PDFs have to be unlocked before most tools can read them. A password-removal tool is on the way; until then, open the file once in a PDF reader with the password, export an unlocked copy, and use that with DocTrim.',
+        a: 'Use Unlock PDF if you know the password: it removes the protection and gives you a file the other tools can read. If you do not know the password, we cannot open the file for you — open it once in a PDF reader with the password, export an unlocked copy, and use that with DocTrim.',
       },
       {
         q: 'The download did not start.',
@@ -121,7 +125,7 @@ const ALL_ITEMS = GROUPS.flatMap((g) => g.items)
 export default function Help() {
   usePageMeta(
     'Help Center — DocTrim',
-    'Answers to common questions about DocTrim: how tools work, where your files are processed, file limits, troubleshooting, and how the site stays free.'
+    'Answers to common questions about DocTrim: how tools work, which ones use our server, where your files are processed, file limits, privacy and analytics, troubleshooting, and how the site stays free.'
   )
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState<Record<string, boolean>>({})

@@ -8,7 +8,7 @@ const PRINCIPLES = [
     icon: ShieldCheck,
     color: '#00D267',
     title: 'Privacy by default',
-    body: 'Most DocTrim tools run entirely in your browser using pdf-lib and pdf.js. Your file is read from your device and written back to your device — it never touches a server.',
+    body: 'Most DocTrim tools run entirely in your browser using pdf-lib and pdf.js. Your file is read from your device and written back to your device — it never touches a server. The ten conversion, OCR and protection tools use our own server instead, and delete the file the moment the job finishes.',
   },
   {
     icon: Zap,
@@ -39,7 +39,7 @@ const STEPS = [
 export default function About() {
   usePageMeta(
     'About DocTrim — We make PDF easy',
-    'DocTrim is a small independent project building a free, privacy-friendly PDF toolkit that runs in your browser. No account, no installs, no paywalls.'
+    'DocTrim is a small independent project building a free, privacy-friendly PDF toolkit where most tools run in your browser. No account, no installs, no paywalls.'
   )
 
   return (
@@ -116,7 +116,10 @@ export default function About() {
             {[
               { value: `${TOOLS.length}`, label: 'PDF tools' },
               { value: '0', label: 'sign-ups required' },
-              { value: '0', label: 'files uploaded*' },
+              {
+                value: `${TOOLS.filter((t) => !t.server && t.slug !== 'edit-pdf').length}`,
+                label: 'tools run on your device*',
+              },
               { value: '$0', label: 'to use everything' },
             ].map((s, i) => (
               <div key={s.label} className={i > 0 ? 'sm:border-l sm:border-line sm:pl-7' : ''}>
@@ -126,8 +129,9 @@ export default function About() {
             ))}
           </div>
           <p className="mt-4 text-[12px] text-ink-muted">
-            *For tools that run in your browser. A few advanced tools need our server and delete your
-            file the moment processing finishes.
+            *The other ten tools need our server and delete your file the moment processing finishes.
+            The PDF editor keeps its surface edits in the browser; rewriting existing text uses the
+            server for a moment.
           </p>
         </div>
       </section>

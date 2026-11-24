@@ -325,7 +325,7 @@ function PostView({ post }: { post: Post }) {
               <div>
                 <p className="text-[15px] font-bold text-ink">DocTrim Team</p>
                 <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">
-                  We build the free browser tools this blog writes about — every claim here is
+                  We build the free PDF tools this blog writes about — every claim here is
                   checked against the code that actually ships.{' '}
                   <Link to="/about" className="whitespace-nowrap font-semibold text-brand hover:underline">
                     About DocTrim

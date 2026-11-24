@@ -47,7 +47,7 @@ const FEATURES: Feature[] = [
 export default function Home() {
   usePageMeta(
     'DocTrim — We make PDF easy.',
-    'Free PDF tools that run in your browser: compress, merge, split, convert, sign and edit. No account, no subscription.'
+    'Free PDF tools for everyday work: compress, merge, split, convert, sign and edit. Most run in your browser; no account, no subscription.'
   )
   useCanonical('/')
 

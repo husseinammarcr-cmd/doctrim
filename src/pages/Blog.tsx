@@ -15,7 +15,7 @@ export default function Blog() {
 
   usePageMeta(
     'PDF guides and how-tos — DocTrim Blog',
-    'Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free browser tools.'
+    'Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free PDF tools.'
   )
   useCanonical('/blog')
   useJsonLd({

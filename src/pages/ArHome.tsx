@@ -96,7 +96,7 @@ export default function ArHome() {
 
   usePageMeta(
     'أدوات PDF مجانية بالعربية — دمج، ضغط، تحويل وتوقيع | DocTrim',
-    '27 أداة PDF مجانية بالعربية تعمل داخل متصفحك: دمج وضغط وتحويل وتوقيع وتعديل ملفات PDF بدون حساب وبدون رفع ملفاتك.'
+    '27 أداة PDF مجانية بالعربية: دمج وضغط وتحويل وتوقيع وتعديل ملفات PDF بدون حساب. معظم الأدوات تعمل داخل متصفحك، والباقي على سيرفر DocTrim مع حذف الملف فوراً.'
   )
   useCanonical('/ar')
   useJsonLd([
@@ -131,12 +131,12 @@ export default function ArHome() {
             <h1 className="h-display mt-5 text-[40px] leading-[1.15] lg:text-[64px]">
               {t('home.title', 'PDF tools, in Arabic.')}
               <br />
-              <span className="text-brand">{t('home.title2', 'No account, no uploads.')}</span>
+              <span className="text-brand">{t('home.title2', 'No account. No sign-up.')}</span>
             </h1>
             <p className="mt-5 max-w-[620px] text-lg leading-relaxed text-ink-soft">
               {t(
                 'home.sub',
-                'Compress, merge, convert, sign and edit PDFs right in your browser — 27 free tools that run on your own device.'
+                'Compress, merge, convert, sign and edit PDFs — 27 free tools, most of which run on your own device.'
               )}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">

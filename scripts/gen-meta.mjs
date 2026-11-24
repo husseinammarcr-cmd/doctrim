@@ -92,48 +92,48 @@ const STATIC_PAGES = [
     path: '/',
     title: 'DocTrim — We make PDF easy.',
     description:
-      'Free PDF tools that run in your browser: compress, merge, split, convert, sign and edit. No account, no subscription.',
+      'Free PDF tools for everyday work: compress, merge, split, convert, sign and edit. Most run in your browser; no account, no subscription.',
   },
   {
     key: 'pdf-tools',
     path: '/pdf-tools',
     title: `All PDF Tools — ${tools.length} free PDF tools | DocTrim`,
-    description: `Every DocTrim tool in one place: ${tools.length} free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no limits, no watermarks.`,
+    description: `Every DocTrim tool in one place: ${tools.length} free tools to convert, compress, organize, edit and protect PDFs. No sign-up, no watermarks, no subscription.`,
   },
   {
     key: 'blog',
     path: '/blog',
     title: 'PDF guides and how-tos — DocTrim Blog',
     description:
-      'Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free browser tools.',
+      'Practical guides to PDF file sizes, page sizes, editing limits, redaction and e-signatures — written by the team building DocTrim’s free PDF tools.',
   },
   {
     key: 'about',
     path: '/about',
     title: 'About DocTrim — We make PDF easy',
     description:
-      'DocTrim is a small independent project building a free, privacy-friendly PDF toolkit that runs in your browser. No account, no installs, no paywalls.',
+      'DocTrim is a small independent project building a free, privacy-friendly PDF toolkit where most tools run in your browser. No account, no installs, no paywalls.',
   },
   {
     key: 'help',
     path: '/help',
     title: 'Help Center — DocTrim',
     description:
-      'Answers to common questions about DocTrim: how tools work, where your files are processed, file limits, troubleshooting, and how the site stays free.',
+      'Answers to common questions about DocTrim: how tools work, which ones use our server, where your files are processed, file limits, privacy and analytics, troubleshooting, and how the site stays free.',
   },
   {
     key: 'privacy',
     path: '/privacy',
     title: 'Privacy Policy — DocTrim',
     description:
-      'How DocTrim handles your files and data: browser-side processing, no accounts, short-lived server logs, and the cookies used by advertising.',
+      'How DocTrim handles your files and data: browser-side processing, short-lived server jobs, first-party analytics without cookies, and the cookies used by advertising.',
   },
   {
     key: 'terms',
     path: '/terms',
     title: 'Terms of Service — DocTrim',
     description:
-      'The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, and the limits of our liability.',
+      'The terms that apply when you use DocTrim: what the service is, your rights over your files, acceptable use, fair-use limits, and the limits of our liability.',
   },
 ]
 
@@ -147,7 +147,7 @@ const ORG = {
 const toolTitle = (t) => (t.slug === 'edit-pdf' ? 'Edit PDF — rewrite text, add anything, sign and redact | DocTrim' : `${t.name} — Free Online PDF Tool | DocTrim`)
 const toolDesc = (t) =>
   t.slug === 'edit-pdf'
-    ? 'A full PDF editor in your browser: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Files never leave your device.'
+    ? 'A full PDF editor: rewrite existing text, add text, images, shapes and signatures, highlight or redact, then download. Text rewrites run on our server; everything else stays in your browser.'
     : t.desc
 
 const meta = {}
@@ -164,7 +164,7 @@ meta[''] = {
       '@type': 'WebSite',
       name: 'DocTrim',
       url: `${SITE}/`,
-      description: 'Free browser-based PDF tools. No account, no uploads for most tools.',
+      description: 'Free PDF tools with no account. Most run in your browser; files sent to our server are deleted immediately.',
       publisher: ORG,
     },
     {

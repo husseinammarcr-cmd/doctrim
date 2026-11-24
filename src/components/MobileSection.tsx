@@ -95,7 +95,7 @@ export default function MobileSection() {
             <StoreButton store="apple" />
           </div>
           <p className="mt-3 text-[13px] text-ink-muted">
-            In development — the apps are not available yet. Every tool works in your browser today.
+            In development — the apps are not available yet. Every tool works on doctrim.com today.
           </p>
         </motion.div>
         <motion.div
