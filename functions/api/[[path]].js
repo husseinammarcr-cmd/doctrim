@@ -29,6 +29,11 @@ const ALLOWED = new Set([
   'force-download',
   'analytics/collect',
   'edit/quick',
+  'edit/analyze',
+  'edit/words',
+  'edit/page',
+  'edit/apply',
+  'edit/download',
 ])
 
 export async function onRequest(context) {
